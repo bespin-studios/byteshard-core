@@ -82,8 +82,12 @@ class Deeplink
             if (class_exists('\\config')) {
                 /** @noinspection PhpUndefinedClassInspection */
                 $config = new \config();
-                if (!empty($config->getUrlContext())) {
-                    $endpoint = trim(str_replace($config->getUrlContext(), '', $endpoint), "/ \n\r\t\v\0");
+                $urlContext = $config->getUrlContext();
+                if (!empty($urlContext)) {
+                    if (str_starts_with($endpoint, $urlContext)) {
+                        $endpoint = substr_replace($endpoint, '', 0, strlen($urlContext));
+                    }
+                    $endpoint = trim($endpoint, "/ \n\r\t\v\0");
                 }
             }
             $internalEndpoints = Config::getInternalEndpoints();
