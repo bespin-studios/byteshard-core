@@ -78,7 +78,14 @@ class Deeplink
     public static function selectTab(): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            $endpoint          = trim($_SERVER['SCRIPT_NAME'], "/ \n\r\t\v\0");
+            $endpoint = trim($_SERVER['SCRIPT_NAME'], "/ \n\r\t\v\0");
+            if (class_exists('\\config')) {
+                /** @noinspection PhpUndefinedClassInspection */
+                $config = new \config();
+                if (!empty($config->getUrlContext())) {
+                    $endpoint = trim(str_replace($config->getUrlContext(), '', $endpoint), "/ \n\r\t\v\0");
+                }
+            }
             $internalEndpoints = Config::getInternalEndpoints();
             if (in_array($endpoint, $internalEndpoints, true)) {
                 return;
