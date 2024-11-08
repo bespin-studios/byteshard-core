@@ -1,3 +1,11 @@
+## [2.4.2](https://github.com/bespin-studios/byteshard-core/compare/v2.4.1...v2.4.2) (2024-11-08)
+
+
+### Bug Fixes
+
+* **Deeplink:** strip url context from endpoint to avoid redirect ([6927f94](https://github.com/bespin-studios/byteshard-core/commit/6927f94b14d4f4c26b2d7172e822927aca123efe))
+* only strip from start ([175b2c4](https://github.com/bespin-studios/byteshard-core/commit/175b2c43966ac829f13c7430203c86a594850c47))
+
 ## [2.4.1](https://github.com/bespin-studios/byteshard-core/compare/v2.4.0...v2.4.1) (2024-10-01)
 
 
