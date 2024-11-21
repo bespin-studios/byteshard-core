@@ -255,11 +255,11 @@ class SessionTabs
     }
 
     /**
-     * @param mixed $currentTab
+     * @param Tab|TabNew $currentTab
      * @param string $selectedTab
      * @return void
      */
-    protected function unSelectSiblings(mixed $currentTab, string $selectedTab): void
+    protected function unSelectSiblings(Tab|TabNew $currentTab, string $selectedTab): void
     {
         if ($currentTab instanceof Tab) {
             foreach ($currentTab->getDirectChildren() as $childrenTab) {
