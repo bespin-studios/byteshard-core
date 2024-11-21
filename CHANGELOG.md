@@ -1,3 +1,11 @@
+## [2.4.3](https://github.com/bespin-studios/byteshard-core/compare/v2.4.2...v2.4.3) (2024-11-21)
+
+
+### Bug Fixes
+
+* unselect tabs on a sibling level where the children tab is selected ([7b271d5](https://github.com/bespin-studios/byteshard-core/commit/7b271d5eaac313a71e64326bc355f2b7bda2c586))
+* use type instead of mixed ([29e44e4](https://github.com/bespin-studios/byteshard-core/commit/29e44e4325587298edeff59c43d3dfc3887df2db))
+
 ## [2.4.2](https://github.com/bespin-studios/byteshard-core/compare/v2.4.1...v2.4.2) (2024-11-08)
 
 
