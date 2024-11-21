@@ -88,6 +88,11 @@ class Tab extends LayoutContainer implements EventStorageInterface, ToolbarConta
         }
     }
 
+    public function setUnSelected(): void
+    {
+        $this->selected = false;
+    }
+
     public function setSelected(string $name = ''): bool
     {
         if ($name === '') {
@@ -218,7 +223,7 @@ class Tab extends LayoutContainer implements EventStorageInterface, ToolbarConta
 
     public function getNonce(): string
     {
-        //TODO: tabs need their own nonce because they can have a toolbar which in turn needs a nonce for it's actions 
+        //TODO: tabs need their own nonce because they can have a toolbar which in turn needs a nonce for it's actions
         return '';
     }
 
