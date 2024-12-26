@@ -64,6 +64,7 @@ class SetSelectedID extends Action
                 if (array_key_exists('!#SelectedSchedulerDate', $id)) {
                     $idElements[] = new DateIDElement($id['!#SelectedSchedulerDate']);
                 } elseif (count($id) === 1 && array_key_exists('colID', $id) && property_exists($clientData, 'ID')) {
+                    // this is the implementation for onSelect
                     // onGridLink doesn't work the same way as onSelect since we need a column and a row for the links instead of only a row
                     // refactor once there is a common implementation for all grid related events
                     try {
@@ -82,6 +83,11 @@ class SetSelectedID extends Action
                     if (property_exists($row, $actionId) && $row->{$actionId}->type === Combo::class) {
                         $idElements[] = new IDElement($actionId, $row->{$actionId}->value);
                         $appendId     = true;
+                    } elseif (is_array($id) && array_key_exists('colID', $id) && array_key_exists('objID', $id)) {
+                        // this is the implementation for onLinkClick in Image columns
+                        $col = json_decode(Session::decrypt($id['colID']));
+                        $obj = json_decode(Session::decrypt($id['objID']), true);
+                        $idElements[] = new IDElement($col->i, $obj);
                     } else {
                         foreach ($id as $clientObject => $clientValue) {
                             if (property_exists($clientData, $clientObject)) {
