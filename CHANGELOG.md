@@ -1,3 +1,10 @@
+## [2.4.4](https://github.com/bespin-studios/byteshard-core/compare/v2.4.3...v2.4.4) (2024-12-26)
+
+
+### Bug Fixes
+
+* onLinkClick was not working with setSelectedId ([249e71f](https://github.com/bespin-studios/byteshard-core/commit/249e71f82c15a5889a8f27c10534dba005c1d473))
+
 ## [2.4.3](https://github.com/bespin-studios/byteshard-core/compare/v2.4.2...v2.4.3) (2024-11-21)
 
 
