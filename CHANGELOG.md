@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/bespin-studios/byteshard-core/compare/v2.4.4...v2.5.0) (2025-01-10)
+
+
+### Features
+
+* navigationItem for SideBar ([947eaa7](https://github.com/bespin-studios/byteshard-core/commit/947eaa75c50b716d0598c632db96aedc4ba574e1))
+
 ## [2.4.4](https://github.com/bespin-studios/byteshard-core/compare/v2.4.3...v2.4.4) (2024-12-26)
 
 
