@@ -19,9 +19,10 @@ class SessionTabs
 {
     private const PARENT_TAB_ID = 0;
 
-    private array $tabs = [];
+    private array  $tabs         = [];
     /** @var Tab[] */
     private array  $legacyTabs   = [];
+    /** @var array<string, bool> */
     private array  $selectedTabs = [];
     private string $type         = 'TabBar';
 
@@ -213,6 +214,17 @@ class SessionTabs
                 }
             }
         }
+        $filteredSelected = array_filter($this->selectedTabs);
+        foreach ($filteredSelected as $selectedTab => $selected) {
+            $split    = explode('\\', $selectedTab);
+            $tabDepth = count($split);
+            if ($tabDepth > 2) {
+                if (array_key_exists($split[0], $tabs)) {
+                    $currentTab = $tabs[$split[0]];
+                    $this->unSelectSiblings($currentTab, $selectedTab);
+                }
+            }
+        }
         if ($found === false) {
             reset($tabs);
             $firstTab = key($tabs);
@@ -254,5 +266,24 @@ class SessionTabs
             $result['Tab'][$tabId] = $tab->getLocale();
         }
         return $result;
+    }
+
+    /**
+     * @param Tab|TabNew $currentTab
+     * @param string $selectedTab
+     * @return void
+     */
+    protected function unSelectSiblings(Tab|TabNew $currentTab, string $selectedTab): void
+    {
+        if ($currentTab instanceof Tab) {
+            foreach ($currentTab->getDirectChildren() as $childrenTab) {
+                if ($childrenTab instanceof Tab) {
+                    if (!str_starts_with($selectedTab, $childrenTab->getNewId()->getTabId())) {
+                        $childrenTab->setUnSelected();
+                    }
+                }
+                $this->unSelectSiblings($childrenTab, $selectedTab);
+            }
+        }
     }
 }
