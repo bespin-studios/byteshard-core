@@ -10,6 +10,7 @@ use byteShard\Cell;
 use byteShard\ID\TabIDElement;
 use byteShard\Layout\Enum\Pattern;
 use byteShard\Locale;
+use byteShard\SideBarItem;
 use byteShard\Tab;
 use byteShard\TabNew;
 use byteShard\ID\ID;
@@ -18,13 +19,12 @@ class SessionTabs
 {
     private const PARENT_TAB_ID = 0;
 
-    private array $tabs = [];
+    private array  $tabs         = [];
     /** @var Tab[] */
-    private array $legacyTabs = [];
-    /**
-     * @var array<string, bool>
-     */
-    private array $selectedTabs = [];
+    private array  $legacyTabs   = [];
+    /** @var array<string, bool> */
+    private array  $selectedTabs = [];
+    private string $type         = 'TabBar';
 
     private function unsetLastSelectedTabOnSameLevelAndSetNewSelectedTab(int $level, string $parent, string $selectedTab): void
     {
@@ -72,12 +72,19 @@ class SessionTabs
         return '';
     }
 
-    public function addTab(Tab|TabNew ...$tabs): void
+    public function addTab(NavigationItem ...$tabs): void
     {
         foreach ($tabs as $tab) {
-            if ($tab instanceof TabNew) {
-                $this->tabs[$tab->getId()] = $tab::class;
-            } else {
+            if ($tab instanceof SideBarItem) {
+                $this->type = 'SideBar';
+            }
+            if (empty($this->tabs) && empty($this->legacyTabs)) {
+                if ($tab instanceof SideBarItem) {
+                    $this->type = 'SideBar';
+                }
+            }
+            if ($tab instanceof Tab) {
+                //legacy
                 $tab->setParentTabID(self::PARENT_TAB_ID);
                 $tab->setNamespace('');
                 if ($tab->getAccessType() > 0) {
@@ -86,8 +93,15 @@ class SessionTabs
                     $this->tabs[$id]       = null;
                     $this->legacyTabs[$id] = $tab;
                 }
+            } else {
+                $this->tabs[$tab->getId()] = $tab::class;
             }
         }
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
     }
 
     public function removeTab(ID $id): bool

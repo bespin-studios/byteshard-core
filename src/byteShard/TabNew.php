@@ -8,11 +8,12 @@ namespace byteShard;
 
 use byteShard\ID\TabIDElement;
 use byteShard\Internal\Layout;
+use byteShard\Internal\NavigationItem;
 use byteShard\Internal\TabLegacyInterface;
 use byteShard\Layout\Enum\Pattern;
 use byteShard\Utils\Strings;
 
-abstract class TabNew implements TabLegacyInterface
+abstract class TabNew implements TabLegacyInterface, NavigationItem
 {
     private ID\ID  $id;
     private array  $tabs     = [];

@@ -43,6 +43,7 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
     private SessionTabs   $tabs;
     private SessionPopups $popups;
     private SessionLocale $sessionLocale;
+    private string        $customHeader;
 
     /**
      * Session constructor.
@@ -629,7 +630,12 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
 
     public function addTab(Tab|TabNew ...$tabs)
     {
-        $this->tabs->addTab(...$tabs);
+        $this->addNavigationItem(...$tabs);
+    }
+
+    public function addNavigationItem(NavigationItem ...$navigationItems): void
+    {
+        $this->tabs->addTab(...$navigationItems);
     }
 
     /**
@@ -654,9 +660,18 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
         return $this->tabs->removeTab($id);
     }
 
+    public function setCustomHeader(string $header): void
+    {
+        $this->customHeader = $header;
+    }
+
     public function getNavigationArray(bool $debug, ?string $dhtmlxCssImagePath): array
     {
-        $result           = $this->tabs->getTabContent();
+        $result         = $this->tabs->getTabContent();
+        $result['type'] = $this->tabs->getType();
+        if (isset($this->customHeader)) {
+            $result['customHeader'] = $this->customHeader;
+        }
         $result['locale'] = $this->sessionLocale->getInterfaceLocale();
         $result['debug']  = $debug;
         if ($dhtmlxCssImagePath !== null) {

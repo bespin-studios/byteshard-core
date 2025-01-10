@@ -11,4 +11,8 @@ use byteShard\TabNew;
 
 interface TabParentInterface {
     public function addTab(Tab|TabNew ...$tabs);
+
+    public function addNavigationItem(NavigationItem ...$navigationItems): void;
+
+    public function setCustomHeader(string $header): void;
 }

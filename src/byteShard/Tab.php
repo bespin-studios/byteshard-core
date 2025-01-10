@@ -10,6 +10,7 @@ use byteShard\Internal\Action\ClientExecutionInterface;
 use byteShard\Internal\Event\EventStorage;
 use byteShard\Internal\Event\EventStorageInterface;
 use byteShard\Internal\LayoutContainer;
+use byteShard\Internal\NavigationItem;
 use byteShard\Internal\Struct;
 use byteShard\Internal\Event\Event;
 use byteShard\Internal\Event\TabEvent;
@@ -21,7 +22,7 @@ use byteShard\Utils\Strings;
  * Class Tab
  * @package byteShard
  */
-class Tab extends LayoutContainer implements EventStorageInterface, ToolbarContainer, TabLegacyInterface
+class Tab extends LayoutContainer implements EventStorageInterface, ToolbarContainer, TabLegacyInterface, NavigationItem
 {
     use EventStorage;
 

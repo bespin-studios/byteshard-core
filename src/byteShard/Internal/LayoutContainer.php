@@ -178,6 +178,20 @@ abstract class LayoutContainer implements TabParentInterface, ContainerInterface
         return $this;
     }
 
+    public function addNavigationItem(NavigationItem ...$navigationItems): void
+    {
+        foreach ($navigationItems as $navigationItem) {
+            if ($navigationItem instanceof Tab || $navigationItem instanceof TabNew) {
+                $this->addTab($navigationItem);
+            }
+        }
+    }
+
+    public function setCustomHeader(string $header): void
+    {
+
+    }
+
     /**
      * @param Tab ...$tabs
      * @return $this
@@ -216,6 +230,8 @@ abstract class LayoutContainer implements TabParentInterface, ContainerInterface
         }
         return $this;
     }
+
+
 
     /**
      * @return bool
