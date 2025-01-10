@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/bespin-studios/byteshard-core/compare/v2.5.0...v2.5.1) (2025-01-10)
+
+
+### Bug Fixes
+
+* top level tabs were not selected correctly after logout ([613b948](https://github.com/bespin-studios/byteshard-core/commit/613b948af571726c61339e6fc5b2f8bd1e6e1440))
+
 # [2.5.0](https://github.com/bespin-studios/byteshard-core/compare/v2.4.4...v2.5.0) (2025-01-10)
 
 
