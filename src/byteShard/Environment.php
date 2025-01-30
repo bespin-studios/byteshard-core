@@ -1087,4 +1087,9 @@ abstract class Environment implements ParametersInterface, JsonSerializable
     {
         return $this->__debugInfo();
     }
+
+    public function getConfig(): Config
+    {
+        return $this->config;
+    }
 }
