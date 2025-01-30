@@ -1,3 +1,10 @@
+## [2.5.2](https://github.com/bespin-studios/byteshard-core/compare/v2.5.1...v2.5.2) (2025-01-30)
+
+
+### Bug Fixes
+
+* add a getter to get environment config object ([6f6d4f4](https://github.com/bespin-studios/byteshard-core/commit/6f6d4f43df79ccc519eec4177c0d2cd29685fd37))
+
 ## [2.5.1](https://github.com/bespin-studios/byteshard-core/compare/v2.5.0...v2.5.1) (2025-01-10)
 
 
