@@ -36,12 +36,14 @@ class SimpleXML
         return $child;
     }
 
-    public static function addAttribute(?SimpleXMLElement $xml, string $qualifiedName, ?string $value = null, ?string $namespace = null): void
+    public static function addAttribute(?SimpleXMLElement $xml, string $qualifiedName, ?string $value = null, ?string $namespace = null, bool $trusted = false): void
     {
         if ($xml === null) {
             return;
         }
-        $qualifiedName = htmlspecialchars(htmlspecialchars_decode($qualifiedName, 16), 16, 'UTF-8'); //16 === ENT_XML1
+        if ($trusted === false) {
+            $qualifiedName = htmlspecialchars(htmlspecialchars_decode($qualifiedName, 16), 16, 'UTF-8'); //16 === ENT_XML1
+        }
         if ($value === null) {
             $value = '';
         } elseif ($value !== '') {
@@ -55,12 +57,14 @@ class SimpleXML
         $xml->addAttribute($qualifiedName, $value, $namespace);
     }
 
-    public static function addChild(?SimpleXMLElement $xml, string $qualifiedName, ?string $value = null, ?string $namespace = null): ?SimpleXMLElement
+    public static function addChild(?SimpleXMLElement $xml, string $qualifiedName, ?string $value = null, ?string $namespace = null, bool $trusted = false): ?SimpleXMLElement
     {
         if ($xml === null) {
             return null;
         }
-        $qualifiedName = htmlspecialchars(htmlspecialchars_decode($qualifiedName, 16), 16, 'UTF-8'); //16 === ENT_XML1
+        if ($trusted === false) {
+            $qualifiedName = htmlspecialchars(htmlspecialchars_decode($qualifiedName, 16), 16, 'UTF-8'); //16 === ENT_XML1
+        }
         if ($value !== null) {
             $value = htmlspecialchars(htmlspecialchars_decode($value, 16), 16, 'UTF-8');
         }
