@@ -1,3 +1,10 @@
+## [2.5.4](https://github.com/bespin-studios/byteshard-core/compare/v2.5.3...v2.5.4) (2025-02-11)
+
+
+### Bug Fixes
+
+* add trusted parameter to skip qualifiedName escaping ([1cb063d](https://github.com/bespin-studios/byteshard-core/commit/1cb063d643fddb19a873704fcf4af3fd97d5552f))
+
 ## [2.5.3](https://github.com/bespin-studios/byteshard-core/compare/v2.5.2...v2.5.3) (2025-02-11)
 
 
