@@ -1,3 +1,10 @@
+## [2.5.3](https://github.com/bespin-studios/byteshard-core/compare/v2.5.2...v2.5.3) (2025-02-11)
+
+
+### Bug Fixes
+
+* return child on addChildCData ([eafa4ef](https://github.com/bespin-studios/byteshard-core/commit/eafa4efa73f5757b832def881e8abbd91f68bc71))
+
 ## [2.5.2](https://github.com/bespin-studios/byteshard-core/compare/v2.5.1...v2.5.2) (2025-01-30)
 
 
