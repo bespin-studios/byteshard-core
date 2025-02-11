@@ -23,7 +23,7 @@ class SimpleXML
         }
     }
 
-    public static function addChildCData(?SimpleXMLElement $xml, string $name, string $cDataText): void
+    public static function addChildCData(?SimpleXMLElement $xml, string $name, string $cDataText): ?SimpleXMLElement
     {
         $child = $xml?->addChild($name);
         if ($child !== null) {
@@ -33,6 +33,7 @@ class SimpleXML
                 $node->appendChild($cdataSection);
             }
         }
+        return $child;
     }
 
     public static function addAttribute(?SimpleXMLElement $xml, string $qualifiedName, ?string $value = null, ?string $namespace = null): void
