@@ -94,6 +94,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private bool    $refactorCellCollapsed            = false;
 
     private ?string $refactorContentRequestTimestamp = null;
+    private array $refactorContentControls = [];
 
     public function __construct(private string $contentClass = '')
     {
@@ -622,11 +623,9 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function getFormFieldUploadData(): ?array
     {
         $result = null;
-        if (isset($this->content['controls']) && is_array($this->content['controls'])) {
-            foreach ($this->content['controls'] as $encryptedName => $field) {
-                if (isset($field['objectType']) && $field['objectType'] === Upload::class) {
-                    $result[$encryptedName] = $field;
-                }
+        foreach ($this->refactorContentControls as $encryptedName => $field) {
+            if (isset($field['objectType']) && $field['objectType'] === Upload::class) {
+                $result[$encryptedName] = $field;
             }
         }
         return $result;
@@ -656,27 +655,27 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         // reverse lookup
         $this->content['encrypted'][$name] = $encryptedName;
         // object data
-        $this->content['controls'][$encryptedName]['name']       = $name;
-        $this->content['controls'][$encryptedName]['accessType'] = $accessType;
+        $this->refactorContentControls[$encryptedName]['name']       = $name;
+        $this->refactorContentControls[$encryptedName]['accessType'] = $accessType;
         if ($columnType !== null) {
-            $this->content['controls'][$encryptedName]['type'] = $columnType;
+            $this->refactorContentControls[$encryptedName]['type'] = $columnType;
         }
         if ($objectType !== null) {
-            $this->content['controls'][$encryptedName]['objectType'] = $objectType;
+            $this->refactorContentControls[$encryptedName]['objectType'] = $objectType;
         }
         if ($label !== null) {
-            $this->content['controls'][$encryptedName]['label'] = $label;
+            $this->refactorContentControls[$encryptedName]['label'] = $label;
         }
         if (!empty($validations)) {
-            $this->content['controls'][$encryptedName]['validations'] = $validations;
+            $this->refactorContentControls[$encryptedName]['validations'] = $validations;
         }
         if ($dateFormat !== null) {
-            $this->content['controls'][$encryptedName]['date_format'] = $dateFormat;
+            $this->refactorContentControls[$encryptedName]['date_format'] = $dateFormat;
         }
         if ($radioValue !== null) {
-            $this->content['controls'][$encryptedName]['radio_value'][$encryptedRadioValue] = $radioValue;
+            $this->refactorContentControls[$encryptedName]['radio_value'][$encryptedRadioValue] = $radioValue;
         }
-        $this->content['controls'][$encryptedName]['encryptedValue'] = $encryptedValue;
+        $this->refactorContentControls[$encryptedName]['encryptedValue'] = $encryptedValue;
     }
 
     /**
@@ -688,7 +687,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setContentSelectedID($encryptedName, $id): void
     {
-        $this->content['controls'][$encryptedName]['selected_id'] = $id;
+        $this->refactorContentControls[$encryptedName]['selected_id'] = $id;
     }
 
     public function setVisibleDateRange(string $range): void
@@ -706,8 +705,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
 
     public function getContentSelectedID(?string $name): mixed
     {
-        if ($name !== null && $name !== '' && isset($this->content['encrypted'], $this->content['encrypted'][$name], $this->content['controls'][$this->content['encrypted'][$name]], $this->content['controls'][$this->content['encrypted'][$name]]['selected_id'])) {
-            return $this->content['controls'][$this->content['encrypted'][$name]]['selected_id'];
+        if ($name !== null && $name !== '' && isset($this->content['encrypted'], $this->content['encrypted'][$name], $this->refactorContentControls[$this->content['encrypted'][$name]], $this->refactorContentControls[$this->content['encrypted'][$name]]['selected_id'])) {
+            return $this->refactorContentControls[$this->content['encrypted'][$name]]['selected_id'];
         }
         return null;
     }
@@ -722,10 +721,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getContentControlType(): array
     {
-        if (isset($this->content['controls'])) {
-            return $this->content['controls'];
-        }
-        return array();
+        return $this->refactorContentControls;
     }
 
     public function setUploadedFileInformation(array $file): void
@@ -772,9 +768,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function clearContentObjectTypes(): void
     {
-        if (array_key_exists('controls', $this->content)) {
-            unset($this->content['controls']);
-        }
+        $this->refactorContentControls = [];
         if (array_key_exists('nested_controls', $this->content)) {
             unset($this->content['nested_controls']);
         }
