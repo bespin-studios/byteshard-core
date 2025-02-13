@@ -1,3 +1,16 @@
+# [2.6.0](https://github.com/bespin-studios/byteshard-core/compare/v2.5.4...v2.6.0) (2025-02-13)
+
+
+### Bug Fixes
+
+* remove property content array and replace by individual properties ([51a4778](https://github.com/bespin-studios/byteshard-core/commit/51a47788e83815a038ec34877d5833795d558759))
+* remove property content array and replace by individual properties ([0b65741](https://github.com/bespin-studios/byteshard-core/commit/0b65741fc5edb4e9f4d5eb6388649501140552b2))
+
+
+### Features
+
+* add abstract class DynamicCellContent ([6aca131](https://github.com/bespin-studios/byteshard-core/commit/6aca131d5b26c8b1e94745d0c9f8b65439428773))
+
 ## [2.5.4](https://github.com/bespin-studios/byteshard-core/compare/v2.5.3...v2.5.4) (2025-02-11)
 
 
