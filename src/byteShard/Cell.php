@@ -84,9 +84,9 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
 
     private ?string $refactorContentRequestTimestamp = null;
     private array   $refactorContentControls         = [];
-    private array   $refactorContentEncrypted = [];
-    private array   $toolbarListId            = [];
-    private ?string $filterValue              = null;
+    private array   $encrypted                       = [];
+    private array   $toolbarListId                   = [];
+    private ?string $filterValue                     = null;
     private string  $visibleDateRange;
     private array   $nestedControls                  = [];
     private array   $uploads                         = [];
@@ -572,7 +572,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function setContentControlType(string $encryptedName, string $name, int $accessType, ?string $columnType = null, ?string $objectType = null, ?string $label = null, array $validations = [], ?string $dateFormat = null, ?string $encryptedRadioValue = null, ?string $radioValue = null, bool $encryptedValue = false): void
     {
         // reverse lookup
-        $this->refactorContentEncrypted[$name] = $encryptedName;
+        $this->encrypted[$name] = $encryptedName;
         // object data
         $this->refactorContentControls[$encryptedName]['name']       = $name; //name is used in bs_post
         $this->refactorContentControls[$encryptedName]['accessType'] = $accessType;
@@ -621,8 +621,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
 
     public function getContentSelectedID(?string $name): mixed
     {
-        if ($name !== null && $name !== '' && isset($this->refactorContentEncrypted[$name], $this->refactorContentControls[$this->refactorContentEncrypted[$name]], $this->refactorContentControls[$this->refactorContentEncrypted[$name]]['selected_id'])) {
-            return $this->refactorContentControls[$this->refactorContentEncrypted[$name]]['selected_id'];
+        if ($name !== null && $name !== '' && isset($this->encrypted[$name], $this->refactorContentControls[$this->encrypted[$name]], $this->refactorContentControls[$this->encrypted[$name]]['selected_id'])) {
+            return $this->refactorContentControls[$this->encrypted[$name]]['selected_id'];
         }
         return null;
     }
@@ -681,9 +681,9 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function clearContentObjectTypes(): void
     {
-        $this->refactorContentControls  = [];
-        $this->nestedControls           = [];
-        $this->refactorContentEncrypted = [];
+        $this->refactorContentControls = [];
+        $this->nestedControls          = [];
+        $this->encrypted               = [];
         foreach ($this->uploads as $file) {
             unlink($file['fqfn']);
         }
@@ -698,8 +698,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getEncryptedName(string $unencryptedName): ?string
     {
-        if (array_key_exists($unencryptedName, $this->refactorContentEncrypted)) {
-            return $this->refactorContentEncrypted[$unencryptedName];
+        if (array_key_exists($unencryptedName, $this->encrypted)) {
+            return $this->encrypted[$unencryptedName];
         }
         return null;
     }
