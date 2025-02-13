@@ -78,7 +78,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private bool    $refactorCellUseFixedHeight       = false;
     private bool    $refactorCellUseFixedWidth        = false;
     private ?string $refactorCellOriginalContentClass = null;
-    private ?string $refactorCellLocaleName           = null;
+    private ?string $localeName                       = null;
     private ?string $name                             = null;
     private bool    $collapsed                        = false;
 
@@ -1137,7 +1137,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setLocaleName(string $localeName): self
     {
-        $this->refactorCellLocaleName = $localeName;
+        $this->localeName = $localeName;
         return $this;
     }
 
@@ -1146,8 +1146,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getLocaleName(): string
     {
-        if ($this->refactorCellLocaleName !== null) {
-            return $this->refactorCellLocaleName;
+        if ($this->localeName !== null) {
+            return $this->localeName;
         }
         return $this->getName();
     }
