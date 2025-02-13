@@ -79,7 +79,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private bool    $refactorCellUseFixedWidth        = false;
     private ?string $refactorCellOriginalContentClass = null;
     private ?string $refactorCellLocaleName           = null;
-    private ?string $refactorCellName                 = null;
+    private ?string $name                             = null;
     private bool    $collapsed                        = false;
 
     private ?string $requestTimestamp = null;
@@ -749,7 +749,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function setName(string $name): self
     {
         trigger_error(__METHOD__.'  is deprecated', E_USER_DEPRECATED);
-        $this->refactorCellName = $name;
+        $this->name = $name;
         if ($this->refactorCellRegistered === false) {
             $this->refactorCellRegistered = true;
             $this->setDimensions();
@@ -1181,7 +1181,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
             if (isset($this->toolbar['name'])) {
                 return $this->toolbar['name'];
             }
-            return $this->refactorCellName.'_'.$this->refactorCellId.'_toolbar';
+            return $this->name.'_'.$this->refactorCellId.'_toolbar';
         }
         return '';
     }
