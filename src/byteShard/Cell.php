@@ -94,8 +94,13 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private bool    $refactorCellCollapsed            = false;
 
     private ?string $refactorContentRequestTimestamp = null;
-    private array $refactorContentControls = [];
-    private array $refactorContentEncrypted = [];
+    private array   $refactorContentControls         = [];
+    private array   $refactorContentEncrypted        = [];
+    private array   $refactorContentToolbarListId    = [];
+    private ?string $refactorContentFilterValue      = null;
+    private string  $refactorContentVisibleDateRange;
+    private array   $refactorContentNestedControls   = [];
+    private array   $refactorContentUploads          = [];
 
     public function __construct(private string $contentClass = '')
     {
@@ -693,15 +698,12 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
 
     public function setVisibleDateRange(string $range): void
     {
-        $this->content['visibleDateRange'] = $range;
+        $this->refactorContentVisibleDateRange = $range;
     }
 
     public function getVisibleDateRange(): string
     {
-        if (array_key_exists('visibleDateRange', $this->content)) {
-            return $this->content['visibleDateRange'];
-        }
-        return '';
+        return $this->refactorContentVisibleDateRange ?? '';
     }
 
     public function getContentSelectedID(?string $name): mixed
@@ -727,7 +729,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
 
     public function setUploadedFileInformation(array $file): void
     {
-        $this->content['uploads'][$file['id']] = $file;
+        $this->refactorContentUploads[$file['id']] = $file;
     }
 
     /**
@@ -742,7 +744,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function setNestedControls($parentName, $value, array $nestedNames): void
     {
         foreach ($nestedNames as $name) {
-            $this->content['nested_controls'][$parentName][$value][$name] = $name;
+            $this->refactorContentNestedControls[$parentName][$value][$name] = $name;
         }
     }
 
@@ -755,10 +757,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getNestedControls(): array
     {
-        if (array_key_exists('nested_controls', $this->content)) {
-            return $this->content['nested_controls'];
-        }
-        return [];
+        return $this->refactorContentNestedControls;
     }
 
     /**
@@ -769,17 +768,13 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function clearContentObjectTypes(): void
     {
-        $this->refactorContentControls = [];
-        if (array_key_exists('nested_controls', $this->content)) {
-            unset($this->content['nested_controls']);
+        $this->refactorContentControls       = [];
+        $this->refactorContentNestedControls = [];
+        $this->refactorContentEncrypted      = [];
+        foreach ($this->refactorContentUploads as $file) {
+            unlink($file['fqfn']);
         }
-        $this->refactorContentEncrypted = [];
-        if (array_key_exists('uploads', $this->content)) {
-            foreach ($this->content['uploads'] as $file) {
-                unlink($file['fqfn']);
-            }
-            unset($this->content['uploads']);
-        }
+        $this->refactorContentUploads = [];
     }
 
     /**
@@ -981,7 +976,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setToolbarListID($element_id, $id): self
     {
-        $this->content['toolbarListID'][$element_id] = $id;
+        $this->refactorContentToolbarListId[$element_id] = $id;
         return $this;
     }
 
@@ -992,11 +987,9 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getToolbarListID(string $element): mixed
     {
-        if (array_key_exists('toolbarListID', $this->content)) {
-            $id = $this->getEventNameForID($element);
-            if (array_key_exists($id, $this->content['toolbarListID'])) {
-                return $this->content['toolbarListID'][$id];
-            }
+        $id = $this->getEventNameForID($element);
+        if (array_key_exists($id, $this->refactorContentToolbarListId)) {
+            return $this->refactorContentToolbarListId[$id];
         }
         return null;
     }
@@ -1008,14 +1001,12 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function unsetToolbarListID(string $element = ''): void
     {
-        if (array_key_exists('toolbarListID', $this->content)) {
-            if ($element === '') {
-                unset($this->content['toolbarListID']);
-            } else {
-                $id = $this->getEventNameForID($element);
-                if (array_key_exists($id, $this->content['toolbarListID'])) {
-                    unset($this->content['toolbarListID'][$id]);
-                }
+        if ($element === '') {
+            $this->refactorContentToolbarListId = [];
+        } else {
+            $id = $this->getEventNameForID($element);
+            if (array_key_exists($id, $this->refactorContentToolbarListId)) {
+                unset($this->refactorContentToolbarListId[$id]);
             }
         }
     }
@@ -1112,7 +1103,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setFilterValue(string $value): self
     {
-        $this->content['filterValue'] = $value;
+        $this->refactorContentFilterValue = $value;
         return $this;
     }
 
@@ -1121,10 +1112,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getFilterValue(): ?string
     {
-        if (isset($this->content['filterValue'])) {
-            return $this->content['filterValue'];
-        }
-        return null;
+        return $this->refactorContentFilterValue;
     }
 
     /**
