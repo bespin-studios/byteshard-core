@@ -82,14 +82,14 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private ?string $refactorCellName                 = null;
     private bool    $refactorCellCollapsed            = false;
 
-    private ?string $refactorContentRequestTimestamp = null;
-    private array   $controls                        = [];
-    private array   $encrypted                       = [];
-    private array   $toolbarListId                   = [];
-    private ?string $filterValue                     = null;
+    private ?string $requestTimestamp = null;
+    private array   $controls         = [];
+    private array   $encrypted        = [];
+    private array   $toolbarListId    = [];
+    private ?string $filterValue      = null;
     private string  $visibleDateRange;
-    private array   $nestedControls                  = [];
-    private array   $uploads                         = [];
+    private array   $nestedControls   = [];
+    private array   $uploads          = [];
 
     public function __construct(private string $contentClass = '')
     {
@@ -521,7 +521,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setRequestTimestamp(): void
     {
-        $this->refactorContentRequestTimestamp = (string)microtime(true);
+        $this->requestTimestamp = (string)microtime(true);
     }
 
     /**
@@ -530,8 +530,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getRequestTimestamp(): ?float
     {
-        if ($this->refactorContentRequestTimestamp !== null) {
-            return (float)$this->refactorContentRequestTimestamp;
+        if ($this->requestTimestamp !== null) {
+            return (float)$this->requestTimestamp;
         }
         return null;
     }
