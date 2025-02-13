@@ -65,22 +65,22 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private string        $contentFormat = 'XML';
     private string        $clickedLinkId;
 
-    private ?string $refactorCellId             = null;
-    private ?string $refactorCellNamespace      = null;
-    private ?string $refactorCellCollapsedLabel = null;
-    private bool    $refactorCellRegistered     = false;
-    private bool    $userWidth                  = false;
-    private ?int    $refactorCellWidth          = null;
-    private bool    $userHeight                 = false;
-    private ?int    $refactorCellHeight         = null;
-    private bool    $hideHeader                 = false;
-    private bool    $hideArrow                  = false;
-    private bool    $useFixedHeight             = false;
-    private bool    $useFixedWidth              = false;
-    private ?string $originalContentClass       = null;
-    private ?string $localeName                 = null;
-    private ?string $name                       = null;
-    private bool    $collapsed                  = false;
+    private ?string $refactorCellId       = null;
+    private ?string $namespace            = null;
+    private ?string $collapsedLabel       = null;
+    private bool    $registered           = false;
+    private bool    $userWidth            = false;
+    private ?int    $width                = null;
+    private bool    $userHeight           = false;
+    private ?int    $height               = null;
+    private bool    $hideHeader           = false;
+    private bool    $hideArrow            = false;
+    private bool    $useFixedHeight       = false;
+    private bool    $useFixedWidth        = false;
+    private ?string $originalContentClass = null;
+    private ?string $localeName           = null;
+    private ?string $name                 = null;
+    private bool    $collapsed            = false;
 
     private ?string $requestTimestamp = null;
     private array   $controls         = [];
@@ -148,7 +148,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function setWidth(int $int): self
     {
         if ($this->userWidth === false) {
-            $this->refactorCellWidth = $int;
+            $this->width = $int;
         }
         return $this;
     }
@@ -160,7 +160,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setWidthOnResize(int $int): self
     {
-        $this->refactorCellWidth = $int;
+        $this->width = $int;
         return $this;
     }
 
@@ -176,7 +176,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function setHeight(int $int): self
     {
         if ($this->userHeight === false) {
-            $this->refactorCellHeight = $int;
+            $this->height = $int;
         }
         return $this;
     }
@@ -188,7 +188,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setHeightOnResize(int $height): self
     {
-        $this->refactorCellHeight = $height;
+        $this->height = $height;
         return $this;
     }
 
@@ -713,8 +713,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function setID(string $id): self
     {
         $this->refactorCellId = $id;
-        if ($this->refactorCellRegistered === false) {
-            $this->refactorCellRegistered = true;
+        if ($this->registered === false) {
+            $this->registered = true;
             $this->setDimensions();
         }
         return $this;
@@ -750,8 +750,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     {
         trigger_error(__METHOD__.'  is deprecated', E_USER_DEPRECATED);
         $this->name = $name;
-        if ($this->refactorCellRegistered === false) {
-            $this->refactorCellRegistered = true;
+        if ($this->registered === false) {
+            $this->registered = true;
             $this->setDimensions();
         }
         return $this;
@@ -764,9 +764,9 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setNamespace(string $namespace): self
     {
-        $this->refactorCellNamespace = $namespace;
-        if ($this->refactorCellRegistered === false) {
-            $this->refactorCellRegistered = true;
+        $this->namespace = $namespace;
+        if ($this->registered === false) {
+            $this->registered = true;
             $this->setDimensions();
         }
         return $this;
@@ -777,7 +777,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     private function setDimensions(): void
     {
-        $size = \byteShard\Session::getSizeData($this->refactorCellNamespace.'\\'.$this->refactorCellId);
+        $size = \byteShard\Session::getSizeData($this->namespace.'\\'.$this->refactorCellId);
         foreach ($size as $type => $val) {
             switch ($type) {
                 case self::HEIGHT:
@@ -811,7 +811,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
                 if (empty($this->refactorCellId)) {
                     return '';
                 }
-                return rtrim(self::$cellNamespace, '\\').'\\'.trim($this->refactorCellNamespace, '\\').'\\'.$this->refactorCellId;
+                return rtrim(self::$cellNamespace, '\\').'\\'.trim($this->namespace, '\\').'\\'.$this->refactorCellId;
             }
         }
         if (str_starts_with(strtolower($this->contentClass), 'app\\cell')) {
@@ -837,7 +837,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function getShortName(): string
     {
         if ($this->contentClass === '') {
-            return $this->refactorCellNamespace.'\\'.$this->refactorCellId;
+            return $this->namespace.'\\'.$this->refactorCellId;
         }
         return trim($this->contentClass, '\\');
     }
@@ -946,8 +946,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         $cellData        = [];
         $cellData['ID']  = $this->id->getEncryptedCellId();
         $cellData['EID'] = $this->id->getEncryptedCellIdForEvent();
-        if ($this->refactorCellCollapsedLabel !== null) {
-            $cellData['collapsedLabel'] = $this->refactorCellCollapsedLabel;
+        if ($this->collapsedLabel !== null) {
+            $cellData['collapsedLabel'] = $this->collapsedLabel;
         }
         if ($this->collapsed === true) {
             $cellData['collapsed'] = true;
@@ -957,11 +957,11 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         } else {
             $cellData['toolbar'] = false;
         }
-        if ($this->refactorCellWidth !== null) {
-            $cellData['width'] = $this->refactorCellWidth;
+        if ($this->width !== null) {
+            $cellData['width'] = $this->width;
         }
-        if ($this->refactorCellHeight !== null) {
-            $cellData['height'] = $this->refactorCellHeight;
+        if ($this->height !== null) {
+            $cellData['height'] = $this->height;
         }
         if ($this->useFixedWidth === true) {
             $cellData['fixSize']['width'] = true;
@@ -999,7 +999,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getHorizontalAutoSize(): bool
     {
-        return $this->refactorCellWidth === null;
+        return $this->width === null;
     }
 
     /**
@@ -1007,7 +1007,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getVerticalAutoSize(): bool
     {
-        return $this->refactorCellHeight === null;
+        return $this->height === null;
     }
 
     /**
@@ -1061,8 +1061,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function setContainerID(string $containerId): self
     {
         $this->containerId = $containerId;
-        if ($this->refactorCellRegistered === false) {
-            $this->refactorCellRegistered = true;
+        if ($this->registered === false) {
+            $this->registered = true;
             $this->setDimensions();
         }
         return $this;
@@ -1127,7 +1127,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getNamespace(): ?string
     {
-        return $this->refactorCellNamespace;
+        return $this->namespace;
     }
 
     /**
@@ -1167,7 +1167,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setCollapsedLabel(string $collapsedLabel): self
     {
-        $this->refactorCellCollapsedLabel = $collapsedLabel;
+        $this->collapsedLabel = $collapsedLabel;
         return $this;
     }
 
