@@ -617,26 +617,6 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     }
 
     /**
-     * @param int|string|null $width
-     */
-    public function setFormDefaultInputWidth(int|string $width = null)
-    {
-        $this->content['form_input_width'] = $width;
-    }
-
-    /**
-     * @return int|string|null
-     * @API
-     */
-    public function getFormDefaultInputWidth(): int|string|null
-    {
-        if (isset($this->content['form_input_width'])) {
-            return $this->content['form_input_width'];
-        }
-        return null;
-    }
-
-    /**
      * @return array|null
      */
     public function getFormFieldUploadData(): ?array
