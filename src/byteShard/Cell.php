@@ -85,8 +85,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private ?string $refactorContentRequestTimestamp = null;
     private array   $refactorContentControls         = [];
     private array   $refactorContentEncrypted        = [];
-    private array   $refactorContentToolbarListId    = [];
-    private ?string $refactorContentFilterValue      = null;
+    private array   $refactorContentToolbarListId = [];
+    private ?string $filterValue                  = null;
     private string  $visibleDateRange;
     private array   $nestedControls                  = [];
     private array   $uploads                         = [];
@@ -1016,7 +1016,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setFilterValue(string $value): self
     {
-        $this->refactorContentFilterValue = $value;
+        $this->filterValue = $value;
         return $this;
     }
 
@@ -1025,7 +1025,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getFilterValue(): ?string
     {
-        return $this->refactorContentFilterValue;
+        return $this->filterValue;
     }
 
     /**
