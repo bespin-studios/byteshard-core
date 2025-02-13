@@ -970,6 +970,15 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         return self::$cellNamespace.$this->contentClass;
     }
 
+    public static function getClassName(\byteShard\ID\ID $id): string
+    {
+        $containerId = $id->getContainerId();
+        if ($containerId !== '') {
+            return 'App\\Container\\'.$containerId;
+        }
+        return self::$cellNamespace.$id->getCellId();
+    }
+
     public function __toString()
     {
         return $this->getContentClass();
