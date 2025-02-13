@@ -42,17 +42,6 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public const COLLAPSED = 'Collapsed';
 
     private string $containerId = '';
-    /*
-     * ID
-    * label
-    * name
-    * hideHeader
-    * width
-    * height
-    * toolbar
-    */
-    /** @var array */
-    public array $content = [];
     /** @var array */
     private array $toolbar = [];
     /** @var Storage[] */
