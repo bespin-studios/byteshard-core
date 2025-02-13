@@ -84,9 +84,9 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
 
     private ?string $refactorContentRequestTimestamp = null;
     private array   $refactorContentControls         = [];
-    private array   $refactorContentEncrypted        = [];
-    private array   $refactorContentToolbarListId = [];
-    private ?string $filterValue                  = null;
+    private array   $refactorContentEncrypted = [];
+    private array   $toolbarListId            = [];
+    private ?string $filterValue              = null;
     private string  $visibleDateRange;
     private array   $nestedControls                  = [];
     private array   $uploads                         = [];
@@ -889,7 +889,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setToolbarListID($element_id, $id): self
     {
-        $this->refactorContentToolbarListId[$element_id] = $id;
+        $this->toolbarListId[$element_id] = $id;
         return $this;
     }
 
@@ -901,8 +901,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function getToolbarListID(string $element): mixed
     {
         $id = $this->getEventNameForID($element);
-        if (array_key_exists($id, $this->refactorContentToolbarListId)) {
-            return $this->refactorContentToolbarListId[$id];
+        if (array_key_exists($id, $this->toolbarListId)) {
+            return $this->toolbarListId[$id];
         }
         return null;
     }
@@ -915,11 +915,11 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function unsetToolbarListID(string $element = ''): void
     {
         if ($element === '') {
-            $this->refactorContentToolbarListId = [];
+            $this->toolbarListId = [];
         } else {
             $id = $this->getEventNameForID($element);
-            if (array_key_exists($id, $this->refactorContentToolbarListId)) {
-                unset($this->refactorContentToolbarListId[$id]);
+            if (array_key_exists($id, $this->toolbarListId)) {
+                unset($this->toolbarListId[$id]);
             }
         }
     }
