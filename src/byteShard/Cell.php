@@ -73,8 +73,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private ?int    $refactorCellWidth          = null;
     private bool    $userHeight                 = false;
     private ?int    $refactorCellHeight         = null;
-    private bool    $refactorCellHideHeader     = false;
-    private bool    $refactorCellHideArrow      = false;
+    private bool    $hideHeader                 = false;
+    private bool    $hideArrow                  = false;
     private bool    $useFixedHeight             = false;
     private bool    $useFixedWidth              = false;
     private ?string $originalContentClass       = null;
@@ -209,7 +209,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setHideHeader(bool $bool = true): self
     {
-        $this->refactorCellHideHeader = $bool;
+        $this->hideHeader = $bool;
         return $this;
     }
 
@@ -219,7 +219,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setHideArrow(): self
     {
-        $this->refactorCellHideArrow = true;
+        $this->hideArrow = true;
         return $this;
     }
 
@@ -969,13 +969,13 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         if ($this->useFixedHeight === true) {
             $cellData['fixSize']['height'] = true;
         }
-        if ($this->refactorCellHideHeader === true) {
+        if ($this->hideHeader === true) {
             $cellData['hideHeader'] = true;
             $cellData['label']      = '';
         } else {
             $cellData['label'] = $this->getLabel();
         }
-        if ($this->refactorCellHideArrow === true) {
+        if ($this->hideArrow === true) {
             $cellData['hideArrow'] = true;
         }
         if ($this->cssClass !== '') {
