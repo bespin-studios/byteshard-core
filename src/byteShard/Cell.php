@@ -193,34 +193,11 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     }
 
     /**
-     * Todo: description
-     * @param mixed $objectOrString name of a cell e.g. admin_a | Cell object | CellContent Object | ID Object for a static ID
-     * @param bool $fromCache internal use
-     * @return Cell
-     */
-    public function setDependency(mixed $objectOrString, bool $fromCache = false): self
-    {
-        trigger_error(__METHOD__.' is deprecated. There is no substitute method. You can probably achieve a similar behaviour with getId()');
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getScopeLocaleToken(): string
     {
         return $this->createLocaleBaseToken('Cell');
-    }
-
-    /**
-     * @param mixed $objectOrString name of a cell e.g. admin_a | Cell object | CellContent Object | ID Object for a static ID
-     * @return $this
-     * @API
-     */
-    public function setToolbarDependency(mixed $objectOrString): self
-    {
-        trigger_error(__METHOD__.' is deprecated. There is no substitute method. You can probably achieve a similar behaviour with getId()');
-        return $this;
     }
 
     /**
@@ -318,59 +295,6 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     {
         $class = trim(self::$cellNamespace.trim(str_replace(ltrim(self::$cellNamespace, '\\'), '', ltrim($cell, '\\')), '\\'), '\\');
         return is_subclass_of($class, TreeInterface::class);
-    }
-
-    /**
-     * @param string $cell
-     * @param string $checkType
-     * @param string $callerClassMethod
-     * @return bool
-     * @throws Exception
-     */
-    static public function checktContentCellType(string $cell, string $checkType, string $callerClassMethod = ''): bool
-    {
-        $calledIn = null;
-        $cell     = trim(self::$cellNamespace.trim(str_replace(ltrim(self::$cellNamespace, '\\'), '', ltrim($cell, '\\')), '\\'), '\\');
-        switch ($checkType) {
-            case 'Grid':
-                $gridClass = ContentClassFactory::getGridClass();
-                if (!is_subclass_of($cell, $gridClass)) {
-                    $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-                    if (array_key_exists(2, $trace) && array_key_exists('class', $trace[2])) {
-                        $calledIn = $trace[2]['class'];
-                    }
-                    if ($callerClassMethod === '') {
-                        throw new Exception(__METHOD__.': cell '.$cell.' must be of type '.$gridClass.($calledIn !== null ? ' (called in '.$calledIn.')' : ''), 106800002);
-                    }
-                    throw new Exception($callerClassMethod.': cell '.$cell.' must be of type '.$gridClass.($calledIn !== null ? ' (called in '.$calledIn.')' : ''), 106800003);
-                }
-                break;
-            case 'Form':
-                if (!is_subclass_of($cell, FormInterface::class)) {
-                    $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-                    if (array_key_exists(2, $trace) && array_key_exists('class', $trace[2])) {
-                        $calledIn = $trace[2]['class'];
-                    }
-                    if ($callerClassMethod === '') {
-                        throw new Exception(__METHOD__.': cell '.$cell.' must be of type '.FormInterface::class.($calledIn !== null ? ' (called in '.$calledIn.')' : ''), 106800004);
-                    }
-                    throw new Exception($callerClassMethod.': cell '.$cell.' must be of type '.FormInterface::class.($calledIn !== null ? ' (called in '.$calledIn.')' : ''), 106800005);
-                }
-                break;
-            case 'Tree':
-                if (!is_subclass_of($cell, TreeInterface::class)) {
-                    $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-                    if (array_key_exists(2, $trace) && array_key_exists('class', $trace[2])) {
-                        $calledIn = $trace[2]['class'];
-                    }
-                    if ($callerClassMethod === '') {
-                        throw new Exception(__METHOD__.': cell '.$cell.' must be of type '.TreeInterface::class.($calledIn !== null ? ' (called in '.$calledIn.')' : ''), 106800006);
-                    }
-                    throw new Exception($callerClassMethod.': cell '.$cell.' must be of type '.TreeInterface::class.($calledIn !== null ? ' (called in '.$calledIn.')' : ''), 106800007);
-                }
-                break;
-        }
-        return true;
     }
 
     /**
@@ -650,13 +574,13 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         // reverse lookup
         $this->refactorContentEncrypted[$name] = $encryptedName;
         // object data
-        $this->refactorContentControls[$encryptedName]['name']       = $name;
+        $this->refactorContentControls[$encryptedName]['name']       = $name; //name is used in bs_post
         $this->refactorContentControls[$encryptedName]['accessType'] = $accessType;
         if ($columnType !== null) {
             $this->refactorContentControls[$encryptedName]['type'] = $columnType;
         }
         if ($objectType !== null) {
-            $this->refactorContentControls[$encryptedName]['objectType'] = $objectType;
+            $this->refactorContentControls[$encryptedName]['objectType'] = $objectType; // used in DataHarmonizer and ModifyFormObject
         }
         if ($label !== null) {
             $this->refactorContentControls[$encryptedName]['label'] = $label;
@@ -665,10 +589,10 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
             $this->refactorContentControls[$encryptedName]['validations'] = $validations;
         }
         if ($dateFormat !== null) {
-            $this->refactorContentControls[$encryptedName]['date_format'] = $dateFormat;
+            $this->refactorContentControls[$encryptedName]['date_format'] = $dateFormat; // used in DataHarmonizer
         }
         if ($radioValue !== null) {
-            $this->refactorContentControls[$encryptedName]['radio_value'][$encryptedRadioValue] = $radioValue;
+            $this->refactorContentControls[$encryptedName]['radio_value'][$encryptedRadioValue] = $radioValue; // used in ModifyFormObject
         }
         $this->refactorContentControls[$encryptedName]['encryptedValue'] = $encryptedValue;
     }
