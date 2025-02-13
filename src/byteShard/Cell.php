@@ -65,22 +65,22 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private string        $contentFormat = 'XML';
     private string        $clickedLinkId;
 
-    private ?string $refactorCellId                   = null;
-    private ?string $refactorCellNamespace            = null;
-    private ?string $refactorCellCollapsedLabel       = null;
-    private bool    $refactorCellRegistered           = false;
-    private bool    $refactorCellUserWidth            = false;
-    private ?int    $refactorCellWidth                = null;
-    private bool    $refactorCellUserHeight           = false;
-    private ?int    $refactorCellHeight               = null;
-    private bool    $refactorCellHideHeader           = false;
-    private bool    $refactorCellHideArrow            = false;
-    private bool    $refactorCellUseFixedHeight       = false;
-    private bool    $refactorCellUseFixedWidth        = false;
-    private ?string $refactorCellOriginalContentClass = null;
-    private ?string $localeName                       = null;
-    private ?string $name                             = null;
-    private bool    $collapsed                        = false;
+    private ?string $refactorCellId             = null;
+    private ?string $refactorCellNamespace      = null;
+    private ?string $refactorCellCollapsedLabel = null;
+    private bool    $refactorCellRegistered     = false;
+    private bool    $refactorCellUserWidth      = false;
+    private ?int    $refactorCellWidth          = null;
+    private bool    $refactorCellUserHeight     = false;
+    private ?int    $refactorCellHeight         = null;
+    private bool    $refactorCellHideHeader     = false;
+    private bool    $refactorCellHideArrow      = false;
+    private bool    $refactorCellUseFixedHeight = false;
+    private bool    $refactorCellUseFixedWidth  = false;
+    private ?string $originalContentClass       = null;
+    private ?string $localeName                 = null;
+    private ?string $name                       = null;
+    private bool    $collapsed                  = false;
 
     private ?string $requestTimestamp = null;
     private array   $controls         = [];
@@ -476,15 +476,15 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setContentClassName(string $name): void
     {
-        if ($this->contentClass !== '' && $this->refactorCellOriginalContentClass === null) {
-            $this->refactorCellOriginalContentClass = $this->contentClass;
+        if ($this->contentClass !== '' && $this->originalContentClass === null) {
+            $this->originalContentClass = $this->contentClass;
         }
         $this->contentClass = $name;
     }
 
     public function revertCustomContentClassName(): void
     {
-        $this->contentClass = $this->refactorCellOriginalContentClass ?? '';
+        $this->contentClass = $this->originalContentClass ?? '';
     }
 
     /**
