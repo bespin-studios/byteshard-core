@@ -83,7 +83,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private bool    $refactorCellCollapsed            = false;
 
     private ?string $refactorContentRequestTimestamp = null;
-    private array   $refactorContentControls         = [];
+    private array   $controls                        = [];
     private array   $encrypted                       = [];
     private array   $toolbarListId                   = [];
     private ?string $filterValue                     = null;
@@ -542,7 +542,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function getFormFieldUploadData(): ?array
     {
         $result = null;
-        foreach ($this->refactorContentControls as $encryptedName => $field) {
+        foreach ($this->controls as $encryptedName => $field) {
             if (isset($field['objectType']) && $field['objectType'] === Upload::class) {
                 $result[$encryptedName] = $field;
             }
@@ -574,27 +574,27 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         // reverse lookup
         $this->encrypted[$name] = $encryptedName;
         // object data
-        $this->refactorContentControls[$encryptedName]['name']       = $name; //name is used in bs_post
-        $this->refactorContentControls[$encryptedName]['accessType'] = $accessType;
+        $this->controls[$encryptedName]['name']       = $name; //name is used in bs_post
+        $this->controls[$encryptedName]['accessType'] = $accessType;
         if ($columnType !== null) {
-            $this->refactorContentControls[$encryptedName]['type'] = $columnType;
+            $this->controls[$encryptedName]['type'] = $columnType;
         }
         if ($objectType !== null) {
-            $this->refactorContentControls[$encryptedName]['objectType'] = $objectType; // used in DataHarmonizer and ModifyFormObject
+            $this->controls[$encryptedName]['objectType'] = $objectType; // used in DataHarmonizer and ModifyFormObject
         }
         if ($label !== null) {
-            $this->refactorContentControls[$encryptedName]['label'] = $label;
+            $this->controls[$encryptedName]['label'] = $label;
         }
         if (!empty($validations)) {
-            $this->refactorContentControls[$encryptedName]['validations'] = $validations;
+            $this->controls[$encryptedName]['validations'] = $validations;
         }
         if ($dateFormat !== null) {
-            $this->refactorContentControls[$encryptedName]['date_format'] = $dateFormat; // used in DataHarmonizer
+            $this->controls[$encryptedName]['date_format'] = $dateFormat; // used in DataHarmonizer
         }
         if ($radioValue !== null) {
-            $this->refactorContentControls[$encryptedName]['radio_value'][$encryptedRadioValue] = $radioValue; // used in ModifyFormObject
+            $this->controls[$encryptedName]['radio_value'][$encryptedRadioValue] = $radioValue; // used in ModifyFormObject
         }
-        $this->refactorContentControls[$encryptedName]['encryptedValue'] = $encryptedValue;
+        $this->controls[$encryptedName]['encryptedValue'] = $encryptedValue;
     }
 
     /**
@@ -606,7 +606,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setContentSelectedID($encryptedName, $id): void
     {
-        $this->refactorContentControls[$encryptedName]['selected_id'] = $id;
+        $this->controls[$encryptedName]['selected_id'] = $id;
     }
 
     public function setVisibleDateRange(string $range): void
@@ -621,8 +621,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
 
     public function getContentSelectedID(?string $name): mixed
     {
-        if ($name !== null && $name !== '' && isset($this->encrypted[$name], $this->refactorContentControls[$this->encrypted[$name]], $this->refactorContentControls[$this->encrypted[$name]]['selected_id'])) {
-            return $this->refactorContentControls[$this->encrypted[$name]]['selected_id'];
+        if ($name !== null && $name !== '' && isset($this->encrypted[$name], $this->controls[$this->encrypted[$name]], $this->controls[$this->encrypted[$name]]['selected_id'])) {
+            return $this->controls[$this->encrypted[$name]]['selected_id'];
         }
         return null;
     }
@@ -637,7 +637,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getContentControlType(): array
     {
-        return $this->refactorContentControls;
+        return $this->controls;
     }
 
     public function setUploadedFileInformation(array $file): void
@@ -681,9 +681,9 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function clearContentObjectTypes(): void
     {
-        $this->refactorContentControls = [];
-        $this->nestedControls          = [];
-        $this->encrypted               = [];
+        $this->controls       = [];
+        $this->nestedControls = [];
+        $this->encrypted      = [];
         foreach ($this->uploads as $file) {
             unlink($file['fqfn']);
         }
