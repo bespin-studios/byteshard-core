@@ -41,8 +41,6 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public const WIDTH     = 'CellWidth';
     public const COLLAPSED = 'Collapsed';
 
-    /** @var array */
-    private array  $cell        = [];
     private string $containerId = '';
     /*
      * ID
@@ -78,13 +76,28 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private string        $contentFormat = 'XML';
     private string        $clickedLinkId;
 
+    private ?string $refactorCellId                   = null;
+    private ?string $refactorCellNamespace            = null;
+    private ?string $refactorCellCollapsedLabel       = null;
+    private bool    $refactorCellRegistered           = false;
+    private bool    $refactorCellUserWidth            = false;
+    private ?int    $refactorCellWidth                = null;
+    private bool    $refactorCellUserHeight           = false;
+    private ?int    $refactorCellHeight               = null;
+    private bool    $refactorCellHideHeader           = false;
+    private bool    $refactorCellHideArrow            = false;
+    private bool    $refactorCellUseFixedHeight       = false;
+    private bool    $refactorCellUseFixedWidth        = false;
+    private ?string $refactorCellOriginalContentClass = null;
+    private ?string $refactorCellLocaleName           = null;
+    private ?string $refactorCellName                 = null;
+    private bool    $refactorCellCollapsed            = false;
+
+    private ?string $refactorContentRequestTimestamp = null;
+
     public function __construct(private string $contentClass = '')
     {
-        $this->cell['ID']             = null;
-        $this->cell['namespace']      = null;
-        $this->cell['label']          = null;
-        $this->cell['collapsedLabel'] = null;
-        $this->cell['registered']     = false;
+
     }
 
     public function containerId(): string
@@ -138,8 +151,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setWidth(int $int): self
     {
-        if (!isset($this->cell['user_width'])) {
-            $this->cell['width'] = $int;
+        if ($this->refactorCellUserWidth === false) {
+            $this->refactorCellWidth = $int;
         }
         return $this;
     }
@@ -151,7 +164,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setWidthOnResize(int $int): self
     {
-        $this->cell['width'] = $int;
+        $this->refactorCellWidth = $int;
         return $this;
     }
 
@@ -166,8 +179,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setHeight(int $int): self
     {
-        if (!isset($this->cell['user_height'])) {
-            $this->cell['height'] = $int;
+        if ($this->refactorCellUserHeight === false) {
+            $this->refactorCellHeight = $int;
         }
         return $this;
     }
@@ -179,7 +192,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setHeightOnResize(int $height): self
     {
-        $this->cell['height'] = $height;
+        $this->refactorCellHeight = $height;
         return $this;
     }
 
@@ -223,7 +236,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setHideHeader(bool $bool = true): self
     {
-        $this->cell['hideHeader'] = $bool;
+        $this->refactorCellHideHeader = $bool;
         return $this;
     }
 
@@ -233,7 +246,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setHideArrow(): self
     {
-        $this->cell['hideArrow'] = true;
+        $this->refactorCellHideArrow = true;
         return $this;
     }
 
@@ -247,7 +260,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setFixedWidth(bool $bool = true): self
     {
-        $this->cell['fixedWidth'] = $bool;
+        $this->refactorCellUseFixedWidth = $bool;
         return $this;
     }
 
@@ -261,9 +274,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setFixedHeight(bool $bool = true): self
     {
-        if (is_bool($bool)) {
-            $this->cell['fixedHeight'] = $bool;
-        }
+        $this->refactorCellUseFixedHeight = $bool;
         return $this;
     }
 
@@ -545,21 +556,21 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setContentClassName(string $name): void
     {
-        if ($this->contentClass !== '' && !array_key_exists('original_content_class', $this->cell)) {
-            $this->cell['original_content_class'] = $this->contentClass;
+        if ($this->contentClass !== '' && $this->refactorCellOriginalContentClass === null) {
+            $this->refactorCellOriginalContentClass = $this->contentClass;
         }
         $this->contentClass = $name;
     }
 
     public function revertCustomContentClassName(): void
     {
-        $this->contentClass = array_key_exists('original_content_class', $this->cell) ? $this->cell['original_content_class'] : '';
+        $this->contentClass = $this->refactorCellOriginalContentClass ?? '';
     }
 
     /**
      *
      */
-    public function resetEvents()
+    public function resetEvents(): void
     {
         $this->event = [];
     }
@@ -568,7 +579,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      * @param Struct\GetData $dataObject
      * @internal
      */
-    public final function setGetDataActionClientData(Struct\GetData $dataObject)
+    public final function setGetDataActionClientData(Struct\GetData $dataObject): void
     {
         $this->getData = $dataObject;
     }
@@ -586,53 +597,11 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     }
 
     /**
-     * This function is used to register form fields in the session. Those fields will be fetched upon client update
-     * Only register form fields which are relevant for updates
-     * no labels
-     * has been refactored to setContentObjectType
-     *
-     * @param $encryptedName
-     * @param $name
-     * @param $type
-     * @param $accessType
-     * @param null $label
-     * @param null $validations
-     */
-    /*public function setFormObjectType($encryptedName, $name, $type, $accessType, $formObjectType, $label = null, $validations = null) {
-        $this->content['form_fields'][$encryptedName]['name']           = $name;
-        $this->content['form_fields'][$encryptedName]['type']           = $type;
-        $this->content['form_fields'][$encryptedName]['accessType']     = $accessType;
-        $this->content['form_fields'][$encryptedName]['formObjectType'] = $formObjectType;
-        if ($label !== null) {
-            $this->content['form_fields'][$encryptedName]['label'] = $label;
-        }
-        if ($validations !== null) {
-            $this->content['form_fields'][$encryptedName]['validations'] = $validations;
-        }
-    }*/
-
-    /**
-     * This function is used to get the form fields from the session.
-     * Those fields are fetched upon client update
-     * has been refactored to getContentControlType()
-     *
-     * @return array
-     * @API
-     */
-    public function getFormObjectData(): array
-    {
-        if (isset($this->content['form_fields'])) {
-            return $this->content['form_fields'];
-        }
-        return [];
-    }
-
-    /**
      * store client request time to detect database update concurrency
      */
-    public function setRequestTimestamp()
+    public function setRequestTimestamp(): void
     {
-        $this->content['request_timestamp'] = (string)microtime(true);
+        $this->refactorContentRequestTimestamp = (string)microtime(true);
     }
 
     /**
@@ -641,8 +610,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getRequestTimestamp(): ?float
     {
-        if (isset($this->content['request_timestamp'])) {
-            return (float)$this->content['request_timestamp'];
+        if ($this->refactorContentRequestTimestamp !== null) {
+            return (float)$this->refactorContentRequestTimestamp;
         }
         return null;
     }
@@ -702,7 +671,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      * @param ?string $radioValue the value of a radio control
      * @internal
      */
-    public function setContentControlType(string $encryptedName, string $name, int $accessType, ?string $columnType = null, ?string $objectType = null, ?string $label = null, array $validations = [], ?string $dateFormat = null, ?string $encryptedRadioValue = null, ?string $radioValue = null, bool $encryptedValue = false)
+    public function setContentControlType(string $encryptedName, string $name, int $accessType, ?string $columnType = null, ?string $objectType = null, ?string $label = null, array $validations = [], ?string $dateFormat = null, ?string $encryptedRadioValue = null, ?string $radioValue = null, bool $encryptedValue = false): void
     {
         // reverse lookup
         $this->content['encrypted'][$name] = $encryptedName;
@@ -737,7 +706,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      * @param $id
      * @internal
      */
-    public function setContentSelectedID($encryptedName, $id)
+    public function setContentSelectedID($encryptedName, $id): void
     {
         $this->content['controls'][$encryptedName]['selected_id'] = $id;
     }
@@ -779,7 +748,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         return array();
     }
 
-    public function setUploadedFileInformation(array $file)
+    public function setUploadedFileInformation(array $file): void
     {
         $this->content['uploads'][$file['id']] = $file;
     }
@@ -788,15 +757,15 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      * This method is used to register nested controls. This is currently only used for Form Radios.
      *
      * @session write
-     * @param $parent_name
+     * @param $parentName
      * @param $value
-     * @param array $nested_names
+     * @param array $nestedNames
      * @internal
      */
-    public function setNestedControls($parent_name, $value, array $nested_names)
+    public function setNestedControls($parentName, $value, array $nestedNames): void
     {
-        foreach ($nested_names as $name) {
-            $this->content['nested_controls'][$parent_name][$value][$name] = $name;
+        foreach ($nestedNames as $name) {
+            $this->content['nested_controls'][$parentName][$value][$name] = $name;
         }
     }
 
@@ -821,7 +790,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      * @session write
      * @internal
      */
-    public function clearContentObjectTypes()
+    public function clearContentObjectTypes(): void
     {
         if (array_key_exists('controls', $this->content)) {
             unset($this->content['controls']);
@@ -862,15 +831,15 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setID(string $id): self
     {
-        $this->cell['ID'] = $id;
-        if ($this->cell['registered'] === false) {
-            $this->cell['registered'] = true;
+        $this->refactorCellId = $id;
+        if ($this->refactorCellRegistered === false) {
+            $this->refactorCellRegistered = true;
             $this->setDimensions();
         }
         return $this;
     }
 
-    public function init(string $layoutCellId, ?\byteShard\ID\ID $cellId)
+    public function init(string $layoutCellId, ?\byteShard\ID\ID $cellId): void
     {
         $this->layoutCellId = $layoutCellId;
         $this->id           = $cellId;
@@ -899,9 +868,9 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function setName(string $name): self
     {
         trigger_error(__METHOD__.'  is deprecated', E_USER_DEPRECATED);
-        $this->cell['name'] = $name;
-        if ($this->cell['registered'] === false) {
-            $this->cell['registered'] = true;
+        $this->refactorCellName = $name;
+        if ($this->refactorCellRegistered === false) {
+            $this->refactorCellRegistered = true;
             $this->setDimensions();
         }
         return $this;
@@ -914,9 +883,9 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setNamespace(string $namespace): self
     {
-        $this->cell['namespace'] = $namespace;
-        if ($this->cell['registered'] === false) {
-            $this->cell['registered'] = true;
+        $this->refactorCellNamespace = $namespace;
+        if ($this->refactorCellRegistered === false) {
+            $this->refactorCellRegistered = true;
             $this->setDimensions();
         }
         return $this;
@@ -927,19 +896,19 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     private function setDimensions(): void
     {
-        $size = \byteShard\Session::getSizeData($this->cell['namespace'].'\\'.$this->cell['ID']);
+        $size = \byteShard\Session::getSizeData($this->refactorCellNamespace.'\\'.$this->refactorCellId);
         foreach ($size as $type => $val) {
             switch ($type) {
                 case self::HEIGHT:
                     $this->setHeight($val);
-                    $this->cell['user_height'] = true;
+                    $this->refactorCellUserHeight = true;
                     break;
                 case self::WIDTH:
                     $this->setWidth($val);
-                    $this->cell['user_width'] = true;
+                    $this->refactorCellUserWidth = true;
                     break;
                 case self::COLLAPSED:
-                    $this->cell['collapsed'] = true;
+                    $this->refactorCellCollapsed = true;
                     break;
             }
         }
@@ -958,10 +927,10 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
                 }
                 return self::$cellNamespace.$this->id->getCellId();
             } else {
-                if (empty($this->cell['ID'])) {
+                if (empty($this->refactorCellId)) {
                     return '';
                 }
-                return rtrim(self::$cellNamespace, '\\').'\\'.trim($this->cell['namespace'], '\\').'\\'.$this->cell['ID'];
+                return rtrim(self::$cellNamespace, '\\').'\\'.trim($this->refactorCellNamespace, '\\').'\\'.$this->refactorCellId;
             }
         }
         if (str_starts_with(strtolower($this->contentClass), 'app\\cell')) {
@@ -987,7 +956,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function getShortName(): string
     {
         if ($this->contentClass === '') {
-            return $this->cell['namespace'].'\\'.$this->cell['ID'];
+            return $this->refactorCellNamespace.'\\'.$this->refactorCellId;
         }
         return trim($this->contentClass, '\\');
     }
@@ -1092,10 +1061,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getLabel(): string
     {
-        if ($this->cell['label'] === null) {
-            return Strings::purify(Locale::get($this->createLocaleBaseToken('Cell').'.Label'));
-        }
-        return Strings::purify($this->cell['label']);
+        return Strings::purify(Locale::get($this->createLocaleBaseToken('Cell').'.Label'));
     }
 
     public function getNavigationData(Session $session = null): array
@@ -1103,10 +1069,10 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         $cellData        = [];
         $cellData['ID']  = $this->id->getEncryptedCellId();
         $cellData['EID'] = $this->id->getEncryptedCellIdForEvent();
-        if (isset($this->cell['collapsedLabel'])) {
-            $cellData['collapsedLabel'] = $this->cell['collapsedLabel'];
+        if ($this->refactorCellCollapsedLabel !== null) {
+            $cellData['collapsedLabel'] = $this->refactorCellCollapsedLabel;
         }
-        if (isset($this->cell['collapsed']) && $this->cell['collapsed'] === true) {
+        if ($this->refactorCellCollapsed === true) {
             $cellData['collapsed'] = true;
         }
         if (!empty($this->toolbar)) {
@@ -1114,25 +1080,25 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         } else {
             $cellData['toolbar'] = false;
         }
-        if (!empty($this->cell['width'])) {
-            $cellData['width'] = $this->cell['width'];
+        if ($this->refactorCellWidth !== null) {
+            $cellData['width'] = $this->refactorCellWidth;
         }
-        if (!empty($this->cell['height'])) {
-            $cellData['height'] = $this->cell['height'];
+        if ($this->refactorCellHeight !== null) {
+            $cellData['height'] = $this->refactorCellHeight;
         }
-        if (isset($this->cell['fixedWidth'])) {
-            $cellData['fixSize']['width'] = $this->cell['fixedWidth'];
+        if ($this->refactorCellUseFixedWidth === true) {
+            $cellData['fixSize']['width'] = true;
         }
-        if (isset($this->cell['fixedHeight'])) {
-            $cellData['fixSize']['height'] = $this->cell['fixedHeight'];
+        if ($this->refactorCellUseFixedHeight === true) {
+            $cellData['fixSize']['height'] = true;
         }
-        if (isset($this->cell['hideHeader']) && $this->cell['hideHeader'] === true) {
+        if ($this->refactorCellHideHeader === true) {
             $cellData['hideHeader'] = true;
             $cellData['label']      = '';
         } else {
             $cellData['label'] = $this->getLabel();
         }
-        if (isset($this->cell['hideArrow'])) {
+        if ($this->refactorCellHideArrow === true) {
             $cellData['hideArrow'] = true;
         }
         if ($this->cssClass !== '') {
@@ -1147,9 +1113,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setCollapsed(bool $bool = true): self
     {
-        if (is_bool($bool)) {
-            $this->cell['collapsed'] = $bool;
-        }
+        $this->refactorCellCollapsed = $bool;
         return $this;
     }
 
@@ -1158,10 +1122,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getHorizontalAutoSize(): bool
     {
-        if (isset($this->cell['width'])) {
-            return false;
-        }
-        return true;
+        return $this->refactorCellWidth === null;
     }
 
     /**
@@ -1169,10 +1130,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getVerticalAutoSize(): bool
     {
-        if (isset($this->cell['height'])) {
-            return false;
-        }
-        return true;
+        return $this->refactorCellHeight === null;
     }
 
     /**
@@ -1229,8 +1187,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function setContainerID(string $containerId): self
     {
         $this->containerId = $containerId;
-        if ($this->cell['registered'] === false) {
-            $this->cell['registered'] = true;
+        if ($this->refactorCellRegistered === false) {
+            $this->refactorCellRegistered = true;
             $this->setDimensions();
         }
         return $this;
@@ -1241,8 +1199,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getID(): Struct\ID|array|null|string
     {
-        if (isset($this->cell['ID'])) {
-            return ID::explode($this->cell['ID']);
+        if ($this->refactorCellId !== null) {
+            return ID::explode($this->refactorCellId);
         }
         return null;
     }
@@ -1295,19 +1253,18 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getNamespace(): ?string
     {
-        if (array_key_exists('namespace', $this->cell)) {
-            return $this->cell['namespace'];
-        }
-        return null;
+        return $this->refactorCellNamespace;
     }
 
     /**
      * @param string $localeName
+     * @return Cell
      * @API
      */
-    public function setLocaleName(string $localeName)
+    public function setLocaleName(string $localeName): self
     {
-        $this->cell['locale_name'] = $localeName;
+        $this->refactorCellLocaleName = $localeName;
+        return $this;
     }
 
     /**
@@ -1315,8 +1272,8 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getLocaleName(): string
     {
-        if (array_key_exists('locale_name', $this->cell)) {
-            return $this->cell['locale_name'];
+        if ($this->refactorCellLocaleName !== null) {
+            return $this->refactorCellLocaleName;
         }
         return $this->getName();
     }
@@ -1336,7 +1293,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setCollapsedLabel(string $collapsedLabel): self
     {
-        $this->cell['collapsedLabel'] = $collapsedLabel;
+        $this->refactorCellCollapsedLabel = $collapsedLabel;
         return $this;
     }
 
@@ -1350,7 +1307,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
             if (isset($this->toolbar['name'])) {
                 return $this->toolbar['name'];
             }
-            return $this->cell['name'].'_'.$this->cell['ID'].'_toolbar';
+            return $this->refactorCellName.'_'.$this->refactorCellId.'_toolbar';
         }
         return '';
     }
@@ -1401,12 +1358,14 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     /**
      * @param string $id
      * @param mixed $value
+     * @return Cell
      */
-    public function storeData(string $id, mixed $value)
+    public function storeData(string $id, mixed $value): self
     {
         if (array_key_exists($id, $this->storage)) {
             $this->storage[$id]->setValue($value);
         }
+        return $this;
     }
 
     /**
@@ -1420,11 +1379,13 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
 
     /**
      * @param string $actionId
+     * @return Cell
      * @internal
      */
-    public function setActionId(string $actionId)
+    public function setActionId(string $actionId): self
     {
         $this->actionId = $actionId;
+        return $this;
     }
 
     /**
