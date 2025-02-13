@@ -88,7 +88,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private array   $refactorContentToolbarListId    = [];
     private ?string $refactorContentFilterValue      = null;
     private string  $refactorContentVisibleDateRange;
-    private array   $refactorContentNestedControls   = [];
+    private array   $nestedControls                  = [];
     private array   $uploads                         = [];
 
     public function __construct(private string $contentClass = '')
@@ -657,7 +657,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function setNestedControls($parentName, $value, array $nestedNames): void
     {
         foreach ($nestedNames as $name) {
-            $this->refactorContentNestedControls[$parentName][$value][$name] = $name;
+            $this->nestedControls[$parentName][$value][$name] = $name;
         }
     }
 
@@ -670,7 +670,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function getNestedControls(): array
     {
-        return $this->refactorContentNestedControls;
+        return $this->nestedControls;
     }
 
     /**
@@ -681,9 +681,9 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function clearContentObjectTypes(): void
     {
-        $this->refactorContentControls       = [];
-        $this->refactorContentNestedControls = [];
-        $this->refactorContentEncrypted      = [];
+        $this->refactorContentControls  = [];
+        $this->nestedControls           = [];
+        $this->refactorContentEncrypted = [];
         foreach ($this->uploads as $file) {
             unlink($file['fqfn']);
         }
