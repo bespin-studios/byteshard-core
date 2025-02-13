@@ -80,7 +80,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private ?string $refactorCellOriginalContentClass = null;
     private ?string $refactorCellLocaleName           = null;
     private ?string $refactorCellName                 = null;
-    private bool    $refactorCellCollapsed            = false;
+    private bool    $collapsed                        = false;
 
     private ?string $requestTimestamp = null;
     private array   $controls         = [];
@@ -789,7 +789,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
                     $this->refactorCellUserWidth = true;
                     break;
                 case self::COLLAPSED:
-                    $this->refactorCellCollapsed = true;
+                    $this->collapsed = true;
                     break;
             }
         }
@@ -949,7 +949,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         if ($this->refactorCellCollapsedLabel !== null) {
             $cellData['collapsedLabel'] = $this->refactorCellCollapsedLabel;
         }
-        if ($this->refactorCellCollapsed === true) {
+        if ($this->collapsed === true) {
             $cellData['collapsed'] = true;
         }
         if (!empty($this->toolbar)) {
@@ -990,7 +990,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setCollapsed(bool $bool = true): self
     {
-        $this->refactorCellCollapsed = $bool;
+        $this->collapsed = $bool;
         return $this;
     }
 
