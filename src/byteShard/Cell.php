@@ -87,7 +87,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private array   $refactorContentEncrypted        = [];
     private array   $refactorContentToolbarListId    = [];
     private ?string $refactorContentFilterValue      = null;
-    private string  $refactorContentVisibleDateRange;
+    private string  $visibleDateRange;
     private array   $nestedControls                  = [];
     private array   $uploads                         = [];
 
@@ -611,12 +611,12 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
 
     public function setVisibleDateRange(string $range): void
     {
-        $this->refactorContentVisibleDateRange = $range;
+        $this->visibleDateRange = $range;
     }
 
     public function getVisibleDateRange(): string
     {
-        return $this->refactorContentVisibleDateRange ?? '';
+        return $this->visibleDateRange ?? '';
     }
 
     public function getContentSelectedID(?string $name): mixed
