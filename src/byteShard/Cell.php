@@ -89,7 +89,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private ?string $refactorContentFilterValue      = null;
     private string  $refactorContentVisibleDateRange;
     private array   $refactorContentNestedControls   = [];
-    private array   $refactorContentUploads          = [];
+    private array   $uploads                         = [];
 
     public function __construct(private string $contentClass = '')
     {
@@ -642,7 +642,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
 
     public function setUploadedFileInformation(array $file): void
     {
-        $this->refactorContentUploads[$file['id']] = $file;
+        $this->uploads[$file['id']] = $file;
     }
 
     /**
@@ -684,10 +684,10 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         $this->refactorContentControls       = [];
         $this->refactorContentNestedControls = [];
         $this->refactorContentEncrypted      = [];
-        foreach ($this->refactorContentUploads as $file) {
+        foreach ($this->uploads as $file) {
             unlink($file['fqfn']);
         }
-        $this->refactorContentUploads = [];
+        $this->uploads = [];
     }
 
     /**
