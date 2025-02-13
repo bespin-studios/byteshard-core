@@ -69,14 +69,14 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private ?string $refactorCellNamespace      = null;
     private ?string $refactorCellCollapsedLabel = null;
     private bool    $refactorCellRegistered     = false;
-    private bool    $refactorCellUserWidth      = false;
+    private bool    $userWidth                  = false;
     private ?int    $refactorCellWidth          = null;
-    private bool    $refactorCellUserHeight     = false;
+    private bool    $userHeight                 = false;
     private ?int    $refactorCellHeight         = null;
     private bool    $refactorCellHideHeader     = false;
     private bool    $refactorCellHideArrow      = false;
-    private bool    $refactorCellUseFixedHeight = false;
-    private bool    $refactorCellUseFixedWidth  = false;
+    private bool    $useFixedHeight             = false;
+    private bool    $useFixedWidth              = false;
     private ?string $originalContentClass       = null;
     private ?string $localeName                 = null;
     private ?string $name                       = null;
@@ -147,7 +147,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setWidth(int $int): self
     {
-        if ($this->refactorCellUserWidth === false) {
+        if ($this->userWidth === false) {
             $this->refactorCellWidth = $int;
         }
         return $this;
@@ -175,7 +175,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setHeight(int $int): self
     {
-        if ($this->refactorCellUserHeight === false) {
+        if ($this->userHeight === false) {
             $this->refactorCellHeight = $int;
         }
         return $this;
@@ -233,7 +233,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setFixedWidth(bool $bool = true): self
     {
-        $this->refactorCellUseFixedWidth = $bool;
+        $this->useFixedWidth = $bool;
         return $this;
     }
 
@@ -247,7 +247,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function setFixedHeight(bool $bool = true): self
     {
-        $this->refactorCellUseFixedHeight = $bool;
+        $this->useFixedHeight = $bool;
         return $this;
     }
 
@@ -782,11 +782,11 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
             switch ($type) {
                 case self::HEIGHT:
                     $this->setHeight($val);
-                    $this->refactorCellUserHeight = true;
+                    $this->userHeight = true;
                     break;
                 case self::WIDTH:
                     $this->setWidth($val);
-                    $this->refactorCellUserWidth = true;
+                    $this->userWidth = true;
                     break;
                 case self::COLLAPSED:
                     $this->collapsed = true;
@@ -963,10 +963,10 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         if ($this->refactorCellHeight !== null) {
             $cellData['height'] = $this->refactorCellHeight;
         }
-        if ($this->refactorCellUseFixedWidth === true) {
+        if ($this->useFixedWidth === true) {
             $cellData['fixSize']['width'] = true;
         }
-        if ($this->refactorCellUseFixedHeight === true) {
+        if ($this->useFixedHeight === true) {
             $cellData['fixSize']['height'] = true;
         }
         if ($this->refactorCellHideHeader === true) {
