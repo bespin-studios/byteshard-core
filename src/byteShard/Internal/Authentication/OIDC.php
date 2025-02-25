@@ -4,7 +4,6 @@ namespace byteShard\Internal\Authentication;
 
 use Exception;
 use League\OAuth2\Client\Provider\AbstractProvider;
-use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 
@@ -14,7 +13,7 @@ class OIDC
 
     public function __construct(
         private readonly AbstractProvider $provider,
-        bool $emptyConstructor = false
+        bool                              $emptyConstructor = false
     ) {
         if ($emptyConstructor) {
             return;

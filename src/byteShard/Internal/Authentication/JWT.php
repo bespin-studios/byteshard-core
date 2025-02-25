@@ -2,9 +2,7 @@
 
 namespace byteShard\Internal\Authentication;
 
-use byteShard\Config\OauthInterface;
 use byteShard\Exception;
-use byteShard\Internal\ByteShard;
 use byteShard\Password;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT as FirebaseJWT;

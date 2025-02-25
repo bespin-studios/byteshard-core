@@ -2,17 +2,12 @@
 
 namespace byteShard\Internal\Authentication\Provider;
 
-use byteShard\DataModelInterface;
-use byteShard\Internal\Authentication\AuthenticationInterface;
-use byteShard\Internal\Authentication\OIDC;
 use byteShard\Internal\Authentication\JWT;
+use byteShard\Internal\Authentication\OIDC;
 use byteShard\Internal\Authentication\ProviderInterface;
-use byteShard\Internal\Debug;
 use byteShard\Internal\Login\Struct\Credentials;
-use byteShard\Internal\Schema\DB\UserTable;
 use Exception;
 use League\OAuth2\Client\Provider\AbstractProvider;
-use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 
 class Oauth implements ProviderInterface
 {
