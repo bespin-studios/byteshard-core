@@ -69,7 +69,7 @@ class Authentication
                     return new Ldap();
                 case Providers::OAUTH:
                     if ($this->environment instanceof OauthInterface) {
-                        return new Oauth(certPath: $this->environment->getJwksCertPath());
+                        return new Oauth(provider: $this->environment->getOauthProvider(), certPath: $this->environment->getJwksCertPath());
                     }
                     return null;
             }

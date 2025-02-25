@@ -13,9 +13,12 @@ class OIDC
     private ?AccessTokenInterface $token = null;
 
     public function __construct(
-        private readonly AbstractProvider $provider
-    )
-    {
+        private readonly AbstractProvider $provider,
+        bool $emptyConstructor = false
+    ) {
+        if ($emptyConstructor) {
+            return;
+        }
         if (!isset($_GET['code'])) {
             $this->redirectToAuthProvider();
         }
@@ -33,6 +36,11 @@ class OIDC
         return $this->token?->getToken() ?? '';
     }
 
+    public function getRefreshToken(): string
+    {
+        return $this->token?->getRefreshToken() ?? '';
+    }
+
     private function redirectToAuthProvider(): never
     {
         $authUrl                 = $this->provider->getAuthorizationUrl();
@@ -46,7 +54,7 @@ class OIDC
         try {
             $this->token = $this->provider->getAccessToken('refresh_token', ['refresh_token' => $refreshToken]);
         } catch (Exception $e) {
-
+            $this->redirectToAuthProvider();
         }
     }
 

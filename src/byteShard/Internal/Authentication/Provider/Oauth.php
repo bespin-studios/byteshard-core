@@ -17,6 +17,7 @@ use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 class Oauth implements ProviderInterface
 {
     private const ACCESS_TOKEN_COOKIE = 'access_token';
+    private const REFRESH_TOKEN_COOKIE = 'refresh_token';
     private string $username;
 
     public function __construct(private readonly ?AbstractProvider $provider = null, private readonly string $certPath = '')
@@ -31,15 +32,22 @@ class Oauth implements ProviderInterface
             if ($tokenIsValid === true) {
                 $this->username = $jwt->getPreferredUsername();
                 return true;
-            } else {
-                return $this->refresh();
             }
         }
-        return false;
+        return $this->refresh();
     }
 
     private function refresh(): bool
     {
+        if (array_key_exists(self::REFRESH_TOKEN_COOKIE, $_COOKIE)) {
+            $oidc = new OIDC($this->provider, true);
+            $oidc->refresh($_COOKIE[self::REFRESH_TOKEN_COOKIE]);
+            $newAccessToken = $oidc->getJwt();
+            if (!empty($newAccessToken)) {
+                $this->storeAccessToken($newAccessToken);
+                return true;
+            }
+        }
         return false;
     }
 
@@ -53,23 +61,24 @@ class Oauth implements ProviderInterface
         if ($this->provider === null) {
             throw new Exception('No Oauth Provider defined in Environment');
         }
-        $oidc         = new OIDC(
-            $this->provider
-        );
+        $oidc         = new OIDC($this->provider);
         $jwt          = new JWT($oidc->getJwt(), $this->certPath);
         $tokenIsValid = $jwt->isTokenValid();
         $accessToken  = $oidc->getJwt();
+        $refreshToken = $oidc->getRefreshToken();
         if ($tokenIsValid) {
             $this->username = $jwt->getPreferredUsername();
-            setcookie(self::ACCESS_TOKEN_COOKIE, $accessToken, [
-                'expires'  => time() + 3600,
-                'secure'   => true,
-                'httponly' => true,
-                'samesite' => 'Lax',
-                'path'     => '/',
-            ]);
-            // Token expiration time (you should sync this with the token's actual expiration)
-            //TODO: store refresh token
+            $test           = $jwt->getRealmAccessRoles();
+            $this->storeAccessToken($accessToken);
+            if (!empty($refreshToken)) {
+                setcookie(self::REFRESH_TOKEN_COOKIE, $refreshToken, [
+                    'expires'  => time() + 3600, // Token expiration time (you should sync this with the token's actual expiration)
+                    'secure'   => true,
+                    'httponly' => true,
+                    'samesite' => 'Strict',
+                    'path'     => '/',
+                ]);
+            }
         }
         return $tokenIsValid;
     }
@@ -77,6 +86,22 @@ class Oauth implements ProviderInterface
     public function getUsername(): string
     {
         return $this->username ?? '';
+    }
+
+    /**
+     * @param string $accessToken
+     * @return void
+     */
+    public function storeAccessToken(string $accessToken): void
+    {
+        $jwt = new JWT($accessToken, $this->certPath);
+        setcookie(self::ACCESS_TOKEN_COOKIE, $accessToken, [
+            'expires'  => time() + $jwt->tokenDuration(),
+            'secure'   => true,
+            'httponly' => true,
+            'samesite' => 'Lax',
+            'path'     => '/',
+        ]);
     }
 
 }
