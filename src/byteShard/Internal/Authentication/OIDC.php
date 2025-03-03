@@ -2,6 +2,7 @@
 
 namespace byteShard\Internal\Authentication;
 
+use byteShard\Internal\Server;
 use Exception;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
@@ -53,7 +54,8 @@ class OIDC
         try {
             $this->token = $this->provider->getAccessToken('refresh_token', ['refresh_token' => $refreshToken]);
         } catch (Exception $e) {
-            $this->redirectToAuthProvider();
+            header('Location: '.Server::getBaseUrl().'/login/');
+            exit;
         }
     }
 

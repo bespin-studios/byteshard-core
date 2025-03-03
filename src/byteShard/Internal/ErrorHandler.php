@@ -425,7 +425,7 @@ class ErrorHandler
         }
         //TODO: check if some cookies have to be unset
         if (!headers_sent()) {
-            $parameter = $phpCanWriteToLog ? '' : '/?error=nolog';
+            $parameter = $phpCanWriteToLog ? '/' : '/?error=nolog';
             header('Location: '.$path.'login'.$parameter);
         }
         exit;
