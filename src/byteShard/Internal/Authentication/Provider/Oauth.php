@@ -6,6 +6,7 @@ use byteShard\Internal\Authentication\JWT;
 use byteShard\Internal\Authentication\OIDC;
 use byteShard\Internal\Authentication\ProviderInterface;
 use byteShard\Internal\Login\Struct\Credentials;
+use byteShard\Internal\Server;
 use Exception;
 use League\OAuth2\Client\Provider\AbstractProvider;
 
@@ -34,14 +35,24 @@ class Oauth implements ProviderInterface
 
     private function refresh(): bool
     {
-        if (array_key_exists(self::REFRESH_TOKEN_COOKIE, $_COOKIE)) {
-            $oidc = new OIDC($this->provider, true);
-            $oidc->refresh($_COOKIE[self::REFRESH_TOKEN_COOKIE]);
-            $newAccessToken = $oidc->getJwt();
-            if (!empty($newAccessToken)) {
-                $this->storeAccessToken($newAccessToken);
-                return true;
+        try {
+            if (array_key_exists(self::REFRESH_TOKEN_COOKIE, $_COOKIE)) {
+                $oidc = new OIDC($this->provider, true);
+                $oidc->refresh($_COOKIE[self::REFRESH_TOKEN_COOKIE]);
+                $newAccessToken = $oidc->getJwt();
+                if (!empty($newAccessToken)) {
+                    $this->storeToken($newAccessToken);
+                    $refreshToken = $oidc->getRefreshToken();
+                    if (!empty($refreshToken)) {
+                        $this->storeToken($refreshToken, self::REFRESH_TOKEN_COOKIE);
+                    }
+                    return true;
+                }
             }
+        } catch (Exception) {
+            $this->logout();
+            header('Location: '.Server::getBaseUrl().'/login/');
+            exit;
         }
         return false;
     }
@@ -49,8 +60,12 @@ class Oauth implements ProviderInterface
     public function logout(): void
     {
         setcookie(self::ACCESS_TOKEN_COOKIE, '', time() - 3600, '/');
+        setcookie(self::REFRESH_TOKEN_COOKIE, '', time() - 3600, '/');
     }
 
+    /**
+     * @throws \byteShard\Exception
+     */
     public function authenticate(?Credentials $credentials = null): bool
     {
         if ($this->provider === null) {
@@ -63,16 +78,9 @@ class Oauth implements ProviderInterface
         $refreshToken = $oidc->getRefreshToken();
         if ($tokenIsValid) {
             $this->username = $jwt->getPreferredUsername();
-            $test           = $jwt->getRealmAccessRoles();
-            $this->storeAccessToken($accessToken);
+            $this->storeToken($accessToken);
             if (!empty($refreshToken)) {
-                setcookie(self::REFRESH_TOKEN_COOKIE, $refreshToken, [
-                    'expires'  => time() + 3600, // Token expiration time (you should sync this with the token's actual expiration)
-                    'secure'   => true,
-                    'httponly' => true,
-                    'samesite' => 'Strict',
-                    'path'     => '/',
-                ]);
+                $this->storeToken($refreshToken, self::REFRESH_TOKEN_COOKIE);
             }
         }
         return $tokenIsValid;
@@ -84,17 +92,23 @@ class Oauth implements ProviderInterface
     }
 
     /**
-     * @param string $accessToken
+     * @param string $token
+     * @param string $tokenType
      * @return void
+     * @throws \byteShard\Exception
      */
-    public function storeAccessToken(string $accessToken): void
+    public function storeToken(string $token, string $tokenType = self::ACCESS_TOKEN_COOKIE): void
     {
-        $jwt = new JWT($accessToken, $this->certPath);
-        setcookie(self::ACCESS_TOKEN_COOKIE, $accessToken, [
-            'expires'  => time() + $jwt->tokenDuration(),
+        $tokenDuration = 3600; // TODO: Token expiration time (you should sync this with the token's actual expiration), e.g. a Refresh token does not need to be a JWT, so you can't read it in the same way all the time
+        if ($tokenType === self::ACCESS_TOKEN_COOKIE) {
+            $jwt           = new JWT($token, $this->certPath);
+            $tokenDuration = $jwt->tokenDuration();
+        }
+        setcookie($tokenType, $token, [
+            'expires'  => time() + $tokenDuration,
             'secure'   => true,
             'httponly' => true,
-            'samesite' => 'Lax',
+            'samesite' => $tokenType === self::ACCESS_TOKEN_COOKIE ? 'Lax' : 'Strict', // Strict doesn't work with Firefox for the access token ¯\_(ツ)_/¯
             'path'     => '/',
         ]);
     }

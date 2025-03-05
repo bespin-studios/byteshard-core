@@ -53,7 +53,7 @@ class OIDC
     {
         try {
             $this->token = $this->provider->getAccessToken('refresh_token', ['refresh_token' => $refreshToken]);
-        } catch (Exception $e) {
+        } catch (Exception) {
             header('Location: '.Server::getBaseUrl().'/login/');
             exit;
         }
