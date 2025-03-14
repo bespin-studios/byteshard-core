@@ -22,16 +22,75 @@ class Pdf extends FormObject
     use Form\LabelWidth;
     use Form\Name;
 
-    protected string $type = 'html';
+    protected string $type    = 'html';
+    private bool     $toolbar = true;
+    private int      $zoom;
+    private int      $page;
+    private string   $view;
+    private string   $url;
 
-    public function __construct(?string $id, string $url) {
+
+    public function __construct(?string $id, string $url)
+    {
         parent::__construct($id);
-        $this->attributes['value'] = '<object class="pdfFormObject" data="'.$url.'" type="application/pdf">';
+        $this->url                 = $url;
+        $this->attributes['value'] = $this->getValueAttribute();
     }
 
     public function setValue(string $value): self
     {
-        $this->attributes['value'] = '<object class="pdfFormObject" data="'.$value.'" type="application/pdf">';
+        $this->url                 = $value;
+        $this->attributes['value'] = $this->getValueAttribute();
         return $this;
+    }
+
+    public function useToolbar(bool $value = true): self
+    {
+        $this->toolbar             = $value;
+        $this->attributes['value'] = $this->getValueAttribute();
+        return $this;
+    }
+
+    public function setView(string $view): self
+    {
+        $this->view                = $view;
+        $this->attributes['value'] = $this->getValueAttribute();
+        return $this;
+    }
+
+    public function setZoom(int $value): self
+    {
+        $this->zoom                = $value;
+        $this->attributes['value'] = $this->getValueAttribute();
+        return $this;
+    }
+
+    public function setPage(int $value): self
+    {
+        $this->page                = $value;
+        $this->attributes['value'] = $this->getValueAttribute();
+        return $this;
+    }
+
+    private function getValueAttribute(): string
+    {
+        $url     = $this->url;
+        $options = [];
+        if ($this->toolbar === false) {
+            $options[] = 'toolbar=0';
+        }
+        if (isset($this->view)) {
+            $options[] = 'view='.$this->view;
+        }
+        if (isset($this->zoom)) {
+            $options[] = 'zoom='.$this->zoom;
+        }
+        if (isset($this->page)) {
+            $options[] = 'page='.$this->page;
+        }
+        if (!empty($options)) {
+            $url .= '#'.implode('&', $options);
+        }
+        return '<object class="pdfFormObject" data="'.$url.'" type="application/pdf">';
     }
 }
