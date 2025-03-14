@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/bespin-studios/byteshard-core/compare/v2.6.0...v2.7.0) (2025-03-14)
+
+
+### Features
+
+* add some configuration options to pdf elements ([76d9777](https://github.com/bespin-studios/byteshard-core/commit/76d9777d4cbebfb13d082a98d5acb67c1bf2277f))
+
 # [2.6.0](https://github.com/bespin-studios/byteshard-core/compare/v2.5.4...v2.6.0) (2025-02-13)
 
 
