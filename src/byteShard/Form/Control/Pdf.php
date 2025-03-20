@@ -22,7 +22,7 @@ class Pdf extends FormObject
     use Form\LabelWidth;
     use Form\Name;
 
-    protected string $type    = 'html';
+    protected string $type    = 'pdf';
     private bool     $toolbar = true;
     private int      $zoom;
     private int      $page;
@@ -72,6 +72,32 @@ class Pdf extends FormObject
         return $this;
     }
 
+    /**
+     * use any valid css value, like "80%" or "100vh" or "40px"
+     * @param string $minHeight
+     * @return static
+     */
+    public function setMinHeight(string $minHeight): static
+    {
+        if (isset($this->attributes)) {
+            $this->attributes['minHeight'] = $minHeight;
+        }
+        return $this;
+    }
+
+    /**
+     * use any valid css value, like "80%" or "100vh" or "40px"
+     * @param string $maxHeight
+     * @return static
+     */
+    public function setMaxHeight(string $maxHeight): static
+    {
+        if (isset($this->attributes)) {
+            $this->attributes['maxHeight'] = $maxHeight;
+        }
+        return $this;
+    }
+
     private function getValueAttribute(): string
     {
         $url     = $this->url;
@@ -91,6 +117,6 @@ class Pdf extends FormObject
         if (!empty($options)) {
             $url .= '#'.implode('&', $options);
         }
-        return '<object class="pdfFormObject" data="'.$url.'" type="application/pdf">';
+        return $url;
     }
 }
