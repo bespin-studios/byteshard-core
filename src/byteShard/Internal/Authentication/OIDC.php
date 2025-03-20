@@ -41,6 +41,15 @@ class OIDC
         return $this->token?->getRefreshToken() ?? '';
     }
 
+    public function getRefreshExpiry(): ?int
+    {
+        $values = $this->token?->getValues();
+        if (!isset($values) && array_key_exists('refresh_expires_in', $values)) {
+            return $values['refresh_expires_in'];
+        }
+        return null;
+    }
+
     private function redirectToAuthProvider(): never
     {
         $authUrl                 = $this->provider->getAuthorizationUrl();

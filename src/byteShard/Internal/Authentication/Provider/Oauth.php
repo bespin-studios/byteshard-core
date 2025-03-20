@@ -44,7 +44,7 @@ class Oauth implements ProviderInterface
                     $this->storeToken($newAccessToken);
                     $refreshToken = $oidc->getRefreshToken();
                     if (!empty($refreshToken)) {
-                        $this->storeToken($refreshToken, self::REFRESH_TOKEN_COOKIE);
+                        $this->storeToken($refreshToken, self::REFRESH_TOKEN_COOKIE, $oidc->getRefreshExpiry());
                     }
                     return true;
                 }
@@ -80,7 +80,7 @@ class Oauth implements ProviderInterface
             $this->username = $jwt->getPreferredUsername();
             $this->storeToken($accessToken);
             if (!empty($refreshToken)) {
-                $this->storeToken($refreshToken, self::REFRESH_TOKEN_COOKIE);
+                $this->storeToken($refreshToken, self::REFRESH_TOKEN_COOKIE, $oidc->getRefreshExpiry());
             }
         }
         return $tokenIsValid;
@@ -94,12 +94,15 @@ class Oauth implements ProviderInterface
     /**
      * @param string $token
      * @param string $tokenType
+     * @param int|null $tokenDuration // TODO: Token expiration time (you should sync this with the token's actual expiration), e.g. a Refresh token does not need to be a JWT, so you can't read it in the same way all the time
      * @return void
      * @throws \byteShard\Exception
      */
-    public function storeToken(string $token, string $tokenType = self::ACCESS_TOKEN_COOKIE): void
+    public function storeToken(string $token, string $tokenType = self::ACCESS_TOKEN_COOKIE, ?int $tokenDuration = 3600): void
     {
-        $tokenDuration = 3600; // TODO: Token expiration time (you should sync this with the token's actual expiration), e.g. a Refresh token does not need to be a JWT, so you can't read it in the same way all the time
+        if (is_null($tokenDuration)) {
+            $tokenDuration = 3600;
+        }
         if ($tokenType === self::ACCESS_TOKEN_COOKIE) {
             $jwt           = new JWT($token, $this->certPath);
             $tokenDuration = $jwt->tokenDuration();
