@@ -2,9 +2,9 @@
 
 namespace byteShard\Internal\Authentication;
 
-use byteShard\Internal\Server;
 use Exception;
 use League\OAuth2\Client\Provider\AbstractProvider;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 
@@ -49,14 +49,12 @@ class OIDC
         exit;
     }
 
+    /**
+     * @throws IdentityProviderException
+     */
     public function refresh(string $refreshToken): void
     {
-        try {
-            $this->token = $this->provider->getAccessToken('refresh_token', ['refresh_token' => $refreshToken]);
-        } catch (Exception) {
-            header('Location: '.Server::getBaseUrl().'/login/');
-            exit;
-        }
+        $this->token = $this->provider->getAccessToken('refresh_token', ['refresh_token' => $refreshToken]);
     }
 
     private function getAccessToken(string $code): AccessTokenInterface
