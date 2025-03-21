@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/bespin-studios/byteshard-core/compare/v2.8.0...v2.9.0) (2025-03-21)
+
+
+### Features
+
+* use custom control for PDF ([23ad599](https://github.com/bespin-studios/byteshard-core/commit/23ad599f0ac28466101915518c38c86a3249d0ef))
+
 # [2.8.0](https://github.com/bespin-studios/byteshard-core/compare/v2.7.0...v2.8.0) (2025-03-21)
 
 
