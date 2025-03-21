@@ -1,3 +1,17 @@
+# [2.8.0](https://github.com/bespin-studios/byteshard-core/compare/v2.7.0...v2.8.0) (2025-03-21)
+
+
+### Bug Fixes
+
+* better error handling during refresh (e.g. clean up cookies since they are not valid anymore) ([550af2f](https://github.com/bespin-studios/byteshard-core/commit/550af2f8d732311ea4e79b6bc9ad2e755dbd9abe))
+* redirect to login page to avoid cors once refresh token is expired ([aaeb5ab](https://github.com/bespin-studios/byteshard-core/commit/aaeb5abd111eab36ebbeda37bd0f6b2fcda30888))
+
+
+### Features
+
+* add refresh token duration to cookie if available ([5a86dad](https://github.com/bespin-studios/byteshard-core/commit/5a86dad948e22e261845b9e0f126ed7ee56df393))
+* **oidc:** add refresh implementation for keycloak ([22c7b5b](https://github.com/bespin-studios/byteshard-core/commit/22c7b5bb0372518e5bd0ea58782cb87d6a69e673))
+
 # [2.7.0](https://github.com/bespin-studios/byteshard-core/compare/v2.6.0...v2.7.0) (2025-03-14)
 
 
