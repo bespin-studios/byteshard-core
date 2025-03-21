@@ -4,7 +4,7 @@ namespace byteShard\Internal\Authentication;
 
 use Exception;
 use League\OAuth2\Client\Provider\AbstractProvider;
-use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 
@@ -13,9 +13,12 @@ class OIDC
     private ?AccessTokenInterface $token = null;
 
     public function __construct(
-        private readonly AbstractProvider $provider
-    )
-    {
+        private readonly AbstractProvider $provider,
+        bool                              $emptyConstructor = false
+    ) {
+        if ($emptyConstructor) {
+            return;
+        }
         if (!isset($_GET['code'])) {
             $this->redirectToAuthProvider();
         }
@@ -33,6 +36,20 @@ class OIDC
         return $this->token?->getToken() ?? '';
     }
 
+    public function getRefreshToken(): string
+    {
+        return $this->token?->getRefreshToken() ?? '';
+    }
+
+    public function getRefreshExpiry(): ?int
+    {
+        $values = $this->token?->getValues();
+        if (!isset($values) && array_key_exists('refresh_expires_in', $values)) {
+            return $values['refresh_expires_in'];
+        }
+        return null;
+    }
+
     private function redirectToAuthProvider(): never
     {
         $authUrl                 = $this->provider->getAuthorizationUrl();
@@ -41,13 +58,12 @@ class OIDC
         exit;
     }
 
+    /**
+     * @throws IdentityProviderException
+     */
     public function refresh(string $refreshToken): void
     {
-        try {
-            $this->token = $this->provider->getAccessToken('refresh_token', ['refresh_token' => $refreshToken]);
-        } catch (Exception $e) {
-
-        }
+        $this->token = $this->provider->getAccessToken('refresh_token', ['refresh_token' => $refreshToken]);
     }
 
     private function getAccessToken(string $code): AccessTokenInterface

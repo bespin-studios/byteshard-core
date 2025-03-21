@@ -2,6 +2,8 @@
 
 namespace byteShard\Internal\Authentication;
 
+use byteShard\Exception;
+use byteShard\Password;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT as FirebaseJWT;
 use Firebase\JWT\Key;
@@ -12,26 +14,36 @@ class JWT
 
     public function __construct(string $token, private readonly string $certPath)
     {
-        $jwks = json_decode(file_get_contents($this->certPath), true);
         list($headBase64, $bodyBase64, $cryptoBase64) = explode('.', $token);
-        $header = FirebaseJWT::jsonDecode(FirebaseJWT::urlsafeB64Decode($headBase64));
-        $key    = [];
-        foreach ($jwks['keys'] as $k) {
-            if (isset($k['kid']) && $k['kid'] == $header->kid) {
-                $key = $k;
-                break;
+        $header    = FirebaseJWT::jsonDecode(FirebaseJWT::urlsafeB64Decode($headBase64));
+        $algorithm = $header->alg ?? 'RS256'; // Default to RS256 if not set
+        $kid       = $header->kid ?? null;
+
+        if (str_starts_with($algorithm, 'HS')) {
+            // HMAC (HS256, HS384, HS512) uses shared secret
+            $key = Password::getSecretString('keycloakClientSecret');
+        } else {
+            // RSA (RS256, RS384, RS512) uses JWKS
+            $jwks = json_decode(file_get_contents($this->certPath), true);
+            $key  = null;
+
+            foreach ($jwks['keys'] as $k) {
+                if (isset($k['kid']) && $k['kid'] === $kid) {
+                    if (isset($k['x5c']) && count($k['x5c']) === 1) {
+                        $key = $this->x5cToPem($k['x5c'][0]);
+                    }
+                    break;
+                }
+            }
+
+            if (!$key) {
+                throw new Exception("No matching key found in JWKS.");
             }
         }
-        $cert = '';
-        if (array_key_exists('x5c', $key) && count($key['x5c']) === 1) {
-            $cert = $this->x5cToPem($key['x5c'][0]);
-        }
-        if ($cert !== '') {
-            try {
-                $this->jwt = FirebaseJWT::decode($token, new Key($cert, 'RS256'));
-            } catch (ExpiredException $e) {
-                $this->jwt = $e->getPayload();
-            }
+        try {
+            $this->jwt = FirebaseJWT::decode($token, new Key($key, $algorithm));
+        } catch (ExpiredException $e) {
+            $this->jwt = $e->getPayload();
         }
     }
 
@@ -64,6 +76,11 @@ class JWT
         return time() > $this->jwt->exp;
     }
 
+    public function tokenDuration(): int
+    {
+        return $this->jwt->exp - time();
+    }
+
     public function getJwt(): ?object
     {
         return $this->jwt;
@@ -75,34 +92,5 @@ class JWT
         $cert .= chunk_split($x5c, 64, "\n");
         $cert .= "-----END CERTIFICATE-----\n";
         return $cert;
-    }
-
-    public static function refresh()
-    {
-        $url = "https://your-keycloak-server/auth/realms/{your-realm}/protocol/openid-connect/token";
-
-        $data = array(
-            'client_id'     => 'your-client-id',
-            'client_secret' => 'your-client-secret',  // Required for confidential clients
-            'grant_type'    => 'refresh_token',
-            'refresh_token' => 'your-refresh-token',
-        );
-
-        $options = array(
-            'http' => array(
-                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                'method'  => 'POST',
-                'content' => http_build_query($data),
-            ),
-        );
-
-        $context  = stream_context_create($options);
-        $response = file_get_contents($url, false, $context);
-
-        if ($response === FALSE) {
-            // Handle error
-        }
-
-        $responseData = json_decode($response, true);
     }
 }
