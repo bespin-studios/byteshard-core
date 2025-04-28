@@ -19,9 +19,9 @@ class SessionTabs
 {
     private const PARENT_TAB_ID = 0;
 
-    private array  $tabs         = [];
+    private array $tabs = [];
     /** @var Tab[] */
-    private array  $legacyTabs   = [];
+    private array $legacyTabs = [];
     /** @var array<string, bool> */
     private array  $selectedTabs = [];
     private string $type         = 'TabBar';
@@ -93,7 +93,7 @@ class SessionTabs
                     $this->tabs[$id]       = null;
                     $this->legacyTabs[$id] = $tab;
                 }
-            } else {
+            } else if ($tab->getAccessType() > 0) {
                 $this->tabs[$tab->getId()] = $tab::class;
             }
         }
@@ -164,7 +164,10 @@ class SessionTabs
         foreach ($tabs as $id => $tab) {
             if ($tab !== null) {
                 $tabs[$id] = new $tab();
-                $tabs[$id]->defineTabContent();
+                if (!$tabs[$id]->isInitialized()) {
+                    $tabs[$id]->defineTabContent();
+                    $tabs[$id]->setInitialized();
+                }
             } else {
                 // legacy tabs
                 $tabs[$id] = $this->legacyTabs[$id];
@@ -172,7 +175,7 @@ class SessionTabs
             }
         }
 
-        // set selected tab
+        // set the selected tab
         $found = false;
         // first select all tabs which were previously selected by the user
         foreach ($this->selectedTabs as $selectedTab => $selected) {
@@ -190,7 +193,7 @@ class SessionTabs
                         $tabs[$split[0]]->setSelected($selectedTab);
                     }
                 } else {
-                    // if any multi level tab was selected but is not active, mark it as selected,
+                    // if any multi-level tab was selected but is not active, mark it as selected,
                     // so it will be selected once the user switched to the top level tab
                     $tabPath    = '';
                     $currentTab = $tabs;
