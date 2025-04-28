@@ -19,9 +19,9 @@ class SessionTabs
 {
     private const PARENT_TAB_ID = 0;
 
-    private array  $tabs         = [];
+    private array $tabs = [];
     /** @var Tab[] */
-    private array  $legacyTabs   = [];
+    private array $legacyTabs = [];
     /** @var array<string, bool> */
     private array  $selectedTabs = [];
     private string $type         = 'TabBar';
@@ -93,10 +93,8 @@ class SessionTabs
                     $this->tabs[$id]       = null;
                     $this->legacyTabs[$id] = $tab;
                 }
-            } else {
-                if ($tab->getAccessType() > 0) {
-                    $this->tabs[$tab->getId()] = $tab::class;
-                }
+            } else if ($tab->getAccessType() > 0) {
+                $this->tabs[$tab->getId()] = $tab::class;
             }
         }
     }
