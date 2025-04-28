@@ -9,12 +9,15 @@ namespace byteShard;
 use byteShard\ID\TabIDElement;
 use byteShard\Internal\Layout;
 use byteShard\Internal\NavigationItem;
+use byteShard\Internal\Permission\PermissionImplementation;
 use byteShard\Internal\TabLegacyInterface;
 use byteShard\Layout\Enum\Pattern;
 use byteShard\Utils\Strings;
+use UnitEnum;
 
 abstract class TabNew implements TabLegacyInterface, NavigationItem
 {
+    use PermissionImplementation;
     private ID\ID  $id;
     private array  $tabs     = [];
     private Layout $layout;
@@ -22,10 +25,14 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem
     private bool   $closable = false;
     //Todo: private Toolbar $toolbar;
     //Todo: private string  $label;
+    private bool $initialized = false;
 
-    public function __construct()
+    public function __construct(string|UnitEnum ...$permissions)
     {
         $this->id = \byteShard\ID\ID::factory(new TabIDElement(get_called_class()));
+        foreach ($permissions as $permission) {
+            $this->setPermission($permission);
+        }
     }
 
     public function getSelected(): bool
@@ -189,12 +196,25 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem
         return $this->layout;
     }
 
+    public function isInitialized(): bool
+    {
+        return $this->initialized;
+    }
+
+    public function setInitialized(): void
+    {
+        $this->initialized = true;
+    }
+
     /**
      * @internal
      */
     public function getNavigationData(): array
     {
-        $this->defineTabContent();
+        if (!$this->isInitialized()) {
+            $this->defineTabContent();
+            $this->setInitialized();
+        }
         $result['ID']    = $this->id->getEncryptedContainerId();
         $result['label'] = $this->getLabel();
         if ($this->selected === true) {
