@@ -1,3 +1,11 @@
+## [2.9.1](https://github.com/bespin-studios/byteshard-core/compare/v2.9.0...v2.9.1) (2025-04-28)
+
+
+### Bug Fixes
+
+* permission issue on tabs and duplicate cells in certain cases ([edc2cb9](https://github.com/bespin-studios/byteshard-core/commit/edc2cb925e934f1ce7f3d58be540eef758ea09ad))
+* permission issue on tabs and duplicate cells in certain cases ([ee6ff23](https://github.com/bespin-studios/byteshard-core/commit/ee6ff23e99aaf022309c09bbb675ecb1ff83ed5d))
+
 # [2.9.0](https://github.com/bespin-studios/byteshard-core/compare/v2.8.0...v2.9.0) (2025-03-21)
 
 
