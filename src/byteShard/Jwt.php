@@ -3,11 +3,13 @@
 namespace byteShard;
 
 use byteShard\Internal\Config;
+use Firebase\JWT\Key;
 
 class Jwt
 {
     public static function validate(Config $config, string $jwt): bool
     {
+        return \Firebase\JWT\JWT::decode($jwt, new Key(file_get_contents($config->getJwtPublicKeyPath()), 'HS256')) !== null;
         $parts = explode('.', $jwt);
         if (count($parts) === 3) {
             $publicKey = file_get_contents($config->getJwtPublicKeyPath());
@@ -16,8 +18,27 @@ class Jwt
         return false;
     }
 
+    /**
+     * @param Config $config
+     * @param string $jwt
+     * @return array<string>|null
+     */
+    public static function decode(Config $config, string $jwt): ?array
+    {
+        return json_decode(json_encode(\Firebase\JWT\JWT::decode($jwt, new Key(file_get_contents($config->getJwtPublicKeyPath()), 'HS256'))), true);
+        $parts = explode('.', $jwt);
+        if (count($parts) !== 3) {
+            return null;
+        }
+        if (!self::validate($config, $jwt)) {
+            return null;
+        }
+        return json_decode(self::base64urlDecode($parts[1]), true);
+    }
+
     public static function create(Config $config, array $payload, array $header = []): string
     {
+        return \Firebase\JWT\JWT::encode($payload, file_get_contents($config->getJwtPrivateKeyPath()), 'RS256');
         if (empty($header)) {
             $header = ['typ' => 'JWT', 'alg' => 'RS256'];
         }
@@ -28,6 +49,7 @@ class Jwt
         $encodedPayload = self::base64urlEncode(json_encode($payload));
 
         $signature = '';
+        $test      = file_get_contents($privateKeyPath);
         openssl_sign($encodedHeader.'.'.$encodedPayload, $signature, file_get_contents($privateKeyPath), $algo);
         $base64UrlSignature = self::base64urlEncode($signature);
 
