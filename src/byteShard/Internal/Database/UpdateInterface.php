@@ -14,5 +14,5 @@ interface UpdateInterface
      * @param BaseConnection|null $connection
      * @return int
      */
-    public static function update(string $query, array $parameters = [], BaseConnection $connection = null): int;
+    public static function update(string $query, array $parameters = [], ?BaseConnection $connection = null): int;
 }

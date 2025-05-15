@@ -17,7 +17,7 @@ use DateTimeZone;
  */
 class DateTime extends \DateTime
 {
-    public function __construct(string $time = 'now', DateTimeZone $timezone = null)
+    public function __construct(string $time = 'now', ?DateTimeZone $timezone = null)
     {
         if (is_numeric($time)) {
             if (strlen($time) === 14) {
@@ -68,7 +68,7 @@ class DateTime extends \DateTime
         return (float)$this->format('YmdHis');
     }
 
-    public function getDurationInDecimalHours(DateTime|\DateTime|string $startDate, DateTime|\DateTime|string $endDate = null): float
+    public function getDurationInDecimalHours(DateTime|\DateTime|string $startDate, DateTime|\DateTime|string|null $endDate = null): float
     {
         if (!$startDate instanceof \DateTime) {
             $startDate = new DateTime($startDate);

@@ -25,7 +25,7 @@ class Database
      * @return BaseConnection
      * @throws Exception
      */
-    public static function getConnection(ConnectionType $accessType = ConnectionType::READ, ParametersInterface $parameters = null): BaseConnection
+    public static function getConnection(ConnectionType $accessType = ConnectionType::READ, ?ParametersInterface $parameters = null): BaseConnection
     {
         global $dbDriver;
         switch ($dbDriver) {
@@ -45,7 +45,7 @@ class Database
      * @return MySQL\MySQLi\Recordset|PGSQL\PDO\Recordset
      * @throws Exception
      */
-    public static function getRecordset(BaseConnection $connection = null): MySQL\MySQLi\Recordset|PGSQL\PDO\Recordset
+    public static function getRecordset(?BaseConnection $connection = null): MySQL\MySQLi\Recordset|PGSQL\PDO\Recordset
     {
         global $dbDriver;
         switch ($dbDriver) {
@@ -95,7 +95,7 @@ class Database
      * @return array
      * @throws Exception
      */
-    public static function getArray(string $query, array $parameters = [], BaseConnection $connection = null, string $classMap = null, bool $fetchPropsLate = false): array
+    public static function getArray(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): array
     {
         global $dbDriver;
         return match ($dbDriver) {
@@ -106,7 +106,7 @@ class Database
         };
     }
 
-    public static function getColumn(string $query, array $parameters = [], BaseConnection $connection = null): array
+    public static function getColumn(string $query, array $parameters = [], ?BaseConnection $connection = null): array
     {
         global $dbDriver;
         switch ($dbDriver) {
@@ -130,7 +130,7 @@ class Database
      * @return array
      * @throws Exception
      */
-    public static function getIndexArray(string $query, string $indexColumn, array $parameters = [], BaseConnection $connection = null, string $classMap = null, bool $fetchPropsLate = false): array
+    public static function getIndexArray(string $query, string $indexColumn, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): array
     {
         global $dbDriver;
         return match ($dbDriver) {
@@ -151,7 +151,7 @@ class Database
      * @return object|null
      * @throws Exception
      */
-    public static function getSingle(string $query, array $parameters = [], BaseConnection $connection = null, string $classMap = null, bool $fetchPropsLate = false): ?object
+    public static function getSingle(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): ?object
     {
         global $dbDriver;
         return match ($dbDriver) {
@@ -173,7 +173,7 @@ class Database
      * @return bool|int
      * @throws Exception
      */
-    public static function insert(string $query, array $parameters = [], BaseConnection $connection = null): int|bool
+    public static function insert(string $query, array $parameters = [], ?BaseConnection $connection = null): int|bool
     {
         global $dbDriver;
         return match ($dbDriver) {
@@ -191,7 +191,7 @@ class Database
      * @return int
      * @throws Exception
      */
-    public static function delete(string $query, array $parameters = [], BaseConnection $connection = null): int
+    public static function delete(string $query, array $parameters = [], ?BaseConnection $connection = null): int
     {
         global $dbDriver;
         return match ($dbDriver) {
@@ -209,7 +209,7 @@ class Database
      * @return int
      * @throws Exception
      */
-    public static function update(string $query, array $parameters = [], BaseConnection $connection = null): int
+    public static function update(string $query, array $parameters = [], ?BaseConnection $connection = null): int
     {
         global $dbDriver;
         return match ($dbDriver) {

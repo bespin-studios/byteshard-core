@@ -52,7 +52,7 @@ abstract class Queueable
     /**
      * method is called on successful run
      */
-    public function successCallback(mixed $data, \Exception $exception = null): void
+    public function successCallback(mixed $data, ?\Exception $exception = null): void
     {
         // implement in child class
     }

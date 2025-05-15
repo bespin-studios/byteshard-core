@@ -14,5 +14,5 @@ interface DeleteInterface
      * @param BaseConnection|null $connection
      * @return int
      */
-    public static function delete(string $query, array $parameters = [], BaseConnection $connection = null): int;
+    public static function delete(string $query, array $parameters = [], ?BaseConnection $connection = null): int;
 }

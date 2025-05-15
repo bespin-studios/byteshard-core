@@ -54,7 +54,7 @@
   },
   "require-dev": {
     "composer/composer": "^2.5",
-    "phpstan/phpstan": "^1.11.5",
+    "phpstan/phpstan": "^2",
     "jetbrains/phpstorm-attributes": "^1.0"
   }
 }

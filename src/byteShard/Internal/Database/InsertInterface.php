@@ -14,5 +14,5 @@ interface InsertInterface
      * @param BaseConnection|null $connection
      * @return int|bool
      */
-    public static function insert(string $query, array $parameters = [], BaseConnection $connection = null): int|bool;
+    public static function insert(string $query, array $parameters = [], ?BaseConnection $connection = null): int|bool;
 }

@@ -17,7 +17,7 @@ interface CellInterface
      */
     public function setParentAccessType(int $accessType): self;
 
-    public function getNavigationData(Session $session = null): array;
+    public function getNavigationData(?Session $session = null): array;
 
     public function getHorizontalAutoSize(): bool;
 

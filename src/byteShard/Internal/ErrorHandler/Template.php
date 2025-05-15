@@ -14,14 +14,14 @@ class Template
      * @return void
      * @API
      */
-    public static function printNoPermissionTemplate(string $directory, string $user = null): void
+    public static function printNoPermissionTemplate(string $directory, ?string $user = null): void
     {
         $error_message = $user !== null ? 'The User "'.$user.'"' : 'The process';
         $error_message .= ' has no permission to write to the defined log dir: '.$directory.'<br>Hint: Define "protected $log_path" in the private config.php';
 
         // $error_message should be set in error.php, but this seems to be legacy
         if (file_exists(BS_FILE_PRIVATE_ROOT.'/error.php')) {
-            include_once BS_FILE_PRIVATE_ROOT.'/error.php';
+            include_once BS_FILE_PRIVATE_ROOT.'/error.php'; /** @phpstan-ignore includeOnce.fileNotFound */
         }
 
         print self::getHtml($error_message, 'no_permission');

@@ -79,7 +79,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
      * @return array
      * @throws Exception
      */
-    public static function getArray(string $query, array $parameters = [], BaseConnection $connection = null, string $classMap = null, bool $fetchPropsLate = false): array
+    public static function getArray(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): array
     {
         $connectionObject = self::checkConnection($connection);
         try {
@@ -121,7 +121,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
         return $result;
     }
 
-    public static function getColumn(string $query, array $parameters = [], BaseConnection $connection = null): array
+    public static function getColumn(string $query, array $parameters = [], ?BaseConnection $connection = null): array
     {
         $connectionObject = self::checkConnection($connection);
         try {
@@ -158,7 +158,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
      * @return array
      * @throws Exception
      */
-    public static function getIndexArray(string $query, string $indexColumn, array $parameters = [], BaseConnection $connection = null, string $classMap = null, bool $fetchPropsLate = false): array
+    public static function getIndexArray(string $query, string $indexColumn, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): array
     {
         $records = self::getArray($query, $parameters, $connection, $classMap, $fetchPropsLate);
         $result  = [];
@@ -179,7 +179,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
      * @param BaseConnection|null $connection
      * @return array
      */
-    public static function getMultidimensionalIndexArray(string $query, array $indexColumns, array $parameters = [], BaseConnection $connection = null): array
+    public static function getMultidimensionalIndexArray(string $query, array $indexColumns, array $parameters = [], ?BaseConnection $connection = null): array
     {
         return [];
     }
@@ -195,7 +195,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
      * @throws Exception
      * @api
      */
-    public static function getSingle(string $query, array $parameters = [], BaseConnection $connection = null, string $classMap = null, bool $fetchPropsLate = false): ?object
+    public static function getSingle(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): ?object
     {
         $connectionObject = self::checkConnection($connection);
         try {
@@ -250,7 +250,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
      * @return int|true
      * @throws Exception
      */
-    public static function insert(string $query, array $parameters = [], BaseConnection $connection = null): int|bool
+    public static function insert(string $query, array $parameters = [], ?BaseConnection $connection = null): int|bool
     {
         $connectionObject = self::checkConnection($connection);
         try {
@@ -300,7 +300,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
      * @return int
      * @throws Exception
      */
-    public static function delete(string $query, array $parameters = [], BaseConnection $connection = null): int
+    public static function delete(string $query, array $parameters = [], ?BaseConnection $connection = null): int
     {
         $connectionObject = self::checkConnection($connection);
         try {
@@ -334,7 +334,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
      * @return int
      * @throws Exception
      */
-    public static function update(string $query, array $parameters = [], Baseconnection $connection = null): int
+    public static function update(string $query, array $parameters = [], ?Baseconnection $connection = null): int
     {
         $connectionObject = self::checkConnection($connection);
         try {
@@ -369,7 +369,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
      * @param BaseConnection|null $connection
      * @return Connection
      */
-    private static function checkConnection(BaseConnection $connection = null): Connection
+    private static function checkConnection(?BaseConnection $connection = null): Connection
     {
         if ($connection instanceof Connection) {
             return $connection;
