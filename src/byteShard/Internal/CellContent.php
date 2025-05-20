@@ -297,7 +297,7 @@ abstract class CellContent implements ContainerInterface, ExportInterface
      * @param string|null $type
      * @return Struct\ID|int|null|string|\DateTime
      */
-    public function getID(string $id = null, string $namespace = null, string $type = null): Struct\ID|int|null|string|\DateTime
+    public function getID(?string $id = null, ?string $namespace = null, ?string $type = null): Struct\ID|int|null|string|\DateTime
     {
         if ($id === null && $type !== 'date') {
             return $this->cell->getID();

@@ -149,12 +149,6 @@ final class Proxy
 
     private function getObjectId(FormObject $formObject): string
     {
-        if (!isset($this->id)) {
-            $this->id = $formObject->getName();
-            if (empty($this->id)) {
-                $this->id = md5(random_bytes(64));
-            }
-        }
         return $this->id;
     }
 

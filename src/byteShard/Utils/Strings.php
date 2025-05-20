@@ -93,7 +93,7 @@ class Strings
         return preg_replace('#&lt;(/?(?:'.$tagWhitelist.')(?:.*?)?)&gt;#', '<\1>', htmlspecialchars($string, ENT_QUOTES, 'UTF-8'));
     }
 
-    public static function purify(string $string, bool $htmlSpecialChars = false, HTMLPurifier $purifier = null): string
+    public static function purify(string $string, bool $htmlSpecialChars = false, ?HTMLPurifier $purifier = null): string
     {
         if (preg_match('/<|>|&|\'|"|\(|\)/', $string) === 1) {
             if ($purifier === null) {

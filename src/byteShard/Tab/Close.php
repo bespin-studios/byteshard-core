@@ -37,7 +37,7 @@ class Close extends Action
 
     public function getResult(ContainerInterface $container, $id): array
     {
-        if (isset($this->field, $this->id, $this->table, $this->id->{$this->field})) {
+        if (isset($this->field, $this->table, $this->id->{$this->field})) {
             if ($_SESSION[MAIN] instanceof Session) {
                 $rs = Database::getRecordset($cn = Database::getConnection(Database\Enum\ConnectionType::WRITE));
                 $rs->open("SELECT Active FROM ".$this->table." WHERE ".$this->field."=".$this->id->{$this->field}." AND User_ID='".$_SESSION[MAIN]->getUserID()."'");

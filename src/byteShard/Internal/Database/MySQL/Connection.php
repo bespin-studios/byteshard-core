@@ -24,7 +24,7 @@ abstract class Connection extends BaseConnection
     protected static string $escapeStaticStart = '`';
     protected static string $escapeStaticEnd   = '`';
 
-    public function __construct(ConnectionType $type = ConnectionType::READ, ParametersInterface $connectionParameters = null)
+    public function __construct(ConnectionType $type = ConnectionType::READ, ?ParametersInterface $connectionParameters = null)
     {
         parent::__construct($type, $connectionParameters);
     }

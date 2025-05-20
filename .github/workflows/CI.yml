@@ -3,7 +3,7 @@ name: CI
 on: [push]
 
 jobs:
-  phpstan:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,6 +16,8 @@ jobs:
           php_extensions: gd mysqli ldap http zip
   semrel:
     runs-on: ubuntu-latest
+    needs: tests
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: byteshard/templates/semrel@main
         with:

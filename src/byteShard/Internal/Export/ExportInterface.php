@@ -18,7 +18,7 @@ interface ExportInterface
     public function setProcessedClientData(?ClientData $clientData): void;
 
     /**
-     * @throws Exception, \Exception
+     * @throws Exception|\Exception
      */
     public function defineDownloadParent(): FileInterface;
 

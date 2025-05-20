@@ -194,7 +194,7 @@ class Tab extends LayoutContainer implements EventStorageInterface, ToolbarConta
      * @return string
      * @throws Exception
      */
-    public function setParentTabID(int $parentLevel, string $parentID = null): string
+    public function setParentTabID(int $parentLevel, ?string $parentID = null): string
     {
         $this->meta['parentID'] = $parentID;
         $this->meta['level']    = $parentLevel + 1;
@@ -292,7 +292,7 @@ class Tab extends LayoutContainer implements EventStorageInterface, ToolbarConta
      * @param string|null $php_class_name
      * @return $this
      */
-    public function setToolbar(string $php_class_name = null): self
+    public function setToolbar(?string $php_class_name = null): self
     {
         if ($php_class_name !== null) {
             $this->toolbar['name'] = $php_class_name;

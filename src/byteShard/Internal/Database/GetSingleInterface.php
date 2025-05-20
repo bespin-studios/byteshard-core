@@ -22,5 +22,5 @@ interface GetSingleInterface
      * @param BaseConnection|null $connection an existing connection can be passed to be reused for the query
      * @return object|null if no record is found for the query null is returned
      */
-    public static function getSingle(string $query, array $parameters = [], BaseConnection $connection = null, string $classMap = null, bool $fetchPropsLate = false): ?object;
+    public static function getSingle(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): ?object;
 }

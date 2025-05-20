@@ -223,7 +223,7 @@ class ClientData extends stdClass implements Iterator, ClientDataInterface
         }
     }
 
-    public function setColumn(string $name, mixed $value, string $type, string $clientId, string $cellName = null)
+    public function setColumn(string $name, mixed $value, string $type, string $clientId, ?string $cellName = null)
     {
         if ($cellName !== null) {
             trigger_error('Method '.__METHOD__.' with cellName parameter is deprecated', E_USER_DEPRECATED);
@@ -239,7 +239,7 @@ class ClientData extends stdClass implements Iterator, ClientDataInterface
         }
     }
 
-    public function getColumn(string $cellName = null): ?object
+    public function getColumn(?string $cellName = null): ?object
     {
         if ($cellName !== null) {
             trigger_error('Method '.__METHOD__.' with cellName parameter is deprecated', E_USER_DEPRECATED);

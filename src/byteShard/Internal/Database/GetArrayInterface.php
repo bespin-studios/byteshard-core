@@ -26,5 +26,5 @@ interface GetArrayInterface
      * @param bool $fetchPropsLate
      * @return array
      */
-    public static function getArray(string $query, array $parameters = [], BaseConnection $connection = null, string $classMap = null, bool $fetchPropsLate = false): array;
+    public static function getArray(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): array;
 }

@@ -15,7 +15,7 @@ abstract class Excel
     protected array $format = [];
     protected       $content;
 
-    public function setColWidth(float $width, int $col = null): void
+    public function setColWidth(float $width, ?int $col = null): void
     {
         if ($col === null) {
             $this->format['colWidth'][] = $width;
@@ -24,7 +24,7 @@ abstract class Excel
         }
     }
 
-    public function setRowHeight(float $height, int $row = null): void
+    public function setRowHeight(float $height, ?int $row = null): void
     {
         if ($row === null) {
             $this->format['rowHeight'][] = $height;

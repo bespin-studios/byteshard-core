@@ -141,7 +141,7 @@ class Password implements JsonSerializable
      * @param string|null $salt
      * @return string|null
      */
-    final public function hash(string $algorithm = null, int $cost = null, string $salt = null): ?string
+    final public function hash(?string $algorithm = null, ?int $cost = null, ?string $salt = null): ?string
     {
         $options['cost'] = $cost ?? $this->cost;
         if ($salt !== null) {

@@ -23,5 +23,5 @@ interface GetMultidimensionalIndexArrayInterface
      * @param BaseConnection|null $connection
      * @return array
      */
-    public static function getMultidimensionalIndexArray(string $query, array $indexColumns, array $parameters = [], BaseConnection $connection = null): array;
+    public static function getMultidimensionalIndexArray(string $query, array $indexColumns, array $parameters = [], ?BaseConnection $connection = null): array;
 }

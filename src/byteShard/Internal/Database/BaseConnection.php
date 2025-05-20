@@ -58,7 +58,7 @@ abstract class BaseConnection implements ConnectionInterface, JsonSerializable
     /**
      * BaseConnection constructor.
      */
-    public function __construct(ConnectionType $type = ConnectionType::READ, ParametersInterface $connectionParameters = null, string $name = null)
+    public function __construct(ConnectionType $type = ConnectionType::READ, ?ParametersInterface $connectionParameters = null, ?string $name = null)
     {
         $this->type      = $type;
         $this->db_params = $connectionParameters;
