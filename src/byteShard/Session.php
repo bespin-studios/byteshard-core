@@ -223,7 +223,7 @@ class Session
         return 'en';
     }
 
-    public static function encryptID(string $id, int $navigationLevel = null): string
+    public static function encryptID(string $id, ?int $navigationLevel = null): string
     {
         $session = self::getSessionObject();
         if ($session !== null) {

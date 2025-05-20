@@ -1017,7 +1017,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         return Strings::purify(Locale::get($this->createLocaleBaseToken('Cell').'.Label'));
     }
 
-    public function getNavigationData(Session $session = null): array
+    public function getNavigationData(?Session $session = null): array
     {
         $cellData        = [];
         $cellData['ID']  = $this->id->getEncryptedCellId();

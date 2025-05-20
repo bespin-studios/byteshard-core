@@ -761,7 +761,7 @@ abstract class Environment implements ParametersInterface, JsonSerializable
         return $this->dbDriver;
     }
 
-    public function getDatabase(string $name = null): string
+    public function getDatabase(?string $name = null): string
     {
         if (isset($this->database)) {
             return $this->database;
@@ -770,7 +770,7 @@ abstract class Environment implements ParametersInterface, JsonSerializable
         return $this->database;
     }
 
-    public function getDbParameters(ConnectionType $type, string $name = null): Parameters
+    public function getDbParameters(ConnectionType $type, ?string $name = null): Parameters
     {
         switch ($type) {
             case ConnectionType::LOGIN:

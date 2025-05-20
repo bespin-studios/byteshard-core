@@ -23,7 +23,7 @@ class SetCellHeader extends Action
     /**
      * SetCellHeader constructor.
      */
-    public function __construct(string $cell, string $label = null)
+    public function __construct(string $cell, ?string $label = null)
     {
         parent::__construct();
         $this->cell = Cell::getContentCellName($cell);

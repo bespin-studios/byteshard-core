@@ -108,7 +108,7 @@ class Archive extends Data
         return null;
     }
 
-    private function checkUsage(Message $message = null): bool
+    private function checkUsage(?Message $message = null): bool
     {
         if (isset($this->checkUsageQuery)) {
             $used = false;
@@ -137,7 +137,7 @@ class Archive extends Data
         return true;
     }
 
-    public function setCheckUsageQuery(string $query, string $message = null, string $field = null): self
+    public function setCheckUsageQuery(string $query, ?string $message = null, ?string $field = null): self
     {
         $this->checkUsageQuery = $query;
         if ($message !== null) {
@@ -149,7 +149,7 @@ class Archive extends Data
         return $this;
     }
 
-    public function setCheckUnArchiveQuery(string $query, string $message, string $field = null): self
+    public function setCheckUnArchiveQuery(string $query, string $message, ?string $field = null): self
     {
         $this->checkUnArchiveUsageQuery = $query;
         $this->usedUnArchiveMessage     = $message;
@@ -159,7 +159,7 @@ class Archive extends Data
         return $this;
     }
 
-    private function checkUnArchiveUsage(Message $message = null): bool
+    private function checkUnArchiveUsage(?Message $message = null): bool
     {
         if (isset($this->checkUnArchiveUsageQuery)) {
             $used = false;

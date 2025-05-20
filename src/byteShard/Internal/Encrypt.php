@@ -20,7 +20,7 @@ class Encrypt
      * @return string
      * @throws Exception
      */
-    public static function encrypt(string $name = null, bool $addRandomBytes = true): string
+    public static function encrypt(?string $name = null, bool $addRandomBytes = true): string
     {
         if ($name === null) {
             return md5(random_bytes(64));

@@ -141,7 +141,7 @@ abstract class FormObject
         return $this->note;
     }
 
-    public function getAttributes(Cell $cell = null): array
+    public function getAttributes(?Cell $cell = null): array
     {
         return $this->attributes;
     }

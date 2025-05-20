@@ -38,7 +38,7 @@ class Layout
      * @param string $name
      * @param ID\ID|null $parentId
      */
-    public function __construct(string $id, string $name, ID\ID $parentId = null)
+    public function __construct(string $id, string $name, ?ID\ID $parentId = null)
     {
         $this->name = $name;
         $this->setID($id);

@@ -311,7 +311,7 @@ class ID
         return $this->popupId !== '';
     }
 
-    public static function refactor(string $id, self $containerId = null): ?self
+    public static function refactor(string $id, ?self $containerId = null): ?self
     {
 
         if ($containerId?->isTabId() === true) {

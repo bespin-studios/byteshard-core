@@ -15,7 +15,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
  */
 class Column extends ExcelBase
 {
-    public function __construct(int|string|array $columnString = null, ?string $propertyName = null)
+    public function __construct(int|string|array|null $columnString = null, ?string $propertyName = null)
     {
         if ($columnString !== null) {
             if (is_numeric($columnString)) {

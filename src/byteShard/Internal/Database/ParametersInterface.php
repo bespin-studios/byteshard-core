@@ -15,7 +15,7 @@ use byteShard\Database\Struct\Parameters;
  */
 interface ParametersInterface
 {
-    public function getDatabase(string $name = null): string;
+    public function getDatabase(?string $name = null): string;
 
-    public function getDbParameters(ConnectionType $type, string $name = null): Parameters;
+    public function getDbParameters(ConnectionType $type, ?string $name = null): Parameters;
 }

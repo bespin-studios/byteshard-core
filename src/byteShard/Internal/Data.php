@@ -27,21 +27,21 @@ abstract class Data
     /** @var Cell used in Archive */
     protected Cell $cell;
     /** @var ClientData used in: Archive */
-    protected ClientData     $clientData;
-    protected BaseConnection $dbConnection;
-    protected ?int           $userId;
-    protected DateTimeZone   $dbTimezone;
-    protected string         $dbColumnDateFormat              = 'Y-m-d';
-    protected string         $dbColumnSmalldatetimeFormat     = 'Y-m-d H:i:s';
-    protected string         $dbColumnDatetimeFormat          = 'Y-m-d H:i:s.u';
-    protected int            $dbColumnDatetimePrecision       = 3;
-    protected string         $dbColumnDatetime2Format         = 'Y-m-d H:i:s.u';
-    protected int            $dbColumnDatetime2Precision      = 7;
-    protected string         $dbColumnDatetimeoffsetFormat    = 'Y-m-d H:i:s.u';
-    protected int            $dbColumnDatetimeoffsetPrecision = 7;
-    protected string         $dbColumnBigintdateFormat        = 'YmdHis';
-    protected string         $dbColumnTimeFormat              = 'H:i:s.u';
-    protected int            $dbColumnTimePrecision           = 7;
+    protected ClientData      $clientData;
+    protected ?BaseConnection $dbConnection;
+    protected ?int            $userId;
+    protected DateTimeZone    $dbTimezone;
+    protected string          $dbColumnDateFormat              = 'Y-m-d';
+    protected string          $dbColumnSmalldatetimeFormat     = 'Y-m-d H:i:s';
+    protected string          $dbColumnDatetimeFormat          = 'Y-m-d H:i:s.u';
+    protected int             $dbColumnDatetimePrecision       = 3;
+    protected string          $dbColumnDatetime2Format         = 'Y-m-d H:i:s.u';
+    protected int             $dbColumnDatetime2Precision      = 7;
+    protected string          $dbColumnDatetimeoffsetFormat    = 'Y-m-d H:i:s.u';
+    protected int             $dbColumnDatetimeoffsetPrecision = 7;
+    protected string          $dbColumnBigintdateFormat        = 'YmdHis';
+    protected string          $dbColumnTimeFormat              = 'H:i:s.u';
+    protected int             $dbColumnTimePrecision           = 7;
 
     protected bool $changes = false;
     protected bool $success = false;
@@ -100,7 +100,7 @@ abstract class Data
      * @param ClientData $clientData
      * @param Session|null $framework
      */
-    public function __construct(Cell $cell, ClientData $clientData, Session $framework = null)
+    public function __construct(Cell $cell, ClientData $clientData, ?Session $framework = null)
     {
         $this->cell       = $cell;
         $this->clientData = $clientData;
@@ -177,7 +177,7 @@ abstract class Data
      * @param string|null $message
      * @return $this
      */
-    public function setUnique(string|array $array, string $message = null): self
+    public function setUnique(string|array $array, ?string $message = null): self
     {
         if (!is_array($array)) {
             $array = [$array];
@@ -200,7 +200,7 @@ abstract class Data
      * @param string|null $message
      * @return $this
      */
-    public function setCheckReferencesInTable(string|array $array, string $message = null): self
+    public function setCheckReferencesInTable(string|array $array, ?string $message = null): self
     {
         if (!is_array($array)) {
             $array = [$array];
@@ -345,7 +345,7 @@ abstract class Data
     /**
      * @throws Exception
      */
-    protected function connect(Message $message = null): bool
+    protected function connect(?Message $message = null): bool
     {
         if (!isset($this->dbConnection)) {
             $this->dbConnection = Database::getConnection(Database\Enum\ConnectionType::WRITE);
@@ -360,7 +360,7 @@ abstract class Data
     {
         if (isset($this->dbConnection)) {
             $this->dbConnection->disconnect();
-            unset($this->dbConnection);
+            $this->dbConnection = null;
         }
         return true;
     }
@@ -479,7 +479,7 @@ abstract class Data
      * @return bool
      * @throws Exception
      */
-    protected function checkUnique(Message $message = null): bool
+    protected function checkUnique(?Message $message = null): bool
     {
         //TODO: if recordset implements prepare
         $unique          = true;
@@ -550,7 +550,6 @@ abstract class Data
                                         break 2;
                                     }
                                 }
-
                             }
                         }
                         if ($found === false) {
@@ -564,7 +563,7 @@ abstract class Data
         return $unique;
     }
 
-    protected function checkReferences(Message $message = null): bool
+    protected function checkReferences(?Message $message = null): bool
     {
         $hasNoReferences = true;
         if (array_key_exists('tables', $this->references) && is_array($this->references['tables']) && count($this->references['tables']) > 0) {

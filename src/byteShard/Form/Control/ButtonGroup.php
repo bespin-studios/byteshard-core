@@ -14,7 +14,7 @@ use byteShard\Internal\Form\FormObject;
 
 class ButtonGroup extends FormObject implements CollectionInterface
 {
-    protected Block $container;
+    protected Block           $container;
     protected ButtonInterface $cancelButton;
     protected ButtonInterface $approveButton;
 
@@ -55,9 +55,7 @@ class ButtonGroup extends FormObject implements CollectionInterface
      */
     public function setClosePopupButton(): self
     {
-        if (isset($this->cancelButton)) {
-            $this->cancelButton = new ClosePopupButton();
-        }
+        $this->cancelButton = new ClosePopupButton();
         return $this;
     }
 
@@ -66,12 +64,8 @@ class ButtonGroup extends FormObject implements CollectionInterface
      */
     public function setStyled(): self
     {
-        if (isset($this->cancelButton)) {
-            $this->cancelButton->setClassName('bs_cancel');
-        }
-        if (isset($this->approveButton)) {
-            $this->approveButton->setClassName('bs_approve');
-        }
+        $this->cancelButton->setClassName('bs_cancel');
+        $this->approveButton->setClassName('bs_approve');
         return $this;
     }
 

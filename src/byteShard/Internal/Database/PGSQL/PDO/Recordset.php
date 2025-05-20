@@ -46,7 +46,7 @@ class Recordset implements GetArrayInterface, GetSingleInterface, InsertInterfac
     /**
      * function to create object of Connection class when connection is null/ not null
      */
-    private static function checkConnection(BaseConnection $connection = null, ConnectionType $type = ConnectionType::READ): ?BaseConnection
+    private static function checkConnection(?BaseConnection $connection = null, ConnectionType $type = ConnectionType::READ): ?BaseConnection
     {
         if ($connection instanceof Connection) {
             $connectionClassObject = &$connection;
@@ -70,7 +70,7 @@ class Recordset implements GetArrayInterface, GetSingleInterface, InsertInterfac
      * @return object|null
      * @throws Exception
      */
-    public static function getSingle(string $query, array $parameters = [], BaseConnection $connection = null, string $classMap = null, bool $fetchPropsLate = false): ?object
+    public static function getSingle(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): ?object
     {
         //TODO: Implement encoding handling to deal column names with  umlauts
         $connectionObject = self::checkConnection($connection);
@@ -116,7 +116,7 @@ class Recordset implements GetArrayInterface, GetSingleInterface, InsertInterfac
      * @return array
      * @throws Exception
      */
-    public static function getArray(string $query, array $parameters = [], BaseConnection $connection = null, string $classMap = null, bool $fetchPropsLate = false): array
+    public static function getArray(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): array
     {
         //TODO: Implement encoding handling to deal column names with  umlauts
         $connectionObject = self::checkConnection($connection);
@@ -164,7 +164,7 @@ class Recordset implements GetArrayInterface, GetSingleInterface, InsertInterfac
      * @return bool|int
      * @throws Exception
      */
-    public static function insert(string $query, array $parameters = [], BaseConnection $connection = null): int|bool
+    public static function insert(string $query, array $parameters = [], ?BaseConnection $connection = null): int|bool
     {
         $connectionObject = self::checkConnection($connection, ConnectionType::WRITE);
         if ($connectionObject !== null) {
@@ -212,7 +212,7 @@ class Recordset implements GetArrayInterface, GetSingleInterface, InsertInterfac
      * @return int
      * @throws Exception
      */
-    public static function delete(string $query, array $parameters = [], BaseConnection $connection = null): int
+    public static function delete(string $query, array $parameters = [], ?BaseConnection $connection = null): int
     {
         $affectedRows     = 0;
         $connectionObject = self::checkConnection($connection, ConnectionType::WRITE);
@@ -250,7 +250,7 @@ class Recordset implements GetArrayInterface, GetSingleInterface, InsertInterfac
      * @return int
      * @throws Exception
      */
-    public static function update(string $query, array $parameters = [], Baseconnection $connection = null): int
+    public static function update(string $query, array $parameters = [], ?Baseconnection $connection = null): int
     {
         $affectedRows     = 0;
         $connectionObject = self::checkConnection($connection, ConnectionType::WRITE);

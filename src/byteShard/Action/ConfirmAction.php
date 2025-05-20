@@ -58,7 +58,7 @@ class ConfirmAction extends Action
      * @param string $proceedButtonText
      * @param string $cancelButtonText
      */
-    public function __construct(string $instanceName, Action $action = null, string $title = '', string $message = '', string $proceedButtonText = '', string $cancelButtonText = '')
+    public function __construct(string $instanceName, ?Action $action = null, string $title = '', string $message = '', string $proceedButtonText = '', string $cancelButtonText = '')
     {
         parent::__construct();
         $this->addUniqueID($instanceName);

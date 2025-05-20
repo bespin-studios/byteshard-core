@@ -88,7 +88,7 @@ class Combo extends Form\FormObject implements Form\InputWidthInterface, Encrypt
         return $this->comboClass;
     }
 
-    public function getAttributes(Cell $cell = null): array
+    public function getAttributes(?Cell $cell = null): array
     {
         $attributes = $this->attributes;
         if ($this->comboClass !== '') {

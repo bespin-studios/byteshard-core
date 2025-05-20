@@ -74,7 +74,7 @@ abstract class ID
      * @param ?EncryptedIDStorageInterface $session
      * @return string
      */
-    public static function getID(string $id, null|int|string $value = null, EncryptedIDStorageInterface $session = null): string
+    public static function getID(string $id, null|int|string $value = null, ?EncryptedIDStorageInterface $session = null): string
     {
         if (array_key_exists($id, self::$id_index)) {
             if ($value === null) {

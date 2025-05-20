@@ -11,7 +11,7 @@ use byteShard\Internal\CellContent;
 abstract class Container
 {
     private Cell $cell;
-    public function __construct(Cell $cell = null) {
+    public function __construct(?Cell $cell = null) {
         if ($cell !== null) {
             $this->cell = $cell;
         }

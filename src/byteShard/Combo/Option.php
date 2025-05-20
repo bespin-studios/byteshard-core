@@ -34,7 +34,7 @@ class Option
      * @param bool $selected
      * @param null|string $image
      */
-    public function __construct(array|string $value, string $text = null, bool $selected = false, string $image = null)
+    public function __construct(array|string $value, ?string $text = null, bool $selected = false, ?string $image = null)
     {
         if (is_array($value)) {
             $values = array();
@@ -107,9 +107,9 @@ class Option
         }
         if ($textAsAttribute === true) {
             $option = $xmlParent->addChild('option');
-            SimpleXML::addAttribute($option, 'text', $this->text ?? '');
+            SimpleXML::addAttribute($option, 'text', $this->text);
         } else {
-            $option = SimpleXML::addChild($xmlParent, 'option', $this->text ?? '');
+            $option = SimpleXML::addChild($xmlParent, 'option', $this->text);
         }
         //TODO: pass cell nonce to this method, otherwise we won't be able to recreate client IDs on the server which might be needed for actions
         SimpleXML::addAttribute($option, 'value', Session::encrypt($this->value, $nonce));

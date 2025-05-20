@@ -34,8 +34,7 @@ class Connection extends MySQLConnection
     public function connect(): void
     {
         mysqli_report(MYSQLI_REPORT_STRICT);
-        if (class_exists('\config')) {
-            /** @var Config $config */
+        if (class_exists('\config') && is_subclass_of('\config', Config::class)) {
             $config  = new \config();
             $options = $config->getDbOptions();
             if (empty($options)) {

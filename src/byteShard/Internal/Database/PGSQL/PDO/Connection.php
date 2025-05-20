@@ -36,7 +36,7 @@ class Connection extends BaseConnection
      * @param ConnectionType $type
      * @param ParametersInterface|null $environment
      */
-    public function __construct(ConnectionType $type = ConnectionType::READ, ParametersInterface $environment = null)
+    public function __construct(ConnectionType $type = ConnectionType::READ, ?ParametersInterface $environment = null)
     {
         parent::__construct($type, $environment);
     }

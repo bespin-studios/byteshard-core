@@ -25,7 +25,7 @@ class Validate
      * @throws Exception
      * @throws \Exception
      */
-    final public static function validate(string|int|float|bool|null &$value, string $fieldType = null, array $validationArray = [], string $dateFormat = null): stdClass
+    final public static function validate(string|int|float|bool|null|DateTime &$value, ?string $fieldType = null, array $validationArray = [], ?string $dateFormat = null): stdClass
     {
         $stringValue                         = strval($value);
         $validationResult                    = new stdClass();
@@ -100,7 +100,7 @@ class Validate
                     }
                     break;
                 case Enum\DB\ColumnType::TINYINT;
-                    if (!($value < 255 && (is_int($value) || ctype_digit($value)))) {
+                    if (is_numeric($value) && !($value < 255 && (is_int($value) || ctype_digit($value)))) {
                         $validationResult->failedRules['typeMismatch'] = Locale::get('byteShard.validate.type.tinyint');
                         $validationResult->validationsFailed++;
                     } else {
