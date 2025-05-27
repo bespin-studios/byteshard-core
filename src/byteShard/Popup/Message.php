@@ -6,6 +6,7 @@
 
 namespace byteShard\Popup;
 
+use byteShard\Enum\HttpResponseState;
 use byteShard\Form\Enum\Label\Align;
 use byteShard\Internal\SimpleXML;
 use byteShard\Locale;
@@ -181,7 +182,7 @@ class Message
         }
         $label = Strings::purify('<img src='.$this->getHeaderImage().' class="bs_message_header_image">'.$this->getHeaderLabel());
 
-        $result['state'] = 2;
+        $result['state'] = HttpResponseState::SUCCESS->value;
         $result['popup'] = [
             'bs_message_popup' => [
                 'height' => $this->height,

@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Enum\Export\ExportType;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 
@@ -34,7 +35,7 @@ class CustomExport extends Action\ExportAction implements Action\ExportInterface
             ];
             $this->resetEventId();
         }
-        $action['state'] = 2;
+        $action['state'] = HttpResponseState::SUCCESS->value;
         return new Action\ActionResultMigrationHelper($action);
     }
 }

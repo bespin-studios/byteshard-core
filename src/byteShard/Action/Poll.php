@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 
@@ -36,7 +37,7 @@ class Poll extends Action
     {
         $container       = $this->getLegacyContainer();
         $id              = $this->getLegacyId();
-        $result['state'] = 2;
+        $result['state'] = HttpResponseState::SUCCESS->value;
         $cells           = $this->getCells($this->cells);
         $mergeArray      = [];
         foreach ($cells as $cell) {

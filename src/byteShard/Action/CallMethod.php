@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Exception;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
@@ -59,7 +60,7 @@ class CallMethod extends Action
     {
         $container = $this->getLegacyContainer();
         $id        = $this->getLegacyId();
-        $result    = ['state' => 2];
+        $result    = ['state' => HttpResponseState::SUCCESS->value];
         $className = null;
         if ($container instanceof Cell) {
             $className = $container->getContentClass();

@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 use byteShard\Internal\Action\CellActionResult;
@@ -37,9 +38,9 @@ class HideLoader extends Action
     public function hide(): array
     {
         if (empty($this->id) && empty($this->name)) {
-            $_SESSION['loaderState']['global']['state'] = 2;
+            $_SESSION['loaderState']['global']['state'] = HttpResponseState::SUCCESS->value;
         }
-        return ['state' => 2];
+        return ['state' => HttpResponseState::SUCCESS->value];
     }
 
     protected function runAction(): ActionResultInterface

@@ -321,7 +321,7 @@ abstract class Data
         $result            = array_merge_recursive($result, ...$mergeArray);
         $result['success'] = true;
         $result['changes'] = $this->changes;
-        $result['state']   = 2;
+        $result['state']   = Enum\HttpResponseState::SUCCESS->value;
         return $result;
     }
 
@@ -338,7 +338,7 @@ abstract class Data
         $result            = array_merge_recursive($result, ...$mergeArray);
         $result['success'] = false;
         $result['changes'] = $this->changes;
-        $result['state']   = 2;
+        $result['state']   = Enum\HttpResponseState::SUCCESS->value;
         return $result;
     }
 

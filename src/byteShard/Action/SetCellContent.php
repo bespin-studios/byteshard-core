@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Exception;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
@@ -63,7 +64,7 @@ class SetCellContent extends Action
     protected function runAction(): ActionResultInterface
     {
         $container       = $this->getLegacyContainer();
-        $result['state'] = 1;
+        $result['state'] = HttpResponseState::WARNING->value;
         $cells           = $this->getCells([$this->cell]);
         foreach ($cells as $cell) {
             if (!empty($this->method)) {
@@ -110,7 +111,7 @@ class SetCellContent extends Action
                 $contentClass                                                              = new $className($cell);
                 $result['layout'][$cell->containerId()][$cell->cellId()]['setCellContent'] = $contentClass->getCellContent();
             }
-            $result['state'] = 2;
+            $result['state'] = HttpResponseState::SUCCESS->value;
         }
         return new Action\ActionResultMigrationHelper($result);
     }

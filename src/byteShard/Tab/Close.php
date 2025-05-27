@@ -6,6 +6,7 @@
 
 namespace byteShard\Tab;
 
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Database;
 use byteShard\Internal\Action\ActionResultInterface;
@@ -32,7 +33,7 @@ class Close extends Action
         } else {
             $this->id = $id;
         }
-        $this->result['state'] = 2;
+        $this->result['state'] = HttpResponseState::SUCCESS->value;
     }
 
     public function getResult(ContainerInterface $container, $id): array
@@ -49,7 +50,7 @@ class Close extends Action
                 $cn->disconnect();
             }
         } else {
-            $this->result['state'] = 0;
+            $this->result['state'] = HttpResponseState::ERROR->value;
         }
         return $this->result;
     }

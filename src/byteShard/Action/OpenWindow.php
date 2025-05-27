@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Enum\LinkTarget;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
@@ -71,10 +72,10 @@ class OpenWindow extends Action
 
     protected function runAction(): ActionResultInterface
     {
-        $action['state'] = 1;
+        $action['state'] = HttpResponseState::WARNING->value;
         $container       = $this->getLegacyContainer();
         if ($container instanceof Cell) {
-            $action['state']      = 2;
+            $action['state']      = HttpResponseState::SUCCESS->value;
             $id                   = $this->getLegacyId();
             $parameters           = $id;
             $parameters['target'] = $this->target->value;

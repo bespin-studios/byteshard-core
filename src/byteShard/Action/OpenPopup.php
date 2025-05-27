@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Exception;
 use byteShard\ID\CellIDElement;
 use byteShard\ID\ID;
@@ -110,7 +111,7 @@ class OpenPopup extends Action
     protected function runAction(): ActionResultInterface
     {
         $id                 = $this->getLegacyId();
-        $action['state']    = 0;
+        $action['state']    = HttpResponseState::ERROR->value;
         $failedHeight       = 200;
         $failedWidth        = 400;
         $noConditionMessage = '';
@@ -159,7 +160,7 @@ class OpenPopup extends Action
         }
         if ($conditionsMet === true) {
             $action['popup'] = array_merge_recursive(...$mergeArray);
-            $action['state'] = 2;
+            $action['state'] = HttpResponseState::SUCCESS->value;
         } else {
             $msg = new Message($noConditionMessage === '' ? Locale::get('action.generic') : $noConditionMessage, Popup\Enum\Message\Type::NOTICE);
             $msg->setHeight($failedHeight)->setWidth($failedWidth);

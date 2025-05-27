@@ -6,6 +6,7 @@
 
 namespace byteShard\Internal\Action;
 
+use byteShard\Enum\HttpResponseState;
 use byteShard\Session;
 use byteShard\ID\ID;
 
@@ -38,7 +39,7 @@ class CellActionResult implements ActionResultInterface
                 $result[$this->type][$cell->containerId()][$cell->cellId()][$command['command']] = $command['parameters'];
             }
         }
-        $result['state'] = $this->error === false ? 2 : 0;
+        $result['state'] = $this->error === false ? HttpResponseState::SUCCESS->value : HttpResponseState::ERROR->value;
         return $result;
     }
 

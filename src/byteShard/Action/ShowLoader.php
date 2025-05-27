@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 
@@ -121,7 +122,7 @@ class ShowLoader extends Action
             //TODO: check if __toString is an option for tabs and popup objects
             $_SESSION['loaderState'] = [
                 'global' => [
-                    'state'     => 3,
+                    'state'     => HttpResponseState::RUNNING->value,
                     'startTime' => time()
                 ],
                 'action' => [
