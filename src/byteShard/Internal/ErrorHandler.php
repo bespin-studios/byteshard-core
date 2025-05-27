@@ -7,6 +7,7 @@
 namespace byteShard\Internal;
 
 use ArgumentCountError;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Enum\LogLevel;
 use byteShard\Enum\LogLocation;
 use byteShard\Internal\Exception\ExceptionInterface;
@@ -256,7 +257,7 @@ class ErrorHandler
                         if ($this->sessionClosed === true) {
                             session_start();
                         }
-                        $_SESSION[$this->sessionIndexOfExports][$this->exportId]['state']       = 0;
+                        $_SESSION[$this->sessionIndexOfExports][$this->exportId]['state']       = HttpResponseState::ERROR->value;
                         $_SESSION[$this->sessionIndexOfExports][$this->exportId]['description'] = 'An  error during export has occurred';
                     }
                     break;
@@ -318,7 +319,7 @@ class ErrorHandler
                             if ($this->sessionClosed === true) {
                                 session_start();
                             }
-                            $_SESSION[$this->sessionIndexOfExports][$this->exportId]['state'] = 0;
+                            $_SESSION[$this->sessionIndexOfExports][$this->exportId]['state'] = HttpResponseState::ERROR->value;
                         }
                         break;
                     case self::RESULT_OBJECT_REST:
@@ -370,7 +371,7 @@ class ErrorHandler
         $result['contentParameters'] = [];
         $result['contentFormat']     = 'XML';
         $result['toolbar']           = false;
-        $result['state']             = 2;
+        $result['state']             = HttpResponseState::SUCCESS->value;
         if (!headers_sent()) {
             header('Status: 200');
             header('HTTP/1.0  200');

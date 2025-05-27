@@ -7,6 +7,7 @@
 namespace byteShard\Popup;
 
 use byteShard\Enum\AccessType;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Exception;
 use byteShard\Form\Control\Button;
 use byteShard\Form\Control\Hidden;
@@ -197,7 +198,7 @@ class Confirmation implements PopupInterface
             $result['popup'][$this->confirmationPopupId]['layout']['cells']['a']['contentParameters']['afterDataLoading']['bs_confirmation_id'] = $confirmButtonEventId;
             $result['popup'][$this->confirmationPopupId]['layout']['cells']['a']['contentParameters']['afterDataLoading']['bs_confirmation']    = $this->verificationValue;
         }
-        $result['state'] = 2;
+        $result['state'] = HttpResponseState::SUCCESS->value;
         return $result;
     }
 

@@ -7,6 +7,7 @@
 namespace byteShard\Action\Tab;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\ID;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
@@ -39,7 +40,7 @@ class SetBubble extends Action
                 }
             }
         }
-        $action['state'] = 2;
+        $action['state'] = HttpResponseState::SUCCESS->value;
         return new Action\ActionResultMigrationHelper($action);
     }
 

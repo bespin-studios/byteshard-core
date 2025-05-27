@@ -9,6 +9,7 @@ namespace byteShard\Internal;
 use byteShard\Action\ConfirmAction;
 use byteShard\Action\GetCellData;
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action\ActionResultInterface;
 use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\GetData;
@@ -138,7 +139,7 @@ abstract class Action
             }
             //TODO: make actions (and everything) return a result object instead of an array
             if (!array_key_exists('state', $result)) {
-                $result['state'] = 2;
+                $result['state'] = HttpResponseState::SUCCESS->value;
             }
             if (is_array($result['state'])) {
                 $result['state'] = min($result['state']);

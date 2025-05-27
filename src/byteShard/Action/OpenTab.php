@@ -6,6 +6,7 @@
 
 namespace byteShard\Action;
 
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 
@@ -34,13 +35,13 @@ class OpenTab extends Action
     protected function runAction(): ActionResultInterface
     {
         $id              = $this->getLegacyId();
-        $action['state'] = 2;
+        $action['state'] = HttpResponseState::SUCCESS->value;
         /*if (class_exists($this->className) && is_subclass_of($this->className, Tab\Open::class)) {
             $tab = new $this->className($id);
             if (($_SESSION[MAIN] instanceof Session) && ($tab instanceof Tab\Open) && $tab->isValid()) {
                 $tabId = \byteShard\Session::getIdByName($tab->getID());
                 if (is_array($tabId) && isset($tabId[0])) {
-                    $action['state']                        = 2;
+                    $action['state']                        = HttpResponseState::SUCCESS->value;
                     $action['tabBar']['selectTab'][0]['ID'] = $tabId[0];
                 } else {
                     $parentId = null;

@@ -8,6 +8,7 @@ namespace byteShard\Action\Cell;
 
 use byteShard\Cell;
 use byteShard\Enum\AccessType;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 use byteShard\Session;
@@ -46,7 +47,7 @@ class ContinuePolling extends Action
         foreach ($cells as $cell) {
             $action['layout'][$cell->containerId()][$cell->cellId()]['poll'] = ['interval' => $this->time, 'id' => self::getPollId($cell->getNonce())];
         }
-        $action['state'] = 2;
+        $action['state'] = HttpResponseState::SUCCESS->value;
         return new Action\ActionResultMigrationHelper($action);
     }
 

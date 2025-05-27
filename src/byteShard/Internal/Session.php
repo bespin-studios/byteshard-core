@@ -651,7 +651,7 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
             $this->sessionLocale->setUserSelectedLocale($locale);
             $result = $this->tabs->getLocaleForAllTabs();
         }
-        $result['state'] = 0;
+        $result['state'] = Enum\HttpResponseState::SUCCESS->value;
         return $result;
     }
 
@@ -677,7 +677,7 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
         if ($dhtmlxCssImagePath !== null) {
             $result['dhtmlxCssImgPath'] = $dhtmlxCssImagePath;
         }
-        $result['state'] = 2;
+        $result['state'] = Enum\HttpResponseState::SUCCESS->value;
         return $result;
     }
 

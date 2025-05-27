@@ -8,6 +8,7 @@ namespace byteShard\Action;
 
 use byteShard\Cell;
 use byteShard\Enum\Export\ExportType;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Grid\GridInterface;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
@@ -35,7 +36,7 @@ class CellExport extends Action\ExportAction implements Action\ExportInterface
                 $action['LCell'][$cell->containerId()][$cell->cellId()]['exportGrid'] = 'xls';
             }
         }
-        $action['state'] = 2;
+        $action['state'] = HttpResponseState::SUCCESS->value;
         return new Action\ActionResultMigrationHelper($action);
     }
     //TODO: - check if class_name of cell to be exported instanceof Grid

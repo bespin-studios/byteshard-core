@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 use DateTimeInterface;
@@ -46,7 +47,7 @@ class SetSchedulerDate extends Action
                 $action['LCell'][$cell->containerId()][$cell->cellId()]['updateView'] = $selectedDate->format(DateTimeInterface::ATOM);
             }
         }
-        $action['state'] = 2;
+        $action['state'] = HttpResponseState::SUCCESS->value;
         return new Action\ActionResultMigrationHelper($action);
     }
 }

@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 use byteShard\Internal\CellContent;
@@ -287,7 +288,7 @@ class ConfirmAction extends Action
     private function userClickedConfirmProceedWithNestedActions(): ActionResultInterface
     {
         $this->setRunNested();
-        $result['state']                                      = 2;
+        $result['state']                                      = HttpResponseState::SUCCESS->value;
         $result['popup'][$this->confirmationPopupId]['close'] = true;
         $this->confirmed                                      = false;
         $this->confirmationPopupId                            = '';

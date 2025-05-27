@@ -8,6 +8,7 @@ namespace byteShard\Internal;
 
 use byteShard\Cell;
 use byteShard\Enum\AccessType;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Environment;
 use byteShard\Event\OnChangeInterface;
 use byteShard\Event\OnClickInterface;
@@ -125,7 +126,7 @@ class EventHandler
                 case EventType::OnDblClick:
                     return $this->defaultEvent('onDoubleClick', $objectValue, $confirmationId, $clientData, $getData, OnDoubleClickInterface::class, json_decode(Session::decrypt($affectedId), true));
                 case EventType::OnPoll:
-                    return !str_starts_with($eventId, 'pollOn:') ? ['state' => 2] : $this->defaultEvent($eventId, $objectValue, $confirmationId, $clientData, $getData, OnPollInterface::class, $this->request->getData());
+                    return !str_starts_with($eventId, 'pollOn:') ? ['state' => HttpResponseState::SUCCESS->value] : $this->defaultEvent($eventId, $objectValue, $confirmationId, $clientData, $getData, OnPollInterface::class, $this->request->getData());
             }
         }
 
@@ -196,7 +197,7 @@ class EventHandler
 
     private function runActions(array $data, Action ...$actions): array
     {
-        $result['state'] = 2;
+        $result['state'] = HttpResponseState::SUCCESS->value;
         $mergeArray      = [];
         foreach ($actions as $action) {
             $mergeArray[] = $action->getResult($this->cell ?? $this->container, $data);
@@ -304,7 +305,7 @@ class EventHandler
                 }
             }
         }
-        return ['state' => 2];
+        return ['state' => HttpResponseState::SUCCESS->value];
     }
 
     /**
@@ -322,7 +323,7 @@ class EventHandler
             $cell->setCollapsed();
             $this->environment->storeUserSetting($tabName, $cellName, Cell::COLLAPSED, 'Cell', 1);
         }
-        return ['state' => 2];
+        return ['state' => HttpResponseState::SUCCESS->value];
     }
 
     /**
@@ -340,7 +341,7 @@ class EventHandler
             $cell->setCollapsed(false);
             $this->environment->deleteUserSetting($tabName, $cellName, Cell::COLLAPSED, 'Cell');
         }
-        return ['state' => 2];
+        return ['state' => HttpResponseState::SUCCESS->value];
     }
 
     public function onTabChange(string $affectedId = ''): array
@@ -353,13 +354,13 @@ class EventHandler
             $tabId = $this->id;
         }
         if ($tabId !== null && $tabId->isTabId() === true) {
-            // if only a popup is opened we don't need to process a tab change
+            // if only a popup is opened, we don't need to process a tab change
             if ($tabId->isPopupId() === false) {
                 Session::setSelectedTab($tabId);
                 $this->environment->setLastTab($tabId);
             }
         }
-        return ['state' => 2];
+        return ['state' => HttpResponseState::SUCCESS->value];
     }
 
     /**
@@ -369,7 +370,7 @@ class EventHandler
      */
     public function onTabClose(string $tabId): array
     {
-        $result['state'] = 2;
+        $result['state'] = HttpResponseState::SUCCESS->value;
         /*if (($tab = Session::getTab($tabId)) !== null && ($actions = $tab->getContentActions('onTabClose')) !== null) {
             $merge_array = array();
             foreach ($actions as $action) {
@@ -390,9 +391,9 @@ class EventHandler
      */
     public function onJsLinkClick(string $objectId, array $data): array
     {
-        return ['state' => 2];
+        return ['state' => HttpResponseState::SUCCESS->value];
         // onJsLinkClick is not in use, currently only onGridLink is used. Check if that implementation also works in popups, if not, fix it, remove this implementation afterwards.
-        /*$result['state'] = 2;
+        /*$result['state'] = HttpResponseState::SUCCESS->value;
         if (array_key_exists('colID', $data) && ($cell = Session::getCell($this->id)) !== null) {
             $actions    = $cell->getActionsForEvent($data['colID']);
             $mergeArray = [];
@@ -428,13 +429,13 @@ class EventHandler
     public function onInfo(string $objectId): array
     {
         $result['LCell'][$this->id->getEncryptedContainerId()][$this->id->getPatternCellId()]['showInfo'][$objectId] = 'Foo bar baz';
-        $result['state']                                                                                             = 2;
+        $result['state']                                                                                             = HttpResponseState::SUCCESS->value;
         return $result;
     }
 
     public function onEmptyClick(string $objectId, array $data): array
     {
-        $result['state'] = 0;
+        $result['state'] = HttpResponseState::ERROR->value;
         try {
             $selectedDate = new DateTime($objectId);
             $selectedDate->setTimezone(new DateTimeZone('UTC'));
@@ -448,7 +449,7 @@ class EventHandler
 
     public function doOnViewChance(string $event, string $date, array $data): array
     {
-        $result['state'] = 0;
+        $result['state'] = HttpResponseState::ERROR->value;
         try {
             $selectedDate = new DateTime($date);
             $selectedDate->setTimezone(new DateTimeZone('UCT'));
