@@ -6,6 +6,7 @@
 
 namespace byteShard\Internal\Action;
 
+use byteShard\Enum\HttpResponseState;
 use byteShard\ID\ID;
 
 class ActionResult implements ActionResultInterface
@@ -21,6 +22,6 @@ class ActionResult implements ActionResultInterface
 
     public function getResultArray(?ID $containerId): array
     {
-        return ['state' => $this->error === false ? 2 : 0];
+        return ['state' => $this->error === false ? HttpResponseState::SUCCESS->value : HttpResponseState::ERROR->value];
     }
 }

@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Exception;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
@@ -90,7 +91,7 @@ class GetCellData extends Action
     protected function runAction(): ActionResultInterface
     {
         $container       = $this->getLegacyContainer();
-        $action['state'] = 2;
+        $action['state'] = HttpResponseState::SUCCESS->value;
         $getData         = $this->getGetData();
         if ($container instanceof Cell) {
             if ($getData === null) {

@@ -160,7 +160,7 @@ class Upload
                     }
                     $result['state']                 = true;
                     $result['name']                  = urlencode(Session::encrypt($sanitizer->getServerFilename()));
-                    $result['extra']['state']        = 2;
+                    $result['extra']['state']        = Enum\HttpResponseState::SUCCESS->value;
                     $result['extra']['clear']        = isset($result['extra']['clear']) && $result['extra']['clear'] ? true : $clearAfterUpdate;
                     $result['extra']['uploaderName'] = $encryptedObjectName;
                     $hidden                          = new Hidden(

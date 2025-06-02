@@ -7,6 +7,7 @@
 namespace byteShard\Internal\Action\Scheduler;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 use byteShard\Scheduler;
@@ -22,7 +23,7 @@ class DateTemplate extends Action
 
     protected function runAction(): ActionResultInterface
     {
-        $result = ['state' => 2];
+        $result = ['state' => HttpResponseState::SUCCESS->value];
         $cells  = $this->getCells([$this->cell]);
         $id     = $this->getLegacyId();
 

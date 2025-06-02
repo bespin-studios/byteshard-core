@@ -6,6 +6,7 @@
 
 namespace byteShard;
 
+use byteShard\Enum\HttpResponseState;
 use byteShard\Form\Control\Upload;
 use byteShard\Form\FormInterface;
 use byteShard\ID\IDElement;
@@ -124,7 +125,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     public function closeConfirmationPopup($id): array
     {
-        $result['state'] = 0;
+        $result['state'] = HttpResponseState::ERROR->value;
         if (array_key_exists($id, $this->confirmations)) {
             $result = $this->confirmations[$id]->closeConfirmationPopup();
             unset($this->confirmations[$id]);

@@ -6,6 +6,7 @@
 
 namespace byteShard\Action\Tab;
 
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 
@@ -26,7 +27,7 @@ class SetText extends Action
         foreach ($ids as $tabId) {
             $action['tab'][$tabId]['setText'] = $this->text;
         }
-        $action['state'] = 2;
+        $action['state'] = HttpResponseState::SUCCESS->value;
         return new Action\ActionResultMigrationHelper($action);
     }
 }

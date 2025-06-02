@@ -6,6 +6,7 @@
 
 namespace byteShard\Action;
 
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 use byteShard\Internal\Session;
@@ -38,7 +39,7 @@ class CloseTab extends Action
         $container = $this->getLegacyContainer();
         $id        = $this->getLegacyId();
         //TODO: add app namespace
-        $action['state'] = 2;
+        $action['state'] = HttpResponseState::SUCCESS->value;
         if (class_exists($this->className) && is_subclass_of($this->className, Tab\Close::class)) {
             print 'is subclass';
             $tab = new $this->className($this->id);

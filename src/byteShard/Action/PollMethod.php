@@ -7,6 +7,7 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\Exception;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
@@ -53,7 +54,7 @@ class PollMethod extends Action
      */
     public static function getResponseArray($id, $cell, int $time = 200, bool $newQueue = false): array
     {
-        $result['state'] = 2;
+        $result['state'] = HttpResponseState::SUCCESS->value;
         if ($cell instanceof CellContent) {
             $cell = $cell->getCell();
         }

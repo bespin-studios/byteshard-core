@@ -24,11 +24,6 @@ class ExportHandler
     /** the array key that is used in the session to store export progress */
     const SESSION_INDEX = 'export_state';
 
-    /** the current export progress state that is fetched asynchronous */
-    const ERROR    = 0;
-    const FINISHED = 2;
-    const RUNNING  = 3;
-
     private ErrorHandler           $errorHandler;
     private ?Cell                  $cell;
     private Export\ExportInterface $cellContent;
@@ -164,7 +159,7 @@ class ExportHandler
         }
 
         // if the file has been created or an error occurred, clean session info
-        $this->clearSession($response['state']);
+        $this->clearSession(Enum\HttpResponseState::tryFrom($response['state']));
 
         $httpResponse = new HttpResponse(Enum\HttpResponseType::JSON);
         $httpResponse->setResponseContent($response);
@@ -173,9 +168,9 @@ class ExportHandler
 
     private function displayClientError(string $message): never
     {
-        $response['state']       = self::ERROR;
+        $response['state']       = Enum\HttpResponseState::ERROR->value;
         $response['description'] = $message;
-        $this->clearSession($response['state']);
+        $this->clearSession(Enum\HttpResponseState::ERROR);
         $httpResponse = new HttpResponse(Enum\HttpResponseType::JSON);
         $httpResponse->setResponseContent($response);
         $httpResponse->printHTTPResponse();
@@ -262,7 +257,7 @@ class ExportHandler
         if ($this->exportHandler !== null) {
             $this->exportHandler->getXLSExport($documentTitle, $documentAuthor, $type);
         } else {
-            $this->updateSession(ExportHandler::ERROR, 'getXLSExport not implemented');
+            $this->updateSession(Enum\HttpResponseState::ERROR, 'getXLSExport not implemented');
         }
     }
 
@@ -271,7 +266,7 @@ class ExportHandler
         if ($this->exportHandler !== null) {
             $this->exportHandler->getPDFExport();
         } else {
-            $this->updateSession(ExportHandler::ERROR, 'getPDFExport not implemented');
+            $this->updateSession(Enum\HttpResponseState::ERROR, 'getPDFExport not implemented');
         }
     }
 
@@ -284,7 +279,7 @@ class ExportHandler
         $dirExport->setSheetName("EE System Matrix");
         $dirExport->createXLS();
         $dirExport->getExportFile();
-        $this->updateSession(self::FINISHED);
+        $this->updateSession(Enum\HttpResponseState::SUCCESS);
     }
 
     private function getCustomExport(): void
@@ -300,7 +295,7 @@ class ExportHandler
             $this->displayClientError($exception->getMessage());
         }
 
-        $this->updateSession(self::FINISHED);
+        $this->updateSession(Enum\HttpResponseState::SUCCESS);
         // TODO: pass the output buffer to the error handler
         global $output_buffer;
         $output_buffer = ob_get_clean();
@@ -335,17 +330,17 @@ class ExportHandler
         }
         if (!array_key_exists($this->exportId, $_SESSION[self::SESSION_INDEX])) {
             $_SESSION[self::SESSION_INDEX][$this->exportId]['start_time'] = time();
-            $_SESSION[self::SESSION_INDEX][$this->exportId]['state']      = self::RUNNING;
+            $_SESSION[self::SESSION_INDEX][$this->exportId]['state']      = Enum\HttpResponseState::RUNNING->value;
         }
     }
 
     /**
-     * clean up session once the
-     * @param int $state
+     * cleanup session
+     * @param ?Enum\HttpResponseState $state
      */
-    private function clearSession(int $state): void
+    private function clearSession(?Enum\HttpResponseState $state): void
     {
-        if ($state === self::ERROR || $state === self::FINISHED) {
+        if ($state === Enum\HttpResponseState::ERROR || $state === Enum\HttpResponseState::SUCCESS) {
             $this->startSession();
             unset($_SESSION[self::SESSION_INDEX][$this->exportId]);
             $this->closeSession();
@@ -354,13 +349,13 @@ class ExportHandler
 
     /**
      * update the export state
-     * @param int $state
+     * @param Enum\HttpResponseState $state
      * @param string $description
      */
-    public function updateSession(int $state, string $description = ''): void
+    public function updateSession(Enum\HttpResponseState $state, string $description = ''): void
     {
         $this->startSession();
-        $_SESSION[self::SESSION_INDEX][$this->exportId]['state']       = $state;
+        $_SESSION[self::SESSION_INDEX][$this->exportId]['state']       = $state->value;
         $_SESSION[self::SESSION_INDEX][$this->exportId]['description'] = $description;
         $this->closeSession();
     }
@@ -423,9 +418,9 @@ class ExportHandler
            $dirExport->setSheetName("EE System Matrix");
            $dirExport->createXLS();
            $dirExport->getExportFile();
-           $_SESSION['export_state'][$export_type.$component_name]['state']=2;
+           $_SESSION['export_state'][$export_type.$component_name]['state']=Enum\HttpResponseState::SUCCESS->value;
         }else{
-           $_SESSION['export_state'][$export_type.$component_name]['state']=0;
+           $_SESSION['export_state'][$export_type.$component_name]['state']=Enum\HttpResponseState::ERROR->value;
            $_SESSION['export_state'][$export_type.$component_name]['description']= 'The export function '.$_GET['dataSrc'].' is invalid';
         }*/
     }

@@ -1,3 +1,18 @@
+## [2.9.3](https://github.com/bespin-studios/byteshard-core/compare/v2.9.2...v2.9.3) (2025-05-27)
+
+
+### Bug Fixes
+
+* use state 2 for success in locale ([029ed1c](https://github.com/bespin-studios/byteshard-core/commit/029ed1c5e25fd3b2880cdc71ad7fbc7b9724e7be))
+
+## [2.9.2](https://github.com/bespin-studios/byteshard-core/compare/v2.9.1...v2.9.2) (2025-05-20)
+
+
+### Bug Fixes
+
+* remove nullable findings and some phpstan fixes ([eba6ac1](https://github.com/bespin-studios/byteshard-core/commit/eba6ac1020e2e13f8b2c0434b51254f5d0de99da))
+* versioning runs only when tests are successful ([b301a41](https://github.com/bespin-studios/byteshard-core/commit/b301a41c0cefe9636af917d186b921e0ca79cf01))
+
 ## [2.9.1](https://github.com/bespin-studios/byteshard-core/compare/v2.9.0...v2.9.1) (2025-04-28)
 
 
