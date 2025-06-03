@@ -56,6 +56,24 @@ class User
         );
     }
 
+    private static function isConfigured(): bool
+    {
+        if (($config = self::getConfig()) === null) {
+            return false;
+        }
+        if (($publicPath = $config->getJwtPublicKeyPath()) === null) {
+            return false;
+        }
+        if (($privatePath = $config->getJwtPrivateKeyPath()) === null) {
+            return false;
+        }
+        if (!is_readable($publicPath) || !is_readable($privatePath)) {
+            return false;
+        }
+
+        return true;
+    }
+
     private static function getConfig(): ?object
     {
         if (self::$config !== null) {
@@ -72,6 +90,10 @@ class User
 
     public static function getUserData(): ?User
     {
+        if (!self::isConfigured()) {
+            return null;
+        }
+
         if (self::$instance !== null) {
             return self::$instance;
         }
@@ -144,6 +166,9 @@ class User
 
     public function store(): bool
     {
+        if (!self::isConfigured()) {
+            return false;
+        }
         $payload = [
             'username'  => $this->username,
             'firstname' => $this->firstname,

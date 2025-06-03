@@ -45,7 +45,6 @@ class Jwt
         $encodedPayload = self::base64urlEncode(json_encode($payload));
 
         $signature = '';
-        $test      = file_get_contents($privateKeyPath);
         openssl_sign($encodedHeader.'.'.$encodedPayload, $signature, file_get_contents($privateKeyPath), $algo);
         $base64UrlSignature = self::base64urlEncode($signature);
 
