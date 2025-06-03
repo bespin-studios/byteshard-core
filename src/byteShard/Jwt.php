@@ -3,13 +3,11 @@
 namespace byteShard;
 
 use byteShard\Internal\Config;
-use Firebase\JWT\Key;
 
 class Jwt
 {
     public static function validate(Config $config, string $jwt): bool
     {
-        return \Firebase\JWT\JWT::decode($jwt, new Key(file_get_contents($config->getJwtPublicKeyPath()), 'HS256')) !== null;
         $parts = explode('.', $jwt);
         if (count($parts) === 3) {
             $publicKey = file_get_contents($config->getJwtPublicKeyPath());
@@ -25,7 +23,6 @@ class Jwt
      */
     public static function decode(Config $config, string $jwt): ?array
     {
-        return json_decode(json_encode(\Firebase\JWT\JWT::decode($jwt, new Key(file_get_contents($config->getJwtPublicKeyPath()), 'HS256'))), true);
         $parts = explode('.', $jwt);
         if (count($parts) !== 3) {
             return null;
@@ -38,7 +35,6 @@ class Jwt
 
     public static function create(Config $config, array $payload, array $header = []): string
     {
-        return \Firebase\JWT\JWT::encode($payload, file_get_contents($config->getJwtPrivateKeyPath()), 'RS256');
         if (empty($header)) {
             $header = ['typ' => 'JWT', 'alg' => 'RS256'];
         }
