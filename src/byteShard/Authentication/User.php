@@ -2,6 +2,7 @@
 
 namespace byteShard\Authentication;
 
+use byteShard\Debug;
 use byteShard\Internal\Authentication\Providers;
 use byteShard\Internal\Config;
 use byteShard\Jwt;
@@ -91,9 +92,8 @@ class User
                 Providers::tryFrom($decoded['provider']) ?? Providers::LOCAL
             );
         } catch (\Exception $e) {
-            // Log the error, e.g., invalid token, expired token
-            // For now, we'll return null, effectively logging the user out or treating them as not logged in.
-            self::logout(); // It might be good to clear a potentially invalid cookie
+            Debug::error(__METHOD__.': '.$e->getMessage());
+            self::logout();
             return null;
         }
 
@@ -158,11 +158,10 @@ class User
         try {
             $jwt = Jwt::create(self::getConfig(), $payload);
             setcookie(self::USER_TOKEN_COOKIE_NAME, $jwt, time() + 3600, "/", "", true, true);
-            // Update the static instance to reflect the current state
             self::$instance = $this;
             return true;
         } catch (\Exception $e) {
-            // Log the error during JWT encoding
+            Debug::error(__METHOD__.': '.$e->getMessage());
             return false;
         }
     }
