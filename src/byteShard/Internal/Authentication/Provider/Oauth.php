@@ -2,9 +2,11 @@
 
 namespace byteShard\Internal\Authentication\Provider;
 
+use byteShard\Authentication\User;
 use byteShard\Internal\Authentication\JWT;
 use byteShard\Internal\Authentication\OIDC;
 use byteShard\Internal\Authentication\ProviderInterface;
+use byteShard\Internal\Authentication\Providers;
 use byteShard\Internal\Login\Struct\Credentials;
 use byteShard\Internal\Server;
 use Exception;
@@ -61,6 +63,7 @@ class Oauth implements ProviderInterface
     {
         setcookie(self::ACCESS_TOKEN_COOKIE, '', time() - 3600, '/');
         setcookie(self::REFRESH_TOKEN_COOKIE, '', time() - 3600, '/');
+        User::logout();
     }
 
     /**
@@ -78,6 +81,24 @@ class Oauth implements ProviderInterface
         $refreshToken = $oidc->getRefreshToken();
         if ($tokenIsValid) {
             $this->username = $jwt->getPreferredUsername();
+            $parsedJwt      = $jwt->getJwt();
+            $user           = User::createUser(
+                username: $this->username,
+                firstname: $parsedJwt->given_name ?? '',
+                lastname: $parsedJwt->family_name ?? '',
+                mail: $parsedJwt->email ?? '',
+                provider: Providers::OAUTH
+            );
+            if (isset($parsedJwt->groups)) {
+                if (is_array($parsedJwt->groups)) {
+                    foreach ($parsedJwt->groups as $group) {
+                        $user->addGroup($group);
+                    }
+                } else {
+                    $user->addGroup($parsedJwt->groups);
+                }
+            }
+            $user->store();
             $this->storeToken($accessToken);
             if (!empty($refreshToken)) {
                 $this->storeToken($refreshToken, self::REFRESH_TOKEN_COOKIE, $oidc->getRefreshExpiry());
