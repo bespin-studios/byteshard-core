@@ -2,11 +2,13 @@
 
 namespace byteShard\Internal\Authentication\Provider;
 
+use byteShard\Authentication\JWTProperties;
 use byteShard\Authentication\User;
 use byteShard\Internal\Authentication\JWT;
 use byteShard\Internal\Authentication\OIDC;
 use byteShard\Internal\Authentication\ProviderInterface;
 use byteShard\Internal\Authentication\Providers;
+use byteShard\Internal\Config;
 use byteShard\Internal\Login\Struct\Credentials;
 use byteShard\Internal\Server;
 use Exception;
@@ -82,20 +84,21 @@ class Oauth implements ProviderInterface
         if ($tokenIsValid) {
             $this->username = $jwt->getPreferredUsername();
             $parsedJwt      = $jwt->getJwt();
+            $claims         = Config::getConfig()->getConfiguredClaims();
             $user           = User::createUser(
                 username: $this->username,
-                firstname: $parsedJwt->given_name ?? '',
-                lastname: $parsedJwt->family_name ?? '',
-                mail: $parsedJwt->email ?? '',
+                firstname: $parsedJwt->{$claims[JWTProperties::Firstname->value]} ?? '',
+                lastname: $parsedJwt->{$claims[JWTProperties::Lastname->value]} ?? '',
+                mail: $parsedJwt->{$claims[JWTProperties::Email->value]} ?? '',
                 provider: Providers::OAUTH
             );
-            if (isset($parsedJwt->groups)) {
-                if (is_array($parsedJwt->groups)) {
-                    foreach ($parsedJwt->groups as $group) {
+            if (isset($parsedJwt->{$claims[JWTProperties::Groups->value]})) {
+                if (is_array($parsedJwt->{$claims[JWTProperties::Groups->value]})) {
+                    foreach ($parsedJwt->{$claims[JWTProperties::Groups->value]} as $group) {
                         $user->addGroup($group);
                     }
                 } else {
-                    $user->addGroup($parsedJwt->groups);
+                    $user->addGroup($parsedJwt->{$claims[JWTProperties::Groups->value]});
                 }
             }
             $user->store();

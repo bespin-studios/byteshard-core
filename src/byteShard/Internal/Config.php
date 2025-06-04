@@ -6,12 +6,16 @@
 
 namespace byteShard\Internal;
 
+use byteShard\Authentication\JWTProperties;
 use byteShard\Database\Enum\ConnectionType;
 use byteShard\Database\Struct\Parameters;
 use byteShard\Enum\LogLevel;
 use byteShard\Enum\LogLocation;
 use byteShard\Environment;
 use byteShard\Exception;
+use byteShard\Ldap\Attribute;
+use byteShard\Ldap\Attributes;
+use byteShard\Ldap\Enum\ResultObject;
 use byteShard\Password;
 use JsonSerializable;
 
@@ -89,6 +93,17 @@ abstract class Config implements JsonSerializable
         }
     }
 
+    /**
+     * @throws Exception
+     */
+    public static function getConfig(): object
+    {
+        if (class_exists('\\config')) {
+            return new \config();
+        }
+        throw new Exception('Config class does not exists. Please create the Class with namespace \\config');
+    }
+
     public function getJwtPrivateKeyPath(): string
     {
         return $this->jwtPrivateKeyPath ?? '';
@@ -102,6 +117,17 @@ abstract class Config implements JsonSerializable
     public function getJwtAlgorithm(): int
     {
         return $this->jwtAlgorithm;
+    }
+
+    public function getConfiguredClaims(): array
+    {
+        return [
+            JWTProperties::Firstname->value => 'given_name',
+            JWTProperties::Lastname->value  => 'family_name',
+            JWTProperties::Username->value  => 'preferred_username',
+            JWTProperties::Email->value     => 'email',
+            JWTProperties::Groups->value    => 'groups'
+        ];
     }
 
     /**
@@ -383,6 +409,18 @@ abstract class Config implements JsonSerializable
     public function showLdapDomains(): bool
     {
         return $this->show_ldap_domains;
+    }
+
+    public function getLdapAttributes(): Attributes
+    {
+        return new Attributes(
+            new Attribute('dn', ResultObject::dn),
+            new Attribute('uid', ResultObject::Username),
+            new Attribute('sn', ResultObject::Lastname),
+            new Attribute('givenname', ResultObject::Firstname),
+            new Attribute('mail', ResultObject::Mail),
+            new Attribute('memberOf', ResultObject::Groups),
+        );
     }
 
     /**

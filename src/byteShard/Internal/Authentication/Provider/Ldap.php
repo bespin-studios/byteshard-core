@@ -9,8 +9,7 @@ use byteShard\Internal\Authentication\LdapProviderInterface;
 use byteShard\Internal\Authentication\ProviderInterface;
 use byteShard\Internal\Authentication\Providers;
 use byteShard\Internal\Login\Struct\Credentials;
-use byteShard\Ldap\Attribute;
-use byteShard\Ldap\Attributes;
+use byteShard\Ldap\Enum\ResultObject;
 use byteShard\Ldap\Filter;
 use byteShard\Session;
 use config;
@@ -56,14 +55,7 @@ class Ldap implements ProviderInterface
             $filter->setFilter($config->getLdapUid().'='.$loginUsername);
             $users = $ldap->getArray(
                 $filter,
-                new Attributes(
-                    new Attribute('dn'),
-                    new Attribute('uid', 'Username'),
-                    new Attribute('sn', 'Lastname'),
-                    new Attribute('givenname', 'Firstname'),
-                    new Attribute('mail', 'Mail'),
-                    new Attribute('memberOf', 'Groups'),
-                )
+                $config->getLdapAttributes(),
             );
             if (count($users) === 1) {
                 $user = $users[0];
@@ -71,19 +63,19 @@ class Ldap implements ProviderInterface
                 $authenticated = $this->getLdapInstance($ldapHost, $ldapPort, $ldapMethod)->authenticate($credentials);
                 if ($authenticated === true) {
                     $userObject = User::createUser(
-                        username: $user->Username ?? '',
-                        firstname: $user->Firstname ?? '',
-                        lastname: $user->Lastname ?? '',
-                        mail: $user->Mail ?? '',
+                        username: $user->{ResultObject::Username->value} ?? '',
+                        firstname: $user->{ResultObject::Firstname->value} ?? '',
+                        lastname: $user->{ResultObject::Lastname->value} ?? '',
+                        mail: $user->{ResultObject::Mail->value} ?? '',
                         provider: Providers::LDAP
                     );
-                    if (isset($user->Groups)) {
-                        if (is_array($user->Groups)) {
-                            foreach ($user->Groups as $group) {
+                    if (isset($user->{ResultObject::Groups->value})) {
+                        if (is_array($user->{ResultObject::Groups->value})) {
+                            foreach ($user->{ResultObject::Groups->value} as $group) {
                                 $userObject->addGroup($group, true);
                             }
                         } else {
-                            $userObject->addGroup($user->Groups, true);
+                            $userObject->addGroup($user->{ResultObject::Groups->value}, true);
                         }
                     }
                     $userObject->store();
