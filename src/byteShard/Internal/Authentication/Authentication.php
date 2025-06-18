@@ -93,7 +93,7 @@ class Authentication
         if ($activeSession === false) {
             $activeSession = $identityProvider->authenticate($this->environment->getLoginTemplate()->getCredentials() ?? null);
             if ($activeSession === true) {
-                //TODO: check if this can be done another way. it only needs to be executed once after successful login, but for example oauth does it's initial authenticate on public/login/oauth.php
+                //TODO: check if this can be done another way. it only needs to be executed once after a successful login, but for example, oauth does its initial authenticating on public/login/oauth.php
                 $this->environment->processSuccessfulLogin($identityProvider->getUsername());
             }
         }

@@ -16,6 +16,23 @@ class Jwt
         return false;
     }
 
+    /**
+     * @param Config $config
+     * @param string $jwt
+     * @return array<string>|null
+     */
+    public static function decode(Config $config, string $jwt): ?array
+    {
+        $parts = explode('.', $jwt);
+        if (count($parts) !== 3) {
+            return null;
+        }
+        if (!self::validate($config, $jwt)) {
+            return null;
+        }
+        return json_decode(self::base64urlDecode($parts[1]), true);
+    }
+
     public static function create(Config $config, array $payload, array $header = []): string
     {
         if (empty($header)) {
