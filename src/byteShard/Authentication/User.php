@@ -153,15 +153,9 @@ class User
         $this->provider = $provider;
     }
 
-    public function addGroup(string $group, bool $ldap = false): void
+    public function addGroup(string $group): void
     {
-        if ($ldap) {
-            if (preg_match('/cn=([^,]+)/i', $group, $matches)) {
-                $this->groups[] = $matches[1];
-            }
-        } else {
-            $this->groups[] = $group;
-        }
+        $this->groups[] = $group;
     }
 
     public function store(): bool
