@@ -2,10 +2,12 @@
 
 namespace byteShard\Internal\Authentication\Provider;
 
+use byteShard\Authentication\User;
 use byteShard\Internal\Authentication\Authentication;
 use byteShard\Internal\Authentication\AuthenticationAction;
 use byteShard\Internal\Authentication\LdapProviderInterface;
 use byteShard\Internal\Authentication\ProviderInterface;
+use byteShard\Internal\Authentication\Providers;
 use byteShard\Internal\Login\Struct\Credentials;
 use byteShard\Ldap\Attribute;
 use byteShard\Ldap\Attributes;
@@ -18,8 +20,8 @@ class Ldap implements ProviderInterface
     private string $username;
 
     public function __construct(
-        private readonly ?LdapProviderInterface $authenticationObject = null)
-    {
+        private readonly ?LdapProviderInterface $authenticationObject = null
+    ) {
     }
 
     public function authenticate(?Credentials $credentials = null): bool
@@ -52,11 +54,39 @@ class Ldap implements ProviderInterface
 
             $filter = new Filter($config->getLdapBaseDn());
             $filter->setFilter($config->getLdapUid().'='.$loginUsername);
-            $users = $ldap->getArray($filter, new Attributes(new Attribute('dn')));
+            $users = $ldap->getArray(
+                $filter,
+                new Attributes(
+                    new Attribute('dn'),
+                    new Attribute('uid', 'Username'),
+                    new Attribute('sn', 'Lastname'),
+                    new Attribute('givenname', 'Firstname'),
+                    new Attribute('mail', 'Mail'),
+                    new Attribute('memberOf', 'Groups'),
+                )
+            );
             if (count($users) === 1) {
-                $credentials->setUsername($users[0]->dn);
+                $user = $users[0];
+                $credentials->setUsername($user->dn);
                 $authenticated = $this->getLdapInstance($ldapHost, $ldapPort, $ldapMethod)->authenticate($credentials);
                 if ($authenticated === true) {
+                    $userObject = User::createUser(
+                        username: $user->Username ?? '',
+                        firstname: $user->Firstname ?? '',
+                        lastname: $user->Lastname ?? '',
+                        mail: $user->Mail ?? '',
+                        provider: Providers::LDAP
+                    );
+                    if (isset($user->Groups)) {
+                        if (is_array($user->Groups)) {
+                            foreach ($user->Groups as $group) {
+                                $userObject->addGroup($this->parseGroupName($group));
+                            }
+                        } else {
+                            $userObject->addGroup($this->parseGroupName($user->Groups));
+                        }
+                    }
+                    $userObject->store();
                     $this->username = $loginUsername;
                     return true;
                 }
@@ -65,6 +95,14 @@ class Ldap implements ProviderInterface
             Authentication::logout(action: AuthenticationAction::INVALID_CREDENTIALS);
         }
         Authentication::logout();
+    }
+
+    private function parseGroupName(string $groupName): string
+    {
+        if (preg_match('/cn=([^,]+)/i', $groupName, $matches)) {
+            return $matches[1];
+        }
+        return $groupName;
     }
 
     private function getLdapInstance(string $host, int $port = 389, string $method = ''): \byteShard\Ldap
@@ -107,6 +145,6 @@ class Ldap implements ProviderInterface
 
     public function logout(): void
     {
-
+        User::logout();
     }
 }
