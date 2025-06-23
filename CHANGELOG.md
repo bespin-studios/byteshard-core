@@ -1,3 +1,10 @@
+## [2.9.4](https://github.com/bespin-studios/byteshard-core/compare/v2.9.3...v2.9.4) (2025-06-18)
+
+
+### Bug Fixes
+
+* validation property has to be protected ([aecfc35](https://github.com/bespin-studios/byteshard-core/commit/aecfc35989142bee6c029fef1eb2b5220cbe9749))
+
 ## [2.9.3](https://github.com/bespin-studios/byteshard-core/compare/v2.9.2...v2.9.3) (2025-05-27)
 
 

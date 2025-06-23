@@ -60,4 +60,32 @@ class Jwt
     {
         return base64_decode(strtr($string, '-_', '+/'));
     }
+
+    public static function generateKeyPair(string $privateKeyFile, string $publicKeyFile): bool
+    {
+        $directory = dirname($privateKeyFile);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+        $directoryPublic = dirname($publicKeyFile);
+        if (!is_dir($directoryPublic)) {
+            mkdir($directoryPublic, 0755, true);
+        }
+
+        $config = [
+            'private_key_bits' => 4096,
+            'private_key_type' => OPENSSL_KEYTYPE_RSA,
+        ];
+
+        $res = openssl_pkey_new($config);
+        openssl_pkey_export($res, $privateKey);
+
+        $keyDetails = openssl_pkey_get_details($res);
+        $publicKey  = $keyDetails['key'];
+
+        file_put_contents($privateKeyFile, $privateKey);
+        file_put_contents($publicKeyFile, $publicKey);
+
+        return is_file($privateKeyFile) && is_file($publicKeyFile);
+    }
 }

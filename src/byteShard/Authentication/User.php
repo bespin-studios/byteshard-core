@@ -59,15 +59,19 @@ class User
     private static function isConfigured(): bool
     {
         if (($config = self::getConfig()) === null) {
+            Debug::error('Config does not exist');
             return false;
         }
         if (($publicPath = $config->getJwtPublicKeyPath()) === null) {
+            Debug::error('Public key path not found');
             return false;
         }
         if (($privatePath = $config->getJwtPrivateKeyPath()) === null) {
+            Debug::error('Private key path not found');
             return false;
         }
         if (!is_readable($publicPath) || !is_readable($privatePath)) {
+            Debug::error('Cannot read the jwt keys');
             return false;
         }
 
@@ -163,7 +167,8 @@ class User
         if (!self::isConfigured()) {
             return false;
         }
-        $payload = [
+        $expiresOn = time() + 3600;
+        $payload   = [
             'username'  => $this->username,
             'firstname' => $this->firstname,
             'lastname'  => $this->lastname,
@@ -171,12 +176,18 @@ class User
             'provider'  => $this->provider->value,
             'groups'    => $this->groups,
             'iat'       => time(),
-            'exp'       => time() + 3600
+            'exp'       => $expiresOn
         ];
 
         try {
             $jwt = Jwt::create(self::getConfig(), $payload);
-            setcookie(self::USER_TOKEN_COOKIE_NAME, $jwt, time() + 3600, "/", "", true, true);
+            setcookie(self::USER_TOKEN_COOKIE_NAME, $jwt, [
+                'expires'  => $expiresOn,
+                'path'     => '/',
+                'secure'   => true,
+                'httponly' => false,
+                'samesite' => 'Strict'
+            ]);
             self::$instance = $this;
             return true;
         } catch (\Exception $e) {

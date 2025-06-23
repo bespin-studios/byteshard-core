@@ -16,6 +16,7 @@ use byteShard\Exception;
 use byteShard\Ldap\Attribute;
 use byteShard\Ldap\Attributes;
 use byteShard\Ldap\Enum\ResultObject;
+use byteShard\Jwt;
 use byteShard\Password;
 use JsonSerializable;
 
@@ -106,12 +107,32 @@ abstract class Config implements JsonSerializable
 
     public function getJwtPrivateKeyPath(): string
     {
-        return $this->jwtPrivateKeyPath ?? '';
+        if (!isset($this->jwtPrivateKeyPath) || !is_readable($this->jwtPrivateKeyPath)) {
+            $this->createTmpJwtKeyPair();
+        }
+        return $this->jwtPrivateKeyPath;
     }
 
     public function getJwtPublicKeyPath(): string
     {
-        return $this->jwtPublicKeyPath ?? '';
+        if (!isset($this->jwtPublicKeyPath) || !is_readable($this->jwtPublicKeyPath)) {
+            $this->createTmpJwtKeyPair();
+        }
+        return $this->jwtPublicKeyPath;
+    }
+
+    private function createTmpJwtKeyPair(): void
+    {
+        Debug::warning('No private and/or public key set in config. Using temporary generated keys. Please configure them with $jwtPrivateKeyPath and $jwtPublicKeyPath');
+        $directory = '/tmp/jwtKeys';
+        if (!is_dir($directory)) {
+            mkdir($directory);
+        }
+        $this->jwtPrivateKeyPath = $directory.DIRECTORY_SEPARATOR.'private.key';
+        $this->jwtPublicKeyPath  = $directory.DIRECTORY_SEPARATOR.'public.key';
+        if (!is_file($this->jwtPrivateKeyPath) || !is_file($this->jwtPublicKeyPath)) {
+            Jwt::generateKeyPair($this->jwtPrivateKeyPath, $this->jwtPublicKeyPath);
+        }
     }
 
     public function getJwtAlgorithm(): int
