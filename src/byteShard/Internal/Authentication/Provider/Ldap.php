@@ -72,10 +72,10 @@ class Ldap implements ProviderInterface
                     if (isset($user->{ResultObject::Groups->value})) {
                         if (is_array($user->{ResultObject::Groups->value})) {
                             foreach ($user->{ResultObject::Groups->value} as $group) {
-                                $userObject->addGroup($group, true);
+                                $userObject->addGroup($this->parseGroupName($group));
                             }
                         } else {
-                            $userObject->addGroup($user->{ResultObject::Groups->value}, true);
+                            $userObject->addGroup($this->parseGroupName($user->{ResultObject::Groups->value}));
                         }
                     }
                     $userObject->store();
@@ -87,6 +87,14 @@ class Ldap implements ProviderInterface
             Authentication::logout(action: AuthenticationAction::INVALID_CREDENTIALS);
         }
         Authentication::logout();
+    }
+
+    private function parseGroupName(string $groupName): string
+    {
+        if (preg_match('/cn=([^,]+)/i', $groupName, $matches)) {
+            return $matches[1];
+        }
+        return $groupName;
     }
 
     private function getLdapInstance(string $host, int $port = 389, string $method = ''): \byteShard\Ldap
