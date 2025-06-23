@@ -16,7 +16,7 @@ use byteShard\Internal\Validation;
  */
 trait Validate
 {
-    private array   $validations    = [];
+    protected array   $validations    = [];
     protected array $newValidations = [];
 
     /**
