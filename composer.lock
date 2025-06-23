@@ -223,16 +223,16 @@
         },
         {
             "name": "byteshard/ldap",
-            "version": "v1.0.5",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-ldap.git",
-                "reference": "277744c926ebafa83197b9a6ad0d99e7b941c4cf"
+                "reference": "40536ce2eaddb77d2e6aa411971a36cb75caba20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-ldap/zipball/277744c926ebafa83197b9a6ad0d99e7b941c4cf",
-                "reference": "277744c926ebafa83197b9a6ad0d99e7b941c4cf",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-ldap/zipball/40536ce2eaddb77d2e6aa411971a36cb75caba20",
+                "reference": "40536ce2eaddb77d2e6aa411971a36cb75caba20",
                 "shasum": ""
             },
             "require": {
@@ -267,9 +267,9 @@
             "description": "Ldap wrapper for the byteShard framework",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-ldap/issues",
-                "source": "https://github.com/bespin-studios/byteshard-ldap/tree/v1.0.5"
+                "source": "https://github.com/bespin-studios/byteshard-ldap/tree/v1.1.0"
             },
-            "time": "2025-05-28T09:01:10+00:00"
+            "time": "2025-06-18T07:01:33+00:00"
         },
         {
             "name": "byteshard/locale",
@@ -1726,16 +1726,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "1.29.10",
+            "version": "1.29.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "c80041b1628c4f18030407134fe88303661d4e4e"
+                "reference": "05b6c4378ddf3e81b460ea645c42b46432c0db25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/c80041b1628c4f18030407134fe88303661d4e4e",
-                "reference": "c80041b1628c4f18030407134fe88303661d4e4e",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/05b6c4378ddf3e81b460ea645c42b46432c0db25",
+                "reference": "05b6c4378ddf3e81b460ea645c42b46432c0db25",
                 "shasum": ""
             },
             "require": {
@@ -1826,9 +1826,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.29.10"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.29.11"
             },
-            "time": "2025-02-08T02:56:14+00:00"
+            "time": "2025-06-23T01:22:06+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
@@ -3044,16 +3044,16 @@
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "6.4.1",
+            "version": "6.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jsonrainbow/json-schema.git",
-                "reference": "35d262c94959571e8736db1e5c9bc36ab94ae900"
+                "reference": "ce1fd2d47799bb60668643bc6220f6278a4c1d02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jsonrainbow/json-schema/zipball/35d262c94959571e8736db1e5c9bc36ab94ae900",
-                "reference": "35d262c94959571e8736db1e5c9bc36ab94ae900",
+                "url": "https://api.github.com/repos/jsonrainbow/json-schema/zipball/ce1fd2d47799bb60668643bc6220f6278a4c1d02",
+                "reference": "ce1fd2d47799bb60668643bc6220f6278a4c1d02",
                 "shasum": ""
             },
             "require": {
@@ -3113,9 +3113,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jsonrainbow/json-schema/issues",
-                "source": "https://github.com/jsonrainbow/json-schema/tree/6.4.1"
+                "source": "https://github.com/jsonrainbow/json-schema/tree/6.4.2"
             },
-            "time": "2025-04-04T13:08:07+00:00"
+            "time": "2025-06-03T18:27:04+00:00"
         },
         {
             "name": "marc-mabe/php-enum",
