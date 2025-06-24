@@ -4,6 +4,7 @@ namespace byteShard\Internal\Authentication\Provider;
 
 use byteShard\Authentication\DB;
 use byteShard\Authentication\Enum\Action;
+use byteShard\Authentication\User;
 use byteShard\DataModelInterface;
 use byteShard\Internal\Authentication\AuthenticationAction;
 use byteShard\Internal\Authentication\AuthenticationInterface;
@@ -20,8 +21,7 @@ class Local implements ProviderInterface
     public function __construct(
         private readonly DataModelInterface       $dataModel,
         private readonly ?AuthenticationInterface $authenticationObject = null
-    )
-    {
+    ) {
     }
 
     public function authenticate(?Credentials $credentials = null): bool
@@ -38,6 +38,13 @@ class Local implements ProviderInterface
         }
         if ($result->isSuccess() === true) {
             $this->username = $credentials->getUsername();
+            $user           = User::createUser(
+                username: $credentials->getUsername(),
+                firstname: '',
+                lastname: '',
+                mail: ''
+            );
+            $user->store();
             return true;
         }
         $action = $result->getAction();
@@ -116,6 +123,6 @@ class Local implements ProviderInterface
 
     public function logout(): void
     {
-
+        User::logout();
     }
 }
