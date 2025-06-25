@@ -143,6 +143,17 @@ class Symmetric
     }
 
     /**
+     * derive nonce from a key which can be recomputed deterministically
+     * @param string $key
+     * @param string $purpose
+     * @return string
+     */
+    public static function deriveNonce(string $key, string $purpose): string
+    {
+        return mb_substr(hash_hmac('sha256', $purpose, $key, true), 0, 24, '8bit');
+    }
+
+    /**
      * Decrypts a message (after verifying integrity)
      *
      * @param string $message - ciphertext message
