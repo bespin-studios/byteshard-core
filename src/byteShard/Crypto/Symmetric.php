@@ -95,14 +95,13 @@ class Symmetric
         // base64 appends = or == at the end of the string, depending on the length of the input
         // to prevent patterns which might be caught be WAFs we prepend blanks to the payload before encoding and trim the string after decoding
         // since the payload might start with a space we always prepend an escape character, in this case a #, to the string and then prepend additional spaces in front of it.
-        // during decode we trim everything up to the first occurrence of #
+        // during decoding, we trim everything up to the first occurrence of #
         $payload = '#'.$payload;
         $rest    = strlen($payload) % 3;
-        $prepend = '';
         if ($rest > 0) {
-            $prepend = str_repeat(' ', 3 - $rest);
+            $payload = str_repeat(' ', 3 - $rest).$payload;
         }
-        return base64_encode($prepend.$payload);
+        return base64_encode($payload);
     }
 
     /** @throws Exception */
@@ -110,9 +109,13 @@ class Symmetric
     {
         $message = base64_decode($encoded, true);
         if ($message === false) {
-            throw new Exception('Encryption failure');
+            throw new Exception('Encryption failure: invalid encoding');
         }
-        return substr(ltrim($message, ' '), 1);
+        $message = ltrim($message, ' ');
+        if (strlen($message) === 0 || $message[0] !== '#') {
+            throw new Exception('Encryption failure: invalid format');
+        }
+        return substr($message, 1);
     }
 
     /** @throws Exception */

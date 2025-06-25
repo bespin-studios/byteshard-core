@@ -7,6 +7,7 @@ use byteShard\Internal\Permission\NoApplicationPermissionError;
 
 class TabBar implements ApplicationRootInterface
 {
+    /** @var array<string, TabNew> */
     private array $tabs = [];
 
     public function __construct(TabNew ...$tabs)
@@ -18,9 +19,9 @@ class TabBar implements ApplicationRootInterface
 
     public function getRootParameters(?string $selectedId = null): array
     {
-        $result = [];
+        $result         = [];
         $result['type'] = 'TabBar';
-        $tabs   = $this->getTabs($selectedId);
+        $tabs           = $this->getTabs($selectedId);
         if (!empty($tabs)) {
             foreach ($tabs as $tab) {
                 $result['tabs'][] = $tab->getNavigationData();
