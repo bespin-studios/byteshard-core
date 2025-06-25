@@ -1,3 +1,19 @@
+# [2.10.0](https://github.com/bespin-studios/byteshard-core/compare/v2.9.4...v2.10.0) (2025-06-24)
+
+
+### Bug Fixes
+
+* add check if the user token cookie is configured ([10d7cc0](https://github.com/bespin-studios/byteshard-core/commit/10d7cc02c8e174f0e0917a6ce83e0f6fa08f8d2c))
+* move groups parsing to ldap class ([66410e1](https://github.com/bespin-studios/byteshard-core/commit/66410e1d947d4435c9851ca884683ec8abf78ec7))
+* once using the right private/public key, the original jwt function works. ([2e633eb](https://github.com/bespin-studios/byteshard-core/commit/2e633ebce16b3a8df4457bce4896231d3bc20063))
+
+
+### Features
+
+* add functionality to create temporary keys for jwt-user cookie ([6d10542](https://github.com/bespin-studios/byteshard-core/commit/6d105424b4772d500e35291ec3273d3c2a640b18))
+* initial draft for a new static user model via a jwt token ([93cd037](https://github.com/bespin-studios/byteshard-core/commit/93cd037025075fa1f21610df593ccdbb2d6766fb))
+* using the User object in the local provider as well ([be7b2ed](https://github.com/bespin-studios/byteshard-core/commit/be7b2ed38e3834e9a32f9fc436dd26204b7d6239))
+
 ## [2.9.4](https://github.com/bespin-studios/byteshard-core/compare/v2.9.3...v2.9.4) (2025-06-18)
 
 
