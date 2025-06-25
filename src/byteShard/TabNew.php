@@ -18,6 +18,7 @@ use UnitEnum;
 abstract class TabNew implements TabLegacyInterface, NavigationItem
 {
     use PermissionImplementation;
+
     private ID\ID  $id;
     private array  $tabs     = [];
     private Layout $layout;
@@ -25,7 +26,8 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem
     private bool   $closable = false;
     //Todo: private Toolbar $toolbar;
     //Todo: private string  $label;
-    private bool $initialized = false;
+    private bool                       $initialized = false;
+    private Layout|TabBar|SideBar|null $content     = null;
 
     public function __construct(string|UnitEnum ...$permissions)
     {
@@ -45,11 +47,21 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem
      */
     public function addTab(TabNew ...$tabs): void
     {
-        foreach ($tabs as $tab) {
-            if (!array_key_exists($tab->getId(), $this->tabs)) {
-                $this->tabs[$tab->getId()] = $tab;
-            }
+        trigger_error('byteShard\TabNew::addTab is deprecated. Please create a new \byteShard\TabBar and add it with byteShard\TabNew::setTabBar', E_USER_DEPRECATED);
+        if (!$this->content instanceof TabBar) {
+            $this->content = new TabBar();
         }
+        $this->content->addTabs(...$tabs);
+    }
+
+    public function setTabBar(TabBar $tabBar): void
+    {
+        $this->content = $tabBar;
+    }
+
+    public function isClosable(): bool
+    {
+        return $this->closable;
     }
 
     public function selectFirstTabIfNoneSelected(): void
@@ -154,6 +166,7 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem
      */
     public function getCells(): array
     {
+        trigger_error('byteShard\TabNew::getCells is deprecated.', E_USER_DEPRECATED);
         $cells = isset($this->layout) ? $this->layout->getCells() : [];
         foreach ($this->tabs as $tab) {
             foreach ($tab->getCells() as $cell) {
@@ -170,8 +183,8 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem
      */
     public function setPattern(Pattern $pattern): void
     {
-        $layout = $this->initLayout();
-        $layout->setPattern($pattern);
+        $this->initLayout();
+        $this->content->setPattern($pattern);
     }
 
     /**
@@ -182,19 +195,19 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem
      */
     public function addCell(Cell ...$cells): void
     {
-        $layout = $this->initLayout();
+        $this->initLayout();
         foreach ($cells as $cell) {
-            $layout->addCell($cell);
+            $this->content->addCell($cell);
         }
     }
 
-    private function initLayout(): Layout
+    private function initLayout(): void
     {
-        if (!isset($this->layout)) {
-            $this->layout = new Layout($this->id->getEncryptedContainerId(), $this->id->getTabId(), $this->id);
+        if (!$this->content instanceof Layout) {
+            $this->content = new Layout($this->id->getEncryptedContainerId(), $this->id->getTabId(), $this->id);
         }
-        return $this->layout;
     }
+
 
     public function isInitialized(): bool
     {
@@ -239,6 +252,42 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem
                 }
             }
             $result['bubble'] = $bubble;
+        }
+        return $result;
+    }
+
+    public function getItemConfig(string $selectedId = ''): array
+    {
+        if (!$this->isInitialized()) {
+            $this->defineTabContent();
+            $this->setInitialized();
+        }
+        $result = [];
+        switch (true) {
+            case $this->content instanceof Layout:
+                $cells = $this->content->getCells();
+                foreach ($cells as $cell) {
+                    Session::registerCell($cell);
+                }
+                $result['content']         = $this->content->getNavigationData();
+                $result['bubble']          = $this->content->bubble();
+                $result['content']['type'] = 'Layout';
+                break;
+            case $this->content instanceof TabBar:
+            case $this->content instanceof SideBar:
+                $result = $this->content->getRootParameters($selectedId);
+                break;
+        }
+        $result['ID']    = $this->id->getEncryptedContainerId();
+        $result['label'] = $this->getLabel();
+        if ($this->selected === true) {
+            $result['selected'] = true;
+        }
+        if ($this->closable === true) {
+            $result['closable'] = true;
+        }
+        if (isset($this->toolbar)) {
+            $result['toolbar'] = true;
         }
         return $result;
     }

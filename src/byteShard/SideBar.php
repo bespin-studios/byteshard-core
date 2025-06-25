@@ -10,12 +10,18 @@ class SideBar implements ApplicationRootInterface
     /** @var array<string, SideBarItem> */
     private array  $sideBarCells;
     private string $customHeader;
+    private int    $width = 250;
 
     public function __construct(SideBarItem ...$sideBarCells)
     {
         foreach ($sideBarCells as $sideBarCell) {
             $this->sideBarCells[$sideBarCell->getId()] = $sideBarCell;
         }
+    }
+
+    public function setWidth(int $width): void
+    {
+        $this->width = $width;
     }
 
     public function setCustomHeader(string $header): void
@@ -25,19 +31,25 @@ class SideBar implements ApplicationRootInterface
 
     public function getRootParameters(?string $selectedId = null): array
     {
-        $result         = [];
-        $result['type'] = 'SideBar';
-        $sideBarCells   = $this->initSideBarCells($selectedId);
-        if (!empty($sideBarCells)) {
-            foreach ($sideBarCells as $sideBarCell) {
-                $result['tabs'][] = $sideBarCell->getNavigationData();
-                if (isset($this->customHeader)) {
-                    $result['customHeader'] = $this->customHeader;
-                }
-                $cells = $sideBarCell->getCells();
-                foreach ($cells as $cell) {
-                    Session::registerCell($cell);
-                }
+        $result = [
+            'content' => [
+                'type'   => 'SideBar',
+                'config' => [
+                    'width' => $this->width,
+                ],
+                'events' => [
+                    'onSelect' => ['doOnSelect']
+                ]
+            ]
+        ];
+        if (isset($this->customHeader)) {
+            $result['content']['customHeader'] = $this->customHeader;
+        }
+        $this->initSideBarCells();
+        $this->setSelectedSideBarCell($selectedId);
+        if (!empty($this->sideBarCells)) {
+            foreach ($this->sideBarCells as $sideBarCell) {
+                $result['content']['cells'][] = $sideBarCell->getItemConfig($selectedId);
             }
         } else {
             $tab = new NoApplicationPermissionError();
@@ -46,41 +58,36 @@ class SideBar implements ApplicationRootInterface
                 $tab->setInitialized();
             }
             $tab->setSelected();
-            $result['tabs'][] = $tab->getNavigationData();
+            $result['content']['type']   = 'TabBar';
+            $result['content']['tabs'][] = $tab->getItemConfig();
         }
         return $result;
     }
 
-    private function initSideBarCells($selectedId): array
+    private function initSideBarCells(): void
     {
-        if (empty($this->sideBarCells)) {
-            return [];
-        }
         foreach ($this->sideBarCells as $sideBarCell) {
             if (!$sideBarCell->isInitialized()) {
                 $sideBarCell->defineTabContent();
                 $sideBarCell->setInitialized();
             }
         }
-        $split           = explode('\\', $selectedId);
-        $navigationDepth = count($split);
-        $found           = false;
-        if ($navigationDepth === 1 && array_key_exists($selectedId, $this->sideBarCells)) {
-            $found = true;
-            $this->sideBarCells[$selectedId]->setSelected();
-        } elseif ($navigationDepth > 1 && array_key_exists($split[0], $this->sideBarCells)) {
-            $found = true;
-            $this->sideBarCells[$split[0]]->setSelected($selectedId);
+    }
+
+    private function setSelectedSideBarCell(string $selectedId): void
+    {
+        $parts = explode('\\', $selectedId);
+        $path  = '';
+        foreach ($parts as $part) {
+            $path .= ($path === '' ? '' : '\\').$part;
+            if (isset($this->sideBarCells[$path])) {
+                $this->sideBarCells[$path]->setSelected();
+                return;
+            }
         }
 
-        if ($found === false) {
-            reset($this->sideBarCells);
-            $firstCell = key($this->sideBarCells);
-            $this->sideBarCells[$firstCell]->setSelected();
-        }
-        foreach ($this->sideBarCells as $sideBarCell) {
-            $sideBarCell->selectFirstTabIfNoneSelected();
-        }
-        return $this->sideBarCells;
+        reset($this->sideBarCells);
+        $firstCell = key($this->sideBarCells);
+        $this->sideBarCells[$firstCell]->setSelected();
     }
 }

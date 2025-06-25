@@ -8,28 +8,36 @@ use byteShard\Internal\Permission\NoApplicationPermissionError;
 class TabBar implements ApplicationRootInterface
 {
     /** @var array<string, TabNew> */
-    private array $tabs = [];
+    private array $tabs   = [];
+    private array $events = [];
 
     public function __construct(TabNew ...$tabs)
     {
+        $this->addTabs(...$tabs);
+    }
+
+    public function addTabs(TabNew ...$tabs): void
+    {
         foreach ($tabs as $tab) {
             $this->tabs[$tab->getId()] = $tab;
+            if ($tab->isClosable()) {
+                $this->events['onTabClose'] = ['doOnTabClose'];
+            }
         }
     }
 
     public function getRootParameters(?string $selectedId = null): array
     {
-        $result         = [];
-        $result['type'] = 'TabBar';
-        $tabs           = $this->getTabs($selectedId);
-        if (!empty($tabs)) {
-            foreach ($tabs as $tab) {
-                $result['tabs'][] = $tab->getNavigationData();
-                $cells            = $tab->getCells();
-                foreach ($cells as $cell) {
-                    Session::registerCell($cell);
-                }
+        $result                    = [];
+        $result['content']['type'] = 'TabBar';
+        $this->initTabs();
+        $this->setSelectedTab($selectedId);
+        if (!empty($this->tabs)) {
+            foreach ($this->tabs as $tab) {
+                $result['content']['tabs'][] = $tab->getItemConfig($selectedId);
             }
+            $result['content']['events']             = $this->events;
+            $result['content']['events']['onSelect'] = ['doOnSelect'];
         } else {
             $tab = new NoApplicationPermissionError();
             if (!$tab->isInitialized()) {
@@ -37,41 +45,35 @@ class TabBar implements ApplicationRootInterface
                 $tab->setInitialized();
             }
             $tab->setSelected();
-            $result['tabs'][] = $tab->getNavigationData();
+            $result['content']['tabs'][] = $tab->getItemConfig();
         }
         return $result;
     }
 
-    private function getTabs(?string $selectedId = null): array
+    private function initTabs(): void
     {
-        if (empty($this->tabs)) {
-            return [];
-        }
         foreach ($this->tabs as $tab) {
             if (!$tab->isInitialized()) {
                 $tab->defineTabContent();
                 $tab->setInitialized();
             }
         }
-        $split    = explode('\\', $selectedId);
-        $tabDepth = count($split);
-        $found    = false;
-        if ($tabDepth === 1 && array_key_exists($selectedId, $this->tabs)) {
-            $found = true;
-            $this->tabs[$selectedId]->setSelected();
-        } elseif ($tabDepth > 1 && array_key_exists($split[0], $this->tabs)) {
-            $found = true;
-            $this->tabs[$split[0]]->setSelected($selectedId);
+    }
+
+    private function setSelectedTab(string $selectedId): void
+    {
+        $parts = explode('\\', $selectedId);
+        $path  = '';
+        foreach ($parts as $part) {
+            $path .= ($path === '' ? '' : '\\').$part;
+            if (isset($this->tabs[$path])) {
+                $this->tabs[$path]->setSelected();
+                return;
+            }
         }
 
-        if ($found === false) {
-            reset($this->tabs);
-            $firstTab = key($this->tabs);
-            $this->tabs[$firstTab]->setSelected();
-        }
-        foreach ($this->tabs as $tab) {
-            $tab->selectFirstTabIfNoneSelected();
-        }
-        return $this->tabs;
+        reset($this->tabs);
+        $firstCell = key($this->tabs);
+        $this->tabs[$firstCell]->setSelected();
     }
 }
