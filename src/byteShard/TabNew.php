@@ -11,11 +11,12 @@ use byteShard\Internal\Layout;
 use byteShard\Internal\NavigationItem;
 use byteShard\Internal\Permission\PermissionImplementation;
 use byteShard\Internal\TabLegacyInterface;
+use byteShard\Internal\Toolbar\ToolbarContainer;
 use byteShard\Layout\Enum\Pattern;
 use byteShard\Utils\Strings;
 use UnitEnum;
 
-abstract class TabNew implements TabLegacyInterface, NavigationItem
+abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarContainer
 {
     use PermissionImplementation;
 
@@ -28,6 +29,7 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem
     //Todo: private string  $label;
     private bool                       $initialized = false;
     private Layout|TabBar|SideBar|null $content     = null;
+    private bool                       $toolbar     = false;
 
     public function __construct(string|UnitEnum ...$permissions)
     {
@@ -40,6 +42,11 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem
     public function getSelected(): bool
     {
         return $this->selected;
+    }
+
+    public function setToolbar(): void
+    {
+        $this->toolbar = true;
     }
 
     /**
@@ -286,8 +293,21 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem
         if ($this->closable === true) {
             $result['closable'] = true;
         }
-        if (isset($this->toolbar)) {
-            $result['toolbar'] = true;
+        if (isset($this->toolbar) && $this->toolbar === true) {
+            //TODO: implement toolbar. events have to be routed to the tab class where the toolbar is defined.
+            //TODO: some work has to be done in the toolbar repo
+            $result['toolbar']                      = [];
+            $result['toolbar']['toolbar']           = true;
+            $result['toolbar']['toolbarContent']    = '<?xml version="1.0" encoding="utf-8"?>
+                    <toolbar>
+                        <item type="button" id="id0" img="add.svg" text="Position hinzufügen"/>
+                        <item type="button" id="id1" enabled="" imgdis="add.svg" img="add.svg" text="Personen zuweisen"/>
+                        <item type="button" id="id2" enabled="" imgdis="tick.svg" img="tick.svg" text="Position schließen"/>
+                    </toolbar>';
+            $result['toolbar']['toolbarEvents']     = [
+                'onClick' => ['doOnClick']
+            ];
+            $result['toolbar']['toolbarParameters'] = [];
         }
         return $result;
     }
