@@ -1,3 +1,15 @@
+# [2.11.0](https://github.com/bespin-studios/byteshard-core/compare/v2.10.0...v2.11.0) (2025-06-26)
+
+
+### Bug Fixes
+
+* update dependency ([caa3dfb](https://github.com/bespin-studios/byteshard-core/commit/caa3dfbfbc393868a76cac67f9a78f522aaa610e))
+
+
+### Features
+
+* configure oauth and ldap user properties in config ([20c88a1](https://github.com/bespin-studios/byteshard-core/commit/20c88a11b3468a991a94b360ff31135e9b3ce104))
+
 # [2.10.0](https://github.com/bespin-studios/byteshard-core/compare/v2.9.4...v2.10.0) (2025-06-24)
 
 
