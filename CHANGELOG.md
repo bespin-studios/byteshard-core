@@ -1,3 +1,13 @@
+# [2.12.0](https://github.com/bespin-studios/byteshard-core/compare/v2.11.0...v2.12.0) (2025-06-27)
+
+
+### Features
+
+* add new object properties to client response ([f563f0f](https://github.com/bespin-studios/byteshard-core/commit/f563f0fd685760de35148427217b1131f99090ab))
+* dedicated SideBar class ([18667bc](https://github.com/bespin-studios/byteshard-core/commit/18667bc7607505f3a72d2d532fded10a054da912))
+* dedicated TabBar class ([5d812d1](https://github.com/bespin-studios/byteshard-core/commit/5d812d150938b0d4ee1e7c5a4a5c480afacb4297))
+* started work to reimplement toolbar on tab ([19e5c79](https://github.com/bespin-studios/byteshard-core/commit/19e5c7959b8a637b67a407c4e71feebc1019a3f0))
+
 # [2.11.0](https://github.com/bespin-studios/byteshard-core/compare/v2.10.0...v2.11.0) (2025-06-26)
 
 
