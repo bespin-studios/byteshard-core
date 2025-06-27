@@ -11,9 +11,9 @@ abstract class SideBarItem extends TabNew
         $this->icon = $icon;
     }
 
-    public function getNavigationData(): array
+    public function getItemConfig(string $selectedId = ''): array
     {
-        $result = parent::getNavigationData();
+        $result = parent::getItemConfig($selectedId);
         if (isset($this->icon)) {
             $result['icon'] = $this->icon;
         }

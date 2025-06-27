@@ -82,11 +82,20 @@ abstract class Environment implements ParametersInterface, JsonSerializable
      */
     protected string $locale = 'en';
 
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
     /**
      * List all supported locales depending on the application
      * @var array
      */
     protected array $locales = ['en'];
+    public function getLocales(): array
+    {
+        return $this->locales;
+    }
 
     /**
      * environment which can be configured in config
@@ -741,14 +750,10 @@ abstract class Environment implements ParametersInterface, JsonSerializable
         return false;
     }
 
-    /**
-     * @param $user_id
-     * @return string
-     */
-    private function getLastTab($user_id): string
+    public function getLastTab($userId): string
     {
         $model = $this->getDataModel();
-        return $model->getLastTab($user_id);
+        return $model->getLastTab($userId);
     }
 
 

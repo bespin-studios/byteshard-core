@@ -58,6 +58,12 @@ class en extends Locale
         self::$locale['debug']['authenticate']['no_action'] = 'AuthenticationResult has no action specified';
     }
 
+    protected function get_Internal_Permission_NoApplicationPermissionError_locale(): void
+    {
+        self::$locale['Tab']['Label']       = 'No permission';
+        self::$locale['Cell']['a']['Label'] = 'No permission';
+    }
+
     protected function get_session_locale(): void
     {
         self::$locale['tab']['label']['noPermission'] = 'No permission';
