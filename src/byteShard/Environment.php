@@ -750,14 +750,10 @@ abstract class Environment implements ParametersInterface, JsonSerializable
         return false;
     }
 
-    /**
-     * @param $user_id
-     * @return string
-     */
-    public function getLastTab($user_id): string
+    public function getLastTab($userId): string
     {
         $model = $this->getDataModel();
-        return $model->getLastTab($user_id);
+        return $model->getLastTab($userId);
     }
 
 
