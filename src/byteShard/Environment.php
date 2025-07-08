@@ -14,6 +14,7 @@ use byteShard\Database\Struct\Parameters;
 use byteShard\Enum\LogLevel;
 use byteShard\Form\Enum\Label\Position;
 use byteShard\Form\Settings;
+use byteShard\Internal\ApplicationRootInterface;
 use byteShard\Internal\Authentication\Authentication;
 use byteShard\Internal\Authentication\AuthenticationAction;
 use byteShard\Internal\Authentication\AuthenticationInterface;
@@ -1096,5 +1097,11 @@ abstract class Environment implements ParametersInterface, JsonSerializable
     public function getConfig(): Config
     {
         return $this->config;
+    }
+
+    public function getApplicationRoot(): ?ApplicationRootInterface
+    {
+        trigger_error('add '.__METHOD__.' to your \App\Config\ByteShard config and initialize your ApplicationRoot, e.g. with new '.TabBar::class, E_USER_DEPRECATED);
+        return null;
     }
 }
