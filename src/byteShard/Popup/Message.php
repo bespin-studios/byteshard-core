@@ -6,9 +6,16 @@
 
 namespace byteShard\Popup;
 
+use byteShard\Enum\ContentFormat;
+use byteShard\Enum\ContentType;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Form\Enum\Label\Align;
 use byteShard\Internal\SimpleXML;
+use byteShard\Internal\Struct\ClientCell;
+use byteShard\Internal\Struct\ClientCellComponent;
+use byteShard\Internal\Struct\ClientCellEvent;
+use byteShard\Internal\Struct\ClientCellProperties;
+use byteShard\Layout\Enum\Pattern;
 use byteShard\Locale;
 use byteShard\Popup\Enum\Message\Type;
 use byteShard\Utils\Strings;
@@ -147,32 +154,27 @@ class Message
         }
     }
 
-    private function getMessageString(string $message, string $contentType = 'XML'): string
+    private function getMessageString(string $message, ContentFormat $format = ContentFormat::XML): string
     {
-        if ($contentType === 'JSON') {
+        if ($format === ContentFormat::JSON) {
             return str_replace('"', '&quot;', Strings::purify($message));
         }
         return Strings::purify($message, true);
     }
 
-    /**
-     * @param string $contentType
-     * @return array
-     */
-    public function getNavigationArray(string $contentType = 'XML'): array
+    public function getNavigationArray(ContentFormat $format = ContentFormat::XML): array
     {
         $className = $this->type->value.($this->labelAlign === Align::CENTER ? '_center' : '').'_label';
         $list      = [];
         foreach ($this->messages as $messageId => $message) {
-            $list[] = ['type' => 'label', 'name' => 'Message'.$messageId, 'label' => $this->getMessageString($message, $contentType), 'className' => $className, 'position' => 'label-left'];
+            $list[] = ['type' => 'label', 'name' => 'Message'.$messageId, 'label' => $this->getMessageString($message, $format), 'className' => $className, 'position' => 'label-left'];
         }
         $items[] = ['type' => 'block', 'className' => 'bs_message_block', 'list' => $list];
         $items[] = ['type' => 'button', 'name' => 'close', 'userdata' => ['clientClose' => true], 'value' => Locale::get('byteShard.popup.message.button.ok'), 'className' => 'bs_message_button', 'offsetTop' => '10'];
 
-        if ($contentType === 'JSON') {
+        if ($format === ContentFormat::JSON) {
             $content = json_encode($items);
         } else {
-            $contentType = 'XML';
             SimpleXML::initializeDecode();
             $xmlElement = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><items/>');
             foreach ($items as $item) {
@@ -189,20 +191,17 @@ class Message
                 'class'  => 'popup_bs_message_popup',
                 'width'  => $this->width,
                 'layout' => [
-                    'pattern' => '1C',
+                    'pattern' => Pattern::PATTERN_1C,
                     'cells'   => [
-                        'a' =>
-                            [
-                                'label'             => $label,
-                                'toolbar'           => false,
-                                'content'           => $content,
-                                'contentType'       => 'DHTMLXForm',
-                                'contentFormat'     => $contentType,
-                                'contentParameters' => [],
-                                'contentEvents'     => [
-                                    'onButtonClick' => [['doOnCloseButtonClick']]
-                                ]
-                            ]
+                        'a' => new ClientCell(
+                            new ClientCellProperties(label: $label),
+                            new ClientCellComponent(
+                                type   : ContentType::DhtmlxForm,
+                                content: $content,
+                                events : [new ClientCellEvent('onButtonClick', 'doOnCloseButtonClick')],
+                                format : $format
+                            )
+                        )
                     ]
                 ]
             ]
@@ -214,11 +213,11 @@ class Message
      * @param string $token
      * @param Type $type
      * @param bool $useToken
-     * @param string $contentType
+     * @param ContentFormat $contentFormat
      * @param int|null $height
      * @return array
      */
-    public static function getClientResponse(string $token = '', Type $type = Type::ERROR, bool $useToken = true, string $contentType = 'XML', ?int $height = null): array
+    public static function getClientResponse(string $token = '', Type $type = Type::ERROR, bool $useToken = true, ContentFormat $contentFormat = ContentFormat::XML, ?int $height = null): array
     {
         $localClass = static::class;
         if ($useToken === true) {
@@ -234,7 +233,7 @@ class Message
         if ($height !== null) {
             $message->setHeight($height);
         }
-        return $message->getNavigationArray($contentType);
+        return $message->getNavigationArray($contentFormat);
     }
 
     /**
@@ -246,6 +245,7 @@ class Message
      */
     public static function error(string $token = '', ?int $height = null, bool $useToken = true, string $contentType = 'XML'): array
     {
+        $format     = ContentFormat::from($contentType);
         $localClass = static::class;
         if ($useToken === true) {
             $text = Locale::getArray($token);
@@ -281,7 +281,7 @@ class Message
         } else {
             $message->setHeight($height);
         }
-        return $message->getNavigationArray($contentType);
+        return $message->getNavigationArray($format);
     }
 
     /**

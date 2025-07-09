@@ -7,6 +7,7 @@
 namespace byteShard\Popup;
 
 use byteShard\Enum\AccessType;
+use byteShard\Enum\ContentType;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Exception;
 use byteShard\Form\Control\Button;
@@ -19,6 +20,10 @@ use byteShard\Internal\Form\FormObject;
 use byteShard\Internal\Form\FormObject\Proxy;
 use byteShard\Internal\PopupInterface;
 use byteShard\Internal\Request\EventType;
+use byteShard\Internal\Struct\ClientCell;
+use byteShard\Internal\Struct\ClientCellComponent;
+use byteShard\Internal\Struct\ClientCellEvent;
+use byteShard\Internal\Struct\ClientCellProperties;
 use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\GetData;
 use byteShard\Locale;
@@ -164,7 +169,13 @@ class Confirmation implements PopupInterface
                     '.$this->getHiddenField(self::EVENT_TYPE, $eventType, false).'
                     '.$this->getHiddenField(self::OBJECT_VALUE, $this->objectValue, false).'
                 </items>';
-
+        $post         = [];
+        if ($this->verificationValue !== '') {
+            $post = [
+                'bs_confirmation_id' => $confirmButtonEventId,
+                'bs_confirmation'    => $this->verificationValue
+            ];
+        }
         $result['popup'][$this->confirmationPopupId] = [
             'height' => $this->height !== null ? $this->height : self::DEFAULT_HEIGHT,
             'width'  => $this->width !== null ? $this->width : self::DEFAULT_WIDTH,
@@ -173,31 +184,19 @@ class Confirmation implements PopupInterface
             'layout' => [
                 'pattern' => '1C',
                 'cells'   => [
-                    'a' => [
-                        'ID'                => $this->confirmationPopupId,
-                        'EID'               => '',
-                        'label'             => $this->label,
-                        'toolbar'           => false,
-                        'content'           => $content,
-                        'contentType'       => 'DHTMLXForm',
-                        'contentFormat'     => 'XML',
-                        'contentParameters' => [
-                            'op' => $this->getObjectProperties()
-                        ],
-                        'contentEvents'     => [
-                            'onButtonClick' => [
-                                'doOnCloseButtonClick',
-                                'doOnButtonClick'
-                            ]
-                        ]
-                    ]
-                ],
+                    'a' => new ClientCell(
+                        new ClientCellProperties(label: $this->label, id: $this->confirmationPopupId),
+                        new ClientCellComponent(
+                            type   : ContentType::DhtmlxForm,
+                            content: $content,
+                            events : [new ClientCellEvent('onButtonClick', 'doOnButtonClick'), new ClientCellEvent('onButtonClick', 'doOnCloseButtonClick')],
+                            pre    : ['op' => $this->getObjectProperties()],
+                            post   : $post
+                        )
+                    )
+                ]
             ]
         ];
-        if ($this->verificationValue !== '') {
-            $result['popup'][$this->confirmationPopupId]['layout']['cells']['a']['contentParameters']['afterDataLoading']['bs_confirmation_id'] = $confirmButtonEventId;
-            $result['popup'][$this->confirmationPopupId]['layout']['cells']['a']['contentParameters']['afterDataLoading']['bs_confirmation']    = $this->verificationValue;
-        }
         $result['state'] = HttpResponseState::SUCCESS->value;
         return $result;
     }

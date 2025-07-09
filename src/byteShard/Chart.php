@@ -8,8 +8,12 @@ namespace byteShard;
 
 use byteShard\Chart\Legend\Legend;
 use byteShard\Chart\Axis\Axis;
+use byteShard\Enum\ContentFormat;
+use byteShard\Enum\ContentType;
 use byteShard\Internal\CellContent;
 use byteShard\Internal\Chart\View;
+use byteShard\Internal\Struct\ClientCell;
+use byteShard\Internal\Struct\ClientCellComponent;
 
 class Chart extends CellContent
 {
@@ -29,7 +33,6 @@ class Chart extends CellContent
      */
     public function getCellContent(array $content = []): array
     {
-        //$parent_content = parent::getCellContent($content);
         switch ($this->getAccessType()) {
             case Enum\AccessType::NONE:
                 //TODO: return a dhtmlxForm with a no permission label
@@ -39,14 +42,16 @@ class Chart extends CellContent
                 $this->defineCellContent();
                 break;
         }
-        return [
-            'cellHeader'        => '',
-            'content'           => $this->getContent(),
-            'contentType'       => 'DHTMLXChart',
-            'contentEvents'     => [],
-            'contentParameters' => [],
-            'contentFormat'     => 'json'
-        ];
+        $components   = parent::getComponents();
+        $components[] = new ClientCellComponent(
+            type   : ContentType::DhtmlxChart,
+            content: $this->getContent(),
+            format : ContentFormat::JSON
+        );
+        $result       = new ClientCell(
+            ...$components
+        );
+        return $result->getArray();
     }
 
     /** @API */
