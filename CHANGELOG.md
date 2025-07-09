@@ -1,3 +1,10 @@
+## [2.12.1](https://github.com/bespin-studios/byteshard-core/compare/v2.12.0...v2.12.1) (2025-07-09)
+
+
+### Bug Fixes
+
+* add a deprecated default for the new application root ([4246945](https://github.com/bespin-studios/byteshard-core/commit/4246945b540ebad8da815df53bfe80723999d45b))
+
 # [2.12.0](https://github.com/bespin-studios/byteshard-core/compare/v2.11.0...v2.12.0) (2025-06-27)
 
 
