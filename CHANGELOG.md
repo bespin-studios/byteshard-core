@@ -1,3 +1,48 @@
+## [2.12.1](https://github.com/bespin-studios/byteshard-core/compare/v2.12.0...v2.12.1) (2025-07-09)
+
+
+### Bug Fixes
+
+* add a deprecated default for the new application root ([4246945](https://github.com/bespin-studios/byteshard-core/commit/4246945b540ebad8da815df53bfe80723999d45b))
+
+# [2.12.0](https://github.com/bespin-studios/byteshard-core/compare/v2.11.0...v2.12.0) (2025-06-27)
+
+
+### Features
+
+* add new object properties to client response ([f563f0f](https://github.com/bespin-studios/byteshard-core/commit/f563f0fd685760de35148427217b1131f99090ab))
+* dedicated SideBar class ([18667bc](https://github.com/bespin-studios/byteshard-core/commit/18667bc7607505f3a72d2d532fded10a054da912))
+* dedicated TabBar class ([5d812d1](https://github.com/bespin-studios/byteshard-core/commit/5d812d150938b0d4ee1e7c5a4a5c480afacb4297))
+* started work to reimplement toolbar on tab ([19e5c79](https://github.com/bespin-studios/byteshard-core/commit/19e5c7959b8a637b67a407c4e71feebc1019a3f0))
+
+# [2.11.0](https://github.com/bespin-studios/byteshard-core/compare/v2.10.0...v2.11.0) (2025-06-26)
+
+
+### Bug Fixes
+
+* update dependency ([caa3dfb](https://github.com/bespin-studios/byteshard-core/commit/caa3dfbfbc393868a76cac67f9a78f522aaa610e))
+
+
+### Features
+
+* configure oauth and ldap user properties in config ([20c88a1](https://github.com/bespin-studios/byteshard-core/commit/20c88a11b3468a991a94b360ff31135e9b3ce104))
+
+# [2.10.0](https://github.com/bespin-studios/byteshard-core/compare/v2.9.4...v2.10.0) (2025-06-24)
+
+
+### Bug Fixes
+
+* add check if the user token cookie is configured ([10d7cc0](https://github.com/bespin-studios/byteshard-core/commit/10d7cc02c8e174f0e0917a6ce83e0f6fa08f8d2c))
+* move groups parsing to ldap class ([66410e1](https://github.com/bespin-studios/byteshard-core/commit/66410e1d947d4435c9851ca884683ec8abf78ec7))
+* once using the right private/public key, the original jwt function works. ([2e633eb](https://github.com/bespin-studios/byteshard-core/commit/2e633ebce16b3a8df4457bce4896231d3bc20063))
+
+
+### Features
+
+* add functionality to create temporary keys for jwt-user cookie ([6d10542](https://github.com/bespin-studios/byteshard-core/commit/6d105424b4772d500e35291ec3273d3c2a640b18))
+* initial draft for a new static user model via a jwt token ([93cd037](https://github.com/bespin-studios/byteshard-core/commit/93cd037025075fa1f21610df593ccdbb2d6766fb))
+* using the User object in the local provider as well ([be7b2ed](https://github.com/bespin-studios/byteshard-core/commit/be7b2ed38e3834e9a32f9fc436dd26204b7d6239))
+
 ## [2.9.4](https://github.com/bespin-studios/byteshard-core/compare/v2.9.3...v2.9.4) (2025-06-18)
 
 
