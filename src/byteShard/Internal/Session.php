@@ -107,17 +107,20 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
 
     public function getSelectedTab(): string
     {
+        //TODO: refactor, but still works
         return $this->tabs->getSelectedTab();
     }
 
     public function setSelectedTab(ID\ID $id): bool
     {
+        //TODO: refactor, but still works
         $this->tabs->setSelectedTab($id->getTabId());
         return true;
     }
 
     public function getTab(ID\ID $id): ?Tab
     {
+        //TODO: refactor, but still works
         return $this->tabs->getTab($id);
     }
 
@@ -649,6 +652,7 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
         $result = [];
         if ($this->sessionLocale->isSupportedLocale($locale)) {
             $this->sessionLocale->setUserSelectedLocale($locale);
+            //TODO: this is currently not working
             $result = $this->tabs->getLocaleForAllTabs();
         }
         $result['state'] = Enum\HttpResponseState::SUCCESS->value;

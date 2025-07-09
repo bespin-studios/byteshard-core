@@ -6,6 +6,8 @@
 
 namespace byteShard;
 
+use byteShard\Enum\ContentFormat;
+use byteShard\Enum\ContentType;
 use byteShard\Event\CellActions;
 use byteShard\Event\EventResult;
 use byteShard\Event\OnEmptyClickInterface;
@@ -14,6 +16,10 @@ use byteShard\Event\OnScrollForwardInterface;
 use byteShard\ID\DateIDElement;
 use byteShard\ID\ID;
 use byteShard\Internal\CellContent;
+use byteShard\Internal\Struct\ClientCell;
+use byteShard\Internal\Struct\ClientCellComponent;
+use byteShard\Internal\Struct\ClientCellEvent;
+use byteShard\Internal\Struct\ClientCellProperties;
 use byteShard\Scheduler\DateClass;
 use byteShard\Scheduler\DateTemplate;
 use byteShard\Scheduler\Entry;
@@ -78,26 +84,22 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
 
     public function getCellContent(array $content = []): array
     {
-        $parent_content = parent::getCellContent($content);
+        $components = parent::getComponents();
         $this->defineCellContent();
         $this->restorePreviousSelectedId();
         $this->setDateTemplate();
-        $format = $this->cell->getContentFormat();
-        return array_merge(
-            $parent_content,
-            array_filter(
-                [
-                    'cellHeader' => $this->getCellHeader()
-                ]
-            ),
-            [
-                'content'           => $this->getContent(),
-                'contentType'       => $this->cellContentType,
-                'contentEvents'     => $this->getCellEvents(),
-                'contentParameters' => $this->getCellParameters(),
-                'contentFormat'     => 'JSON'
-            ]
+        $components[] = new ClientCellComponent(
+            type   : ContentType::DhtmlxScheduler,
+            content: $this->getContent(),
+            events : $this->getCellEvents(),
+            pre    : $this->getCellParameters(),
+            format : ContentFormat::JSON
         );
+        $result       = new ClientCell(
+            new ClientCellProperties(cellHeader: $this->getCellHeader()),
+            ...$components
+        );
+        return $result->getArray();
     }
 
     /**
@@ -159,15 +161,7 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
     {
         $events = [];
         foreach ($this->getEvents() as $event) {
-            $functionName = $event->getFunctionName();
-            $eventType    = $event->getEventType();
-            if (array_key_exists($eventType, $events)) {
-                if (!in_array($functionName, $events[$eventType])) {
-                    $events[$eventType][] = $functionName;
-                }
-            } else {
-                $events[$eventType][] = $functionName;
-            }
+            $events[] = new ClientCellEvent($event->getEventType(), $event->getFunctionName());
             $this->cell->registerContentEvent($event);
         }
         return $events;

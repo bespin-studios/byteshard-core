@@ -275,9 +275,13 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         return $this;
     }
 
-    public function setNonce(): string
+    public function setNonce(string $nonce = ''): string
     {
-        $this->nonce = Crypto::randomBytes(24);
+        if ($nonce !== '') {
+            $this->nonce = $nonce;
+        } else {
+            $this->nonce = Crypto::randomBytes(24);
+        }
         return $this->nonce;
     }
 
