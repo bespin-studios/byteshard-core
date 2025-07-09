@@ -1,3 +1,10 @@
+## [2.12.2](https://github.com/bespin-studios/byteshard-core/compare/v2.12.1...v2.12.2) (2025-07-09)
+
+
+### Bug Fixes
+
+* use new notation expected by frontend ([af3b286](https://github.com/bespin-studios/byteshard-core/commit/af3b286966fc79524fb239878e8c436598e4dbc4))
+
 ## [2.12.1](https://github.com/bespin-studios/byteshard-core/compare/v2.12.0...v2.12.1) (2025-07-09)
 
 
