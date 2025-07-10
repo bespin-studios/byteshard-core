@@ -96,7 +96,9 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
             format : ContentFormat::JSON
         );
         return new ClientCell(
-            new ClientCellProperties(cellHeader: $this->getCellHeader()),
+            new ClientCellProperties(
+                nonce: $this->cell->getNonce(),
+                cellHeader: $this->getCellHeader()),
             ...$components
         );
     }

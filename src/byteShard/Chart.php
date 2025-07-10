@@ -14,6 +14,7 @@ use byteShard\Internal\CellContent;
 use byteShard\Internal\Chart\View;
 use byteShard\Internal\Struct\ClientCell;
 use byteShard\Internal\Struct\ClientCellComponent;
+use byteShard\Internal\Struct\ClientCellProperties;
 
 class Chart extends CellContent
 {
@@ -45,7 +46,7 @@ class Chart extends CellContent
             format : ContentFormat::JSON
         );
         return new ClientCell(
-            null,
+            new ClientCellProperties(nonce: $this->cell->getNonce()),
             ...$components
         );
     }
