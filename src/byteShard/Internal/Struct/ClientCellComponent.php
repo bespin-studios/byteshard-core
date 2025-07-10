@@ -6,7 +6,7 @@ use byteShard\Enum\ContentFormat;
 use byteShard\Enum\ContentType;
 use JsonSerializable;
 
-class ClientCellComponent implements JsonSerializable
+class ClientCellComponent implements JsonSerializable, UiComponentInterface
 {
     public function __construct(
         public readonly ContentType         $type,
