@@ -1,3 +1,11 @@
+## [2.12.4](https://github.com/bespin-studios/byteshard-core/compare/v2.12.3...v2.12.4) (2025-07-10)
+
+
+### Bug Fixes
+
+* add pollId and nonce to clientCellProperties ([2481c03](https://github.com/bespin-studios/byteshard-core/commit/2481c03af931bd098e72fed34539184a99fdd620))
+* make events unique ([034874f](https://github.com/bespin-studios/byteshard-core/commit/034874f70341a27c258f7fb31867465a421eb7ff))
+
 ## [2.12.3](https://github.com/bespin-studios/byteshard-core/compare/v2.12.2...v2.12.3) (2025-07-10)
 
 
