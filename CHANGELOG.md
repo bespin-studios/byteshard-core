@@ -1,3 +1,10 @@
+## [2.12.5](https://github.com/bespin-studios/byteshard-core/compare/v2.12.4...v2.12.5) (2025-07-10)
+
+
+### Bug Fixes
+
+* add pollId and nonce to clientCellProperties ([c5f2cad](https://github.com/bespin-studios/byteshard-core/commit/c5f2cad9e23d77a31f21d80a03512f64feef25b3))
+
 ## [2.12.4](https://github.com/bespin-studios/byteshard-core/compare/v2.12.3...v2.12.4) (2025-07-10)
 
 
