@@ -19,7 +19,6 @@ abstract class Accordion extends CellContent
     /**
      * @session write
      * @session read
-     * @return array
      * @internal
      */
     public function getCellContent(): ?ClientCell
