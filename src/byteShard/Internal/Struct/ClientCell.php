@@ -10,7 +10,7 @@ class ClientCell implements JsonSerializable
     public array             $components;
     public HttpResponseState $state;
 
-    public function __construct(public ?ClientCellProperties $cell = null, ClientCellComponent ...$components)
+    public function __construct(public ClientCellProperties $cell, ClientCellComponent ...$components)
     {
         $this->components = $components;
         $this->state      = HttpResponseState::ERROR;

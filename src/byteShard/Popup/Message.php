@@ -194,7 +194,7 @@ class Message
                     'pattern' => Pattern::PATTERN_1C,
                     'cells'   => [
                         'a' => new ClientCell(
-                            new ClientCellProperties(label: $label),
+                            new ClientCellProperties(nonce: '', label: $label),
                             new ClientCellComponent(
                                 type   : ContentType::DhtmlxForm,
                                 content: $content,

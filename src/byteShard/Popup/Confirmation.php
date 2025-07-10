@@ -185,7 +185,7 @@ class Confirmation implements PopupInterface
                 'pattern' => '1C',
                 'cells'   => [
                     'a' => new ClientCell(
-                        new ClientCellProperties(label: $this->label, id: $this->confirmationPopupId),
+                        new ClientCellProperties(nonce: '', label: $this->label, id: $this->confirmationPopupId),
                         new ClientCellComponent(
                             type   : ContentType::DhtmlxForm,
                             content: $content,
@@ -197,7 +197,7 @@ class Confirmation implements PopupInterface
                 ]
             ]
         ];
-        $result['state'] = HttpResponseState::SUCCESS->value;
+        $result['state']                             = HttpResponseState::SUCCESS->value;
         return $result;
     }
 

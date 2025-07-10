@@ -8,4 +8,13 @@ class ClientCellEvent
     {
 
     }
+
+    public static function getUniqueEvents(ClientCellEvent ...$events): array
+    {
+        $unique = [];
+        foreach ($events as $event) {
+            $unique[$event->event.'|'.$event->handler] = $event;
+        }
+        return array_values($unique);
+    }
 }

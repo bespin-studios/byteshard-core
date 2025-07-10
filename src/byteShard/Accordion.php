@@ -8,6 +8,7 @@ namespace byteShard;
 
 use byteShard\Internal\CellContent;
 use byteShard\Internal\Struct\ClientCell;
+use byteShard\Internal\Struct\ClientCellProperties;
 
 //use byteShard\Internal\Permission\PermissionImplementation;
 
@@ -31,7 +32,7 @@ abstract class Accordion extends CellContent
             'cells'         => array(array('id' => 'a1', 'text' => 'Foo'), array('id' => 'a2', 'text' => 'Bar'), array('id' => 'a3', 'text' => 'Baz')),
             'contentType'   => $this->cellContentType,
             'contentFormat' => $this->cell->getContentFormat()));
-        return new ClientCell();
+        return new ClientCell(new ClientCellProperties(nonce: $this->cell->getNonce()));
     }
     //private $cell;
 
