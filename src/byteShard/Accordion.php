@@ -7,6 +7,7 @@
 namespace byteShard;
 
 use byteShard\Internal\CellContent;
+use byteShard\Internal\Struct\ClientCell;
 
 //use byteShard\Internal\Permission\PermissionImplementation;
 
@@ -18,12 +19,11 @@ abstract class Accordion extends CellContent
     /**
      * @session write
      * @session read
-     * @return array
      * @internal
      */
-    public function getCellContent(array $content = array()): array
+    public function getCellContent(): ?ClientCell
     {
-        $parent_content = parent::getCellContent(array());
+        $parent_content = parent::getComponents();
         //'content'           => $this->getXML(),
         //'contentEvents'     => $this->getCellEvents(),
         //'contentParameters' => $this->getCellParameters(),
@@ -31,7 +31,7 @@ abstract class Accordion extends CellContent
             'cells'         => array(array('id' => 'a1', 'text' => 'Foo'), array('id' => 'a2', 'text' => 'Bar'), array('id' => 'a3', 'text' => 'Baz')),
             'contentType'   => $this->cellContentType,
             'contentFormat' => $this->cell->getContentFormat()));
-        return $test;
+        return new ClientCell();
     }
     //private $cell;
 

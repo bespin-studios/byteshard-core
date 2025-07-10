@@ -27,11 +27,7 @@ class Chart extends CellContent
     private int    $origin;
     private string $label;
 
-    /**
-     * @param mixed[] $content
-     * @return array<string,string|array<string, array<string, bool|int|string>|int|string>>
-     */
-    public function getCellContent(array $content = []): array
+    public function getCellContent(): ?ClientCell
     {
         switch ($this->getAccessType()) {
             case Enum\AccessType::NONE:
@@ -48,10 +44,10 @@ class Chart extends CellContent
             content: $this->getContent(),
             format : ContentFormat::JSON
         );
-        $result       = new ClientCell(
+        return new ClientCell(
+            null,
             ...$components
         );
-        return $result->getArray();
     }
 
     /** @API */

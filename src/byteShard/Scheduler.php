@@ -82,7 +82,7 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
         }
     }
 
-    public function getCellContent(array $content = []): array
+    public function getCellContent(): ?ClientCell
     {
         $components = parent::getComponents();
         $this->defineCellContent();
@@ -95,11 +95,10 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
             pre    : $this->getCellParameters(),
             format : ContentFormat::JSON
         );
-        $result       = new ClientCell(
+        return new ClientCell(
             new ClientCellProperties(cellHeader: $this->getCellHeader()),
             ...$components
         );
-        return $result->getArray();
     }
 
     /**

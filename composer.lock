@@ -51,16 +51,16 @@
         },
         {
             "name": "byteshard/contracts",
-            "version": "v1.0.2",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-contracts.git",
-                "reference": "442330f7c7bfa181f22efb3574363ad0dc479c9c"
+                "reference": "2c426c369f85b8bdc3c9cf301e072d269b64cad6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-contracts/zipball/442330f7c7bfa181f22efb3574363ad0dc479c9c",
-                "reference": "442330f7c7bfa181f22efb3574363ad0dc479c9c",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-contracts/zipball/2c426c369f85b8bdc3c9cf301e072d269b64cad6",
+                "reference": "2c426c369f85b8bdc3c9cf301e072d269b64cad6",
                 "shasum": ""
             },
             "require": {
@@ -88,9 +88,9 @@
             "description": "Package for interfaces and other things used by the byteShard components",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-contracts/issues",
-                "source": "https://github.com/bespin-studios/byteshard-contracts/tree/v1.0.2"
+                "source": "https://github.com/bespin-studios/byteshard-contracts/tree/v1.0.3"
             },
-            "time": "2025-05-27T13:47:30+00:00"
+            "time": "2025-07-10T06:14:17+00:00"
         },
         {
             "name": "byteshard/debug",

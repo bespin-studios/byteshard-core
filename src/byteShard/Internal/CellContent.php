@@ -21,6 +21,7 @@ use byteShard\Internal\Event\EventMigrationInterface;
 use byteShard\Internal\Export\ExportInterface;
 use byteShard\Internal\Export\HandlerInterface;
 use byteShard\Internal\Permission\PermissionImplementation;
+use byteShard\Internal\Struct\ClientCell;
 use byteShard\Internal\Struct\ClientCellComponent;
 use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\Navigation_ID;
@@ -359,22 +360,7 @@ abstract class CellContent implements ContainerInterface, ExportInterface
         return $this->cell->getContentClass();
     }
 
-    /**
-     * @param array $content
-     * @return array
-     * @throws Exception
-     */
-    public function getCellContent(array $content = []): array
-    {
-        $this->cell->resetEvents();
-        $this->cell->setNonce();
-        if (method_exists($this, 'defineToolbarContent')) {
-            $this->toolbar = ContentClassFactory::getToolbar($this->cell);
-            $this->defineToolbarContent();
-            return array_merge($content, $this->toolbar->getContents());
-        }
-        return $content;
-    }
+    abstract public function getCellContent(): ?ClientCell;
 
     /**
      * @return array<ClientCellComponent>
@@ -388,7 +374,10 @@ abstract class CellContent implements ContainerInterface, ExportInterface
         if (method_exists($this, 'defineToolbarContent')) {
             $this->toolbar = ContentClassFactory::getToolbar($this->cell);
             $this->defineToolbarContent();
-            $result[] = $this->toolbar->getContents();
+            $toolbar = $this->toolbar->getComponent();
+            if ($toolbar !== null) {
+                $result[] = $toolbar;
+            }
         }
         return $result;
     }
