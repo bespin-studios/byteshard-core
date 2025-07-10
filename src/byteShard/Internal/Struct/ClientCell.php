@@ -2,16 +2,27 @@
 
 namespace byteShard\Internal\Struct;
 
-class ClientCell
+use byteShard\Enum\HttpResponseState;
+use JsonSerializable;
+
+class ClientCell implements JsonSerializable
 {
-    public array $components;
+    public array             $components;
+    public HttpResponseState $state;
+
     public function __construct(public ?ClientCellProperties $cell = null, ClientCellComponent ...$components)
     {
         $this->components = $components;
+        $this->state      = HttpResponseState::ERROR;
     }
 
-    public function getArray(): array
+    public function setState(HttpResponseState $state): void
     {
-        return get_object_vars($this);
+        $this->state = $state;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return array_filter(get_object_vars($this), fn($value) => !empty($value));
     }
 }

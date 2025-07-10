@@ -7,6 +7,7 @@
 namespace byteShard;
 
 use byteShard\Internal\CellContent;
+use byteShard\Internal\Struct\ClientCell;
 
 abstract class Container
 {
@@ -19,13 +20,13 @@ abstract class Container
     
     abstract public function defineContainerContent(Cell $cell): CellContent;
 
-    public function getCellContent(): array
+    public function getCellContent(): ?ClientCell
     {
         if (isset($this->cell)) {
             $content = $this->defineContainerContent($this->cell);
             return $content->getCellContent();
         }
-        return [];
+        return null;
     }
     
     public function getCell(): ?Cell
