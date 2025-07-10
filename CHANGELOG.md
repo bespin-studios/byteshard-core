@@ -1,3 +1,10 @@
+## [2.12.3](https://github.com/bespin-studios/byteshard-core/compare/v2.12.2...v2.12.3) (2025-07-10)
+
+
+### Bug Fixes
+
+* use object instead of array, declare getCellContent abstract ([30e0edb](https://github.com/bespin-studios/byteshard-core/commit/30e0edb55854ea6ecfeea125ffc2675e6d6fe620))
+
 ## [2.12.2](https://github.com/bespin-studios/byteshard-core/compare/v2.12.1...v2.12.2) (2025-07-09)
 
 
