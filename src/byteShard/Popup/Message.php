@@ -12,9 +12,9 @@ use byteShard\Enum\HttpResponseState;
 use byteShard\Form\Enum\Label\Align;
 use byteShard\Internal\SimpleXML;
 use byteShard\Internal\Struct\ClientCell;
-use byteShard\Internal\Struct\ClientCellComponent;
 use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\Struct\ClientCellProperties;
+use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Layout\Enum\Pattern;
 use byteShard\Locale;
 use byteShard\Popup\Enum\Message\Type;
@@ -195,7 +195,7 @@ class Message
                     'cells'   => [
                         'a' => new ClientCell(
                             new ClientCellProperties(nonce: '', label: $label),
-                            new ClientCellComponent(
+                            new ContentComponent(
                                 type   : ContentType::DhtmlxForm,
                                 content: $content,
                                 events : [new ClientCellEvent('onButtonClick', 'doOnCloseButtonClick')],

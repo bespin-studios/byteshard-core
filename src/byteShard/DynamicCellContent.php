@@ -3,6 +3,7 @@
 namespace byteShard;
 
 use byteShard\Internal\CellContent;
+use byteShard\Internal\Struct\ClientCell;
 
 abstract class DynamicCellContent extends CellContent
 {
@@ -12,5 +13,10 @@ abstract class DynamicCellContent extends CellContent
     {
         $this->cell->setContentClassName(str_replace('App\\Cell\\', '', $dynamicClassName));
         return $this->cell;
+    }
+
+    public function getCellContent(): ?ClientCell
+    {
+        return null;
     }
 }
