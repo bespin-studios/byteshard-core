@@ -13,8 +13,8 @@ use byteShard\Enum\ContentType;
 use byteShard\Internal\CellContent;
 use byteShard\Internal\Chart\View;
 use byteShard\Internal\Struct\ClientCell;
-use byteShard\Internal\Struct\ClientCellComponent;
 use byteShard\Internal\Struct\ClientCellProperties;
+use byteShard\Internal\Struct\ContentComponent;
 
 class Chart extends CellContent
 {
@@ -40,7 +40,7 @@ class Chart extends CellContent
                 break;
         }
         $components   = parent::getComponents();
-        $components[] = new ClientCellComponent(
+        $components[] = new ContentComponent(
             type   : ContentType::DhtmlxChart,
             content: $this->getContent(),
             format : ContentFormat::JSON

@@ -21,10 +21,10 @@ use byteShard\Internal\Form\FormObject\Proxy;
 use byteShard\Internal\PopupInterface;
 use byteShard\Internal\Request\EventType;
 use byteShard\Internal\Struct\ClientCell;
-use byteShard\Internal\Struct\ClientCellComponent;
 use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\Struct\ClientCellProperties;
 use byteShard\Internal\Struct\ClientData;
+use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Internal\Struct\GetData;
 use byteShard\Locale;
 use byteShard\Session;
@@ -186,12 +186,12 @@ class Confirmation implements PopupInterface
                 'cells'   => [
                     'a' => new ClientCell(
                         new ClientCellProperties(nonce: '', label: $this->label, id: $this->confirmationPopupId),
-                        new ClientCellComponent(
+                        new ContentComponent(
                             type   : ContentType::DhtmlxForm,
                             content: $content,
                             events : [new ClientCellEvent('onButtonClick', 'doOnButtonClick'), new ClientCellEvent('onButtonClick', 'doOnCloseButtonClick')],
-                            pre    : ['op' => $this->getObjectProperties()],
-                            post   : $post
+                            setup  : ['op' => $this->getObjectProperties()],
+                            update : $post
                         )
                     )
                 ]

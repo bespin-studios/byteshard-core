@@ -137,16 +137,16 @@
         },
         {
             "name": "byteshard/enum",
-            "version": "v1.3.0",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-enum.git",
-                "reference": "e330205c2c7a876fb797c1ee068fcbae040313e2"
+                "reference": "af4f8d07770c23619a2d8290efa426cd0b24277e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-enum/zipball/e330205c2c7a876fb797c1ee068fcbae040313e2",
-                "reference": "e330205c2c7a876fb797c1ee068fcbae040313e2",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-enum/zipball/af4f8d07770c23619a2d8290efa426cd0b24277e",
+                "reference": "af4f8d07770c23619a2d8290efa426cd0b24277e",
                 "shasum": ""
             },
             "require": {
@@ -173,9 +173,9 @@
             "description": "Global enums for the byteShard framework",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-enum/issues",
-                "source": "https://github.com/bespin-studios/byteshard-enum/tree/v1.3.0"
+                "source": "https://github.com/bespin-studios/byteshard-enum/tree/v1.4.0"
             },
-            "time": "2025-07-09T09:51:47+00:00"
+            "time": "2025-07-11T19:48:54+00:00"
         },
         {
             "name": "byteshard/exception",
@@ -2592,16 +2592,16 @@
         },
         {
             "name": "composer/composer",
-            "version": "2.8.9",
+            "version": "2.8.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "b4e6bff2db7ce756ddb77ecee958a0f41f42bd9d"
+                "reference": "53834f587d7ab2527eb237459d7b94d1fb9d4c5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/b4e6bff2db7ce756ddb77ecee958a0f41f42bd9d",
-                "reference": "b4e6bff2db7ce756ddb77ecee958a0f41f42bd9d",
+                "url": "https://api.github.com/repos/composer/composer/zipball/53834f587d7ab2527eb237459d7b94d1fb9d4c5a",
+                "reference": "53834f587d7ab2527eb237459d7b94d1fb9d4c5a",
                 "shasum": ""
             },
             "require": {
@@ -2686,7 +2686,7 @@
                 "irc": "ircs://irc.libera.chat:6697/composer",
                 "issues": "https://github.com/composer/composer/issues",
                 "security": "https://github.com/composer/composer/security/policy",
-                "source": "https://github.com/composer/composer/tree/2.8.9"
+                "source": "https://github.com/composer/composer/tree/2.8.10"
             },
             "funding": [
                 {
@@ -2702,7 +2702,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-05-13T12:01:37+00:00"
+            "time": "2025-07-10T17:08:33+00:00"
         },
         {
             "name": "composer/metadata-minifier",

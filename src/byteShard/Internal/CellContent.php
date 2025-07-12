@@ -24,6 +24,7 @@ use byteShard\Internal\Permission\PermissionImplementation;
 use byteShard\Internal\Struct\ClientCell;
 use byteShard\Internal\Struct\ClientCellComponent;
 use byteShard\Internal\Struct\ClientData;
+use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Internal\Struct\Navigation_ID;
 use byteShard\Locale;
 use byteShard\Popup\Message;
@@ -363,7 +364,7 @@ abstract class CellContent implements ContainerInterface, ExportInterface
     abstract public function getCellContent(): ?ClientCell;
 
     /**
-     * @return array<ClientCellComponent>
+     * @return array<ClientCellComponent|ContentComponent>
      * @throws Exception
      */
     protected function getComponents(string $nonce = ''): array

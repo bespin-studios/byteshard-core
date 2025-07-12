@@ -17,9 +17,9 @@ use byteShard\ID\DateIDElement;
 use byteShard\ID\ID;
 use byteShard\Internal\CellContent;
 use byteShard\Internal\Struct\ClientCell;
-use byteShard\Internal\Struct\ClientCellComponent;
 use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\Struct\ClientCellProperties;
+use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Scheduler\DateClass;
 use byteShard\Scheduler\DateTemplate;
 use byteShard\Scheduler\Entry;
@@ -88,16 +88,16 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
         $this->defineCellContent();
         $this->restorePreviousSelectedId();
         $this->setDateTemplate();
-        $components[] = new ClientCellComponent(
+        $components[] = new ContentComponent(
             type   : ContentType::DhtmlxScheduler,
             content: $this->getContent(),
             events : $this->getCellEvents(),
-            pre    : $this->getCellParameters(),
+            setup  : $this->getCellParameters(),
             format : ContentFormat::JSON
         );
         return new ClientCell(
             new ClientCellProperties(
-                nonce: $this->cell->getNonce(),
+                nonce     : $this->cell->getNonce(),
                 cellHeader: $this->getCellHeader()),
             ...$components
         );

@@ -7,13 +7,15 @@ use JsonSerializable;
 
 class ClientCell implements JsonSerializable
 {
-    public array             $components;
+    public array             $content;
     public HttpResponseState $state;
+    public readonly string   $type;
 
-    public function __construct(public ClientCellProperties $cell, ClientCellComponent ...$components)
+    public function __construct(public ClientCellProperties $setup, ClientCellComponent|ContentComponent ...$components)
     {
-        $this->components = $components;
-        $this->state      = HttpResponseState::ERROR;
+        $this->content = $components;
+        $this->state   = HttpResponseState::ERROR;
+        $this->type    = 'CellContent';
     }
 
     public function setState(HttpResponseState $state): void
@@ -23,6 +25,8 @@ class ClientCell implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return array_filter(get_object_vars($this), fn($value) => !empty($value));
+        $result = array_filter(get_object_vars($this), fn($value) => !empty($value));
+        $result['content'] = [$result];
+        return $result;
     }
 }
