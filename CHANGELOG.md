@@ -1,3 +1,10 @@
+## [2.12.6](https://github.com/bespin-studios/byteshard-core/compare/v2.12.5...v2.12.6) (2025-07-12)
+
+
+### Bug Fixes
+
+* update ClientContent to be used consistently through all objects ([82b64fc](https://github.com/bespin-studios/byteshard-core/commit/82b64fcf25dc7578a9bfa3962658d343cc5e63f4))
+
 ## [2.12.5](https://github.com/bespin-studios/byteshard-core/compare/v2.12.4...v2.12.5) (2025-07-10)
 
 
