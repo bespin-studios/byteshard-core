@@ -1,3 +1,10 @@
+## [2.12.7](https://github.com/bespin-studios/byteshard-core/compare/v2.12.6...v2.12.7) (2025-07-15)
+
+
+### Bug Fixes
+
+* use unified component structure ([17d61b2](https://github.com/bespin-studios/byteshard-core/commit/17d61b20648585f09cac7078d2275414c0f80e9b))
+
 ## [2.12.6](https://github.com/bespin-studios/byteshard-core/compare/v2.12.5...v2.12.6) (2025-07-12)
 
 
