@@ -2,7 +2,9 @@
 
 namespace byteShard\Internal;
 
+use byteShard\Internal\Struct\ContentComponent;
+
 interface ApplicationRootInterface
 {
-    public function getRootParameters(?string $selectedId = null): array;
+    public function getRootParameters(?string $selectedId = null): ContentComponent;
 }

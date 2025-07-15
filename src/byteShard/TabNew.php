@@ -6,10 +6,13 @@
 
 namespace byteShard;
 
+use byteShard\Enum\ContentType;
 use byteShard\ID\TabIDElement;
 use byteShard\Internal\Layout;
 use byteShard\Internal\NavigationItem;
 use byteShard\Internal\Permission\PermissionImplementation;
+use byteShard\Internal\Struct\ClientCellEvent;
+use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Internal\TabLegacyInterface;
 use byteShard\Internal\Toolbar\ToolbarContainer;
 use byteShard\Layout\Enum\Pattern;
@@ -263,53 +266,54 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
         return $result;
     }
 
-    public function getItemConfig(string $selectedId = ''): array
+    public function getItemConfig(string $selectedId = ''): ContentComponent
     {
         if (!$this->isInitialized()) {
             $this->defineTabContent();
             $this->setInitialized();
         }
-        $result = [];
+        $content = [];
+        $setup   = [];
         switch (true) {
             case $this->content instanceof Layout:
                 $cells = $this->content->getCells();
                 foreach ($cells as $cell) {
                     Session::registerCell($cell);
                 }
-                $result['content']         = $this->content->getNavigationData();
-                $result['bubble']          = $this->content->bubble();
-                $result['content']['type'] = 'Layout';
+                $content[]       = $this->content->getItemConfig();
+                $setup['bubble'] = $this->content->bubble();
                 break;
             case $this->content instanceof TabBar:
             case $this->content instanceof SideBar:
-                $result = $this->content->getRootParameters($selectedId);
+                $content[] = $this->content->getRootParameters($selectedId);
                 break;
         }
-        $result['ID']    = $this->id->getEncryptedContainerId();
-        $result['label'] = $this->getLabel();
+        $setup['ID']    = $this->id->getEncryptedContainerId();
+        $setup['label'] = $this->getLabel();
         if ($this->selected === true) {
-            $result['selected'] = true;
+            $setup['selected'] = true;
         }
         if ($this->closable === true) {
-            $result['closable'] = true;
+            $setup['closable'] = true;
         }
         if (isset($this->toolbar) && $this->toolbar === true) {
             //TODO: implement toolbar. events have to be routed to the tab class where the toolbar is defined.
             //TODO: some work has to be done in the toolbar repo
-            $result['toolbar']                      = [];
-            $result['toolbar']['toolbar']           = true;
-            $result['toolbar']['toolbarContent']    = '<?xml version="1.0" encoding="utf-8"?>
+            $content[] = new ContentComponent(
+                type   : ContentType::DhtmlxToolbar,
+                content: '<?xml version="1.0" encoding="utf-8"?>
                     <toolbar>
                         <item type="button" id="id0" img="add.svg" text="Position hinzufügen"/>
                         <item type="button" id="id1" enabled="" imgdis="add.svg" img="add.svg" text="Personen zuweisen"/>
                         <item type="button" id="id2" enabled="" imgdis="tick.svg" img="tick.svg" text="Position schließen"/>
-                    </toolbar>';
-            $result['toolbar']['toolbarEvents']     = [
-                'onClick' => ['doOnClick']
-            ];
-            $result['toolbar']['toolbarParameters'] = [];
+                    </toolbar>',
+                events : [new ClientCellEvent('onClick', 'doOnClick')]);
         }
-        return $result;
+        return new ContentComponent(
+            type   : ContentType::DhtmlxTab,
+            content: $content,
+            setup  : $setup
+        );
     }
 
     /**

@@ -9,8 +9,11 @@ namespace byteShard\Internal;
 use byteShard\Accordion;
 use byteShard\Cell;
 use byteShard\Enum\AccessType;
+use byteShard\Enum\ContentType;
 use byteShard\Exception;
 use byteShard\ID;
+use byteShard\Internal\Struct\ClientCellEvent;
+use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Layout\Enum\Pattern;
 use byteShard\Layout\Separator;
 
@@ -152,8 +155,76 @@ class Layout
         return $this;
     }
 
+    public function getItemConfig(): ContentComponent
+    {
+        $content = [];
+        $events  = [];
+        $setup   = [];
+        // TODO:: choose layout depending on permissions
+        if ($this->pattern === null) {
+            $count                         = count($this->cells);
+            $setup['pattern'] = match ($count) {
+                2       => Pattern::PATTERN_2E->value,
+                3       => Pattern::PATTERN_3E->value,
+                4       => Pattern::PATTERN_4A->value,
+                5       => Pattern::PATTERN_5C->value,
+                6       => Pattern::PATTERN_6A->value,
+                7       => Pattern::PATTERN_7H->value,
+                default => Pattern::PATTERN_1C->value,
+            };
+        } else {
+            $setup['pattern'] = $this->pattern->value;
+        }
+        foreach ($this->separators as $separator) {
+            $setup['separatorSize'][] = $separator->getSeparatorSize();
+        }
+        if (!empty($this->cells)) {
+            $horizontal = '';
+            $vertical   = '';
+            foreach ($this->cells as $id => $cell) {
+                $content[] = $cell->getItemConfig($id);
+                if ($cell->getHorizontalAutoSize()) {
+                    if ($horizontal === '') {
+                        $horizontal = $id;
+                    } else {
+                        $horizontal .= ';'.$id;
+                    }
+                }
+                if ($cell->getVerticalAutoSize()) {
+                    if ($vertical === '') {
+                        $vertical = $id;
+                    } else {
+                        $vertical .= ';'.$id;
+                    }
+                }
+            }
+            if ($horizontal !== '') {
+                $setup['autoSize']['horizontal'] = $horizontal;
+            }
+            if ($vertical !== '') {
+                $setup['autoSize']['vertical'] = $vertical;
+            }
+            if ($this->eventOnCollapse === true) {
+                $events[] = new ClientCellEvent('onCollapse', 'doOnCollapse');
+            }
+            if ($this->eventOnExpand === true) {
+                $events[] = new ClientCellEvent('onExpand', 'doOnExpand');
+            }
+            if ($this->eventOnPanelResizeFinish) {
+                $events[] = new ClientCellEvent('onPanelResizeFinish', 'doOnPanelResizeFinish');
+            }
+        }
+        return new ContentComponent(
+            type   : ContentType::DhtmlxLayout,
+            content: $content,
+            events : $events,
+            setup  : $setup
+        );
+    }
+
     public function getNavigationData(): array
     {
+        trigger_error('getNavigationData is deprecated, refactor to getItemConfig', E_USER_DEPRECATED);
         // TODO:: choose layout depending on permissions
         if ($this->pattern === null) {
             $count             = count($this->cells);
@@ -221,7 +292,7 @@ class Layout
                 if (isset($interfaces[Cell\Bubble::class])) {
                     $layoutCell = new $className(new Cell());
                     try {
-                        $bubble     += $layoutCell->bubble();
+                        $bubble += $layoutCell->bubble();
                     } catch (\Exception) {
                         //TODO: log error
                     }
