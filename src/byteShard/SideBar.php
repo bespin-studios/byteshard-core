@@ -2,8 +2,11 @@
 
 namespace byteShard;
 
+use byteShard\Enum\ContentType;
 use byteShard\Internal\ApplicationRootInterface;
 use byteShard\Internal\Permission\NoApplicationPermissionError;
+use byteShard\Internal\Struct\ClientCellEvent;
+use byteShard\Internal\Struct\ContentComponent;
 
 class SideBar implements ApplicationRootInterface
 {
@@ -29,27 +32,22 @@ class SideBar implements ApplicationRootInterface
         $this->customHeader = $header;
     }
 
-    public function getRootParameters(?string $selectedId = null): array
+    public function getRootParameters(?string $selectedId = null): ContentComponent
     {
-        $result = [
-            'content' => [
-                'type'   => 'SideBar',
-                'config' => [
-                    'width' => $this->width,
-                ],
-                'events' => [
-                    'onSelect' => ['doOnSelect']
-                ]
-            ]
+        $type     = ContentType::DhtmlxSideBar;
+        $content  = [];
+        $events[] = new ClientCellEvent('onSelect', 'doOnSelect');
+        $setup    = [
+            'config' => ['width' => $this->width],
         ];
         if (isset($this->customHeader)) {
-            $result['content']['customHeader'] = $this->customHeader;
+            $setup['customHeader'] = $this->customHeader;
         }
         $this->initSideBarCells();
         $this->setSelectedSideBarCell($selectedId);
         if (!empty($this->sideBarCells)) {
             foreach ($this->sideBarCells as $sideBarCell) {
-                $result['content']['cells'][] = $sideBarCell->getItemConfig($selectedId);
+                $content[] = $sideBarCell->getItemConfig($selectedId);
             }
         } else {
             $tab = new NoApplicationPermissionError();
@@ -58,10 +56,15 @@ class SideBar implements ApplicationRootInterface
                 $tab->setInitialized();
             }
             $tab->setSelected();
-            $result['content']['type']   = 'TabBar';
-            $result['content']['tabs'][] = $tab->getItemConfig();
+            $type      = ContentType::DhtmlxTabBar;
+            $content[] = $tab->getItemConfig();
         }
-        return $result;
+        return new ContentComponent(
+            type   : $type,
+            content: $content,
+            events : $events,
+            setup  : $setup
+        );
     }
 
     private function initSideBarCells(): void

@@ -6,6 +6,7 @@
 
 namespace byteShard;
 
+use byteShard\Enum\ContentType;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Form\Control\Upload;
 use byteShard\Form\FormInterface;
@@ -1022,8 +1023,53 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         return Strings::purify(Locale::get($this->createLocaleBaseToken('Cell').'.Label'));
     }
 
+    public function getItemConfig(string $patternId): Struct\ContentComponent
+    {
+        $setup   = [
+            'ID'        => $this->id->getEncryptedCellId(),
+            'EID'       => $this->id->getEncryptedCellIdForEvent(),
+            'patternId' => $patternId
+        ];
+        if ($this->refactorCellCollapsedLabel !== null) {
+            $setup['collapsedLabel'] = $this->refactorCellCollapsedLabel;
+        }
+        if ($this->refactorCellCollapsed === true) {
+            $setup['collapsed'] = true;
+        }
+        if ($this->refactorCellWidth !== null) {
+            $setup['width'] = $this->refactorCellWidth;
+        }
+        if ($this->refactorCellHeight !== null) {
+            $setup['height'] = $this->refactorCellHeight;
+        }
+        if ($this->refactorCellUseFixedWidth === true) {
+            $setup['fixSize']['width'] = true;
+        }
+        if ($this->refactorCellUseFixedHeight === true) {
+            $setup['fixSize']['height'] = true;
+        }
+        if ($this->refactorCellHideHeader === true) {
+            $setup['hideHeader'] = true;
+            $setup['label']      = '';
+        } else {
+            $setup['label'] = $this->getLabel();
+        }
+        if ($this->refactorCellHideArrow === true) {
+            $setup['hideArrow'] = true;
+        }
+        if ($this->cssClass !== '') {
+            $setup['class'] = $this->cssClass;
+        }
+        return new Struct\ContentComponent(
+            type   : ContentType::DhtmlxLayoutCell,
+            content: [],
+            setup  : $setup,
+        );
+    }
+
     public function getNavigationData(?Session $session = null): array
     {
+        trigger_error('getNavigationData is deprecated, refactor to getItemConfig', E_USER_DEPRECATED);
         $cellData        = [];
         $cellData['ID']  = $this->id->getEncryptedCellId();
         $cellData['EID'] = $this->id->getEncryptedCellIdForEvent();

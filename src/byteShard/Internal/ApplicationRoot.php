@@ -25,10 +25,12 @@ class ApplicationRoot
 
     public function getRootArray(ApplicationRootInterface $rootObject): array
     {
-        $result           = $rootObject->getRootParameters($this->selectedId);
-        $result['locale'] = $this->getLocale();
-        $result['debug']  = $this->debug;
-        $result['sn']     = $this->getNonce();
+        $rootContent              = $rootObject->getRootParameters($this->selectedId);
+        $rootContent->setup['id'] = 0;
+        $result['content'][]      = $rootContent;
+        $result['locale']         = $this->getLocale();
+        $result['debug']          = $this->debug;
+        $result['sn']             = $this->getNonce();
         if ($this->dhtmlxCssImagePath !== null) {
             $result['dhtmlxCssImgPath'] = $this->dhtmlxCssImagePath;
         }

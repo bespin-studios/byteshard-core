@@ -191,28 +191,29 @@ class Popup extends LayoutContainer implements PopupInterface
      */
     public function getNavigationArray(): array
     {
-        $id       = $this->getNewId()->getEncryptedContainerId();
-        $nav[$id] = [];
+        $id     = $this->getNewId()->getEncryptedContainerId();
+        $result['setup']['id'] = $id;
         if (isset($this->popup['height'])) {
-            $nav[$id]['height'] = $this->popup['height'];
+            $result['setup']['height'] = $this->popup['height'];
         }
         if (isset($this->popup['width'])) {
-            $nav[$id]['width'] = $this->popup['width'];
+            $result['setup']['width'] = $this->popup['width'];
         }
         if (isset($this->popup['modal']) && $this->popup['modal'] === true) {
-            $nav[$id]['modal'] = true;
+            $result['setup']['modal'] = true;
         }
         if ($this instanceof OnPopupCloseInterface || $this->eventOnPopupClose === true) {
-            $nav[$id]['closeEvent'] = true;
+            $result['setup']['closeEvent'] = true;
         }
         if ($this->layout instanceof Layout) {
-            $nav[$id]['layout'] = $this->layout->getNavigationData();
+            $result['content'][] = $this->layout->getItemConfig();
+            $result['type']      = 'ByteShardPopup';
         } else {
             $e = new Exception(__METHOD__.': no Layout attached to popup');
             $e->setLocaleToken('byteShard.popup.getNavigationArray.no_layout');
             throw $e;
         }
-        return $nav;
+        return [$id => ['open' => $result]];
     }
 
     public function conditionsMet(): array

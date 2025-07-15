@@ -2,8 +2,11 @@
 
 namespace byteShard;
 
+use byteShard\Enum\ContentType;
 use byteShard\Internal\ApplicationRootInterface;
 use byteShard\Internal\Permission\NoApplicationPermissionError;
+use byteShard\Internal\Struct\ClientCellEvent;
+use byteShard\Internal\Struct\ContentComponent;
 
 class TabBar implements ApplicationRootInterface
 {
@@ -21,23 +24,23 @@ class TabBar implements ApplicationRootInterface
         foreach ($tabs as $tab) {
             $this->tabs[$tab->getId()] = $tab;
             if ($tab->isClosable()) {
-                $this->events['onTabClose'] = ['doOnTabClose'];
+                $this->events[] = new ClientCellEvent('onTabClose', 'doOnTabClose');
             }
         }
     }
 
-    public function getRootParameters(?string $selectedId = null): array
+    public function getRootParameters(?string $selectedId = null): ContentComponent
     {
-        $result                    = [];
-        $result['content']['type'] = 'TabBar';
         $this->initTabs();
         $this->setSelectedTab($selectedId);
+        $content = [];
+        $events  = [];
         if (!empty($this->tabs)) {
             foreach ($this->tabs as $tab) {
-                $result['content']['tabs'][] = $tab->getItemConfig($selectedId);
+                $content[] = $tab->getItemConfig($selectedId);
             }
-            $result['content']['events']             = $this->events;
-            $result['content']['events']['onSelect'] = ['doOnSelect'];
+            $events   = $this->events;
+            $events[] = new ClientCellEvent('onSelect', 'doOnSelect');
         } else {
             $tab = new NoApplicationPermissionError();
             if (!$tab->isInitialized()) {
@@ -45,9 +48,13 @@ class TabBar implements ApplicationRootInterface
                 $tab->setInitialized();
             }
             $tab->setSelected();
-            $result['content']['tabs'][] = $tab->getItemConfig();
+            $content[] = $tab->getItemConfig();
         }
-        return $result;
+        return new ContentComponent(
+            type   : ContentType::DhtmlxTabBar,
+            content: $content,
+            events : $events
+        );
     }
 
     private function initTabs(): void

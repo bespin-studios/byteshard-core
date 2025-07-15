@@ -2,6 +2,9 @@
 
 namespace byteShard;
 
+use byteShard\Enum\ContentType;
+use byteShard\Internal\Struct\ContentComponent;
+
 abstract class SideBarItem extends TabNew
 {
     private string $icon;
@@ -11,12 +14,13 @@ abstract class SideBarItem extends TabNew
         $this->icon = $icon;
     }
 
-    public function getItemConfig(string $selectedId = ''): array
+    public function getItemConfig(string $selectedId = ''): ContentComponent
     {
         $result = parent::getItemConfig($selectedId);
         if (isset($this->icon)) {
-            $result['icon'] = $this->icon;
+            $result->setup['icon'] = $this->icon;
         }
+        $result->type = ContentType::DhtmlxSideBarCell;
         return $result;
     }
 }
