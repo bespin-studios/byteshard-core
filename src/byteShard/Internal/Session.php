@@ -10,6 +10,7 @@ use byteShard\Crypto;
 use byteShard\Cell;
 use byteShard\Internal\Session\EncryptedIDStorageInterface;
 use byteShard\Internal\Session\SessionPopups;
+use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Popup;
 use byteShard\ID;
 use byteShard\Tab;
@@ -671,8 +672,13 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
 
     public function getNavigationArray(bool $debug, ?string $dhtmlxCssImagePath): array
     {
-        $result         = $this->tabs->getTabContent();
-        $result['type'] = $this->tabs->getType();
+        $result['content'] = [
+            [
+                'type'    => Enum\ContentType::DhtmlxTabBar,
+                'events'  => [new ClientCellEvent('onSelect', 'doOnSelect')],
+                'content' => $this->tabs->getTabContent()
+            ]
+        ];
         if (isset($this->customHeader)) {
             $result['customHeader'] = $this->customHeader;
         }

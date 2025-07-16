@@ -129,8 +129,8 @@ class SessionTabs
         $tabs   = $this->getTabs();
         if (!empty($tabs)) {
             foreach ($tabs as $tab) {
-                $result['tabs'][] = $tab->getNavigationData();
-                $cells            = $tab->getCells();
+                $result[] = $tab->getNavigationData();
+                $cells    = $tab->getCells();
                 foreach ($cells as $cell) {
                     \byteShard\Session::registerCell($cell);
                 }
