@@ -1,3 +1,10 @@
+## [2.12.8](https://github.com/bespin-studios/byteshard-core/compare/v2.12.7...v2.12.8) (2025-07-17)
+
+
+### Bug Fixes
+
+* make old style tabs upward compatible ([e20b871](https://github.com/bespin-studios/byteshard-core/commit/e20b871c4dfa49878541a052843b46cfd66a856e))
+
 ## [2.12.7](https://github.com/bespin-studios/byteshard-core/compare/v2.12.6...v2.12.7) (2025-07-15)
 
 
