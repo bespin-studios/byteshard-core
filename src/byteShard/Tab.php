@@ -6,6 +6,7 @@
 
 namespace byteShard;
 
+use byteShard\Enum\ContentType;
 use byteShard\Internal\Action\ClientExecutionInterface;
 use byteShard\Internal\Event\EventStorage;
 use byteShard\Internal\Event\EventStorageInterface;
@@ -14,6 +15,7 @@ use byteShard\Internal\NavigationItem;
 use byteShard\Internal\Struct;
 use byteShard\Internal\Event\Event;
 use byteShard\Internal\Event\TabEvent;
+use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\TabLegacyInterface;
 use byteShard\Internal\Toolbar\ToolbarContainer;
 use byteShard\Utils\Strings;
@@ -50,7 +52,7 @@ class Tab extends LayoutContainer implements EventStorageInterface, ToolbarConta
     public function selectFirstTab(): void
     {
         $this->selected = true;
-        $tabs = $this->getTabs();
+        $tabs           = $this->getTabs();
         if (!empty($tabs)) {
             $tabs[array_key_first($tabs)]->selectFirstTab();
         }
@@ -64,7 +66,7 @@ class Tab extends LayoutContainer implements EventStorageInterface, ToolbarConta
     public function selectFirstTabIfNoneSelected(): void
     {
         $found = false;
-        $tabs = $this->getTabs();
+        $tabs  = $this->getTabs();
         foreach ($tabs as $tab) {
             if ($tab->getSelected() === true) {
                 $found = true;
@@ -106,7 +108,7 @@ class Tab extends LayoutContainer implements EventStorageInterface, ToolbarConta
             } else {
                 $idParts  = explode('\\', $name);
                 $namePart = [];
-                $tabs = $this->getTabs();
+                $tabs     = $this->getTabs();
                 while (!empty($idParts)) {
                     $namePart[] = array_shift($idParts);
                     if (implode('\\', $namePart) === $currentTab) {
@@ -202,7 +204,7 @@ class Tab extends LayoutContainer implements EventStorageInterface, ToolbarConta
         if ($this->meta['parentID'] === null) {
             $id = ['!#tab' => [$parentLevel => $this->meta['name']]];
         } else {
-            $id                        = json_decode(Session::decrypt($this->meta['parentID']), true);
+            $id = json_decode(Session::decrypt($this->meta['parentID']), true);
             if (!is_array($id)) {
                 Debug::error('Could not decrypt/decode id');
                 return '';
@@ -340,34 +342,41 @@ class Tab extends LayoutContainer implements EventStorageInterface, ToolbarConta
     public function getNavigationData(): array
     {
         //$result['ID']    = $this->meta['ID'];
-        $result['ID']    = $this->getNewId()->getEncryptedContainerId();
-        $result['label'] = $this->getLabel();
-        $width           = $this->getWidth();
+        $result['setup']['ID']    = $this->getNewId()->getEncryptedContainerId();
+        $result['setup']['label'] = $this->getLabel();
+        $width                    = $this->getWidth();
         if ($width !== null) {
-            $result['width'] = $width;
+            $result['setup']['width'] = $width;
         }
         if ($this->selected === true) {
-            $result['selected'] = true;
+            $result['setup']['selected'] = true;
         }
         if (isset($this->meta['closable']) && $this->meta['closable'] === true) {
-            $result['closable'] = true;
+            $result['setup']['closable'] = true;
         }
         if (!empty($this->toolbar)) {
             $result['toolbar'] = true;
         }
         if ($this->layout !== null) {
-            $result['layout'] = $this->layout->getNavigationData();
-            $result['bubble'] = $this->layout->bubble();
+            $result['content'][]       = $this->layout->getItemConfig();
+            $result['setup']['bubble'] = $this->layout->bubble();
         } else {
-            $bubble = 0;
-            foreach ($this->getTabs() as $id => $tab) {
-                //$id = $tab->getNewId()->getTabId();
-                $result['nested'][$id] = $tab->getNavigationData();
-                $bubble                += $result['nested'][$id]['bubble'];
+            $bubble     = 0;
+            $nestedTabs = [];
+            foreach ($this->getTabs() as $tab) {
+                $nestedTabs[] = $tab->getNavigationData();
             }
-            $result['bubble'] = $bubble;
+            foreach ($nestedTabs as $nestedTab) {
+                $bubble += $nestedTab['bubble'];
+            }
+            $result['content'][]       = [
+                'type'    => Enum\ContentType::DhtmlxTabBar,
+                'events'  => [new ClientCellEvent('onSelect', 'doOnSelect')],
+                'content' => $nestedTabs
+            ];
+            $result['setup']['bubble'] = $bubble;
         }
-        //$result['bubble'] = $this->bubble();
+        $result['type'] = ContentType::DhtmlxTab;
         return $result;
     }
 
@@ -496,7 +505,7 @@ class Tab extends LayoutContainer implements EventStorageInterface, ToolbarConta
             // Object with that name already registered in this cell, return the ID
             return $this->popups[$popupName];
         }
-        $decrypted                = json_decode(Session::decrypt($this->meta['ID']), true);
+        $decrypted = json_decode(Session::decrypt($this->meta['ID']), true);
         if (!is_array($decrypted)) {
             Debug::error('Could not decrypt/decode id');
             return '';
