@@ -22,8 +22,9 @@ abstract class Accordion extends CellContent
      * @session read
      * @internal
      */
-    public function getCellContent(): ?ClientCell
+    public function getCellContent(bool $resetNonce = true): ?ClientCell
     {
+        parent::getCellContent($resetNonce);
         $parent_content = parent::getComponents();
         //'content'           => $this->getXML(),
         //'contentEvents'     => $this->getCellEvents(),

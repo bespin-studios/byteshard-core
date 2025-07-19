@@ -49,16 +49,16 @@ abstract class CellContent implements ContainerInterface, ExportInterface
     // overwrite in child:
     protected string           $cellContentType;
     protected Cell             $cell;
-    protected ?string          $filterValue        = null;
+    protected ?string          $filterValue   = null;
     protected stdClass         $user;
     protected ?int             $user_id;
     protected ?string          $username;
     protected ToolbarInterface $toolbar;
-    private string             $outputCharset      = 'UTF-8';
+    private string             $outputCharset = 'UTF-8';
     protected string           $locale;
-    private ?string            $cellHeader         = null;
-    private array              $idCache            = [];
-    private array              $events             = [];
+    private ?string            $cellHeader    = null;
+    private array              $idCache       = [];
+    private array              $events        = [];
     protected ?ClientData      $clientData;
     protected ?ID\ID           $selectedID;
     protected ?Struct\GetData  $getDataID;
@@ -362,11 +362,18 @@ abstract class CellContent implements ContainerInterface, ExportInterface
         return $this->cell->getContentClass();
     }
 
-    abstract public function getCellContent(): ?ClientCell;
+    public function getCellContent(bool $resetNonce = true): ?ClientCell
+    {
+        if ($resetNonce === true) {
+            $this->cell->setNonce();
+        }
+        $this->cell->resetEvents();
+        return null;
+    }
 
     public function useFallbackContent(CellContent $cellContent): ?CellContent
     {
-        $this->fallbackContent    = $cellContent;
+        $this->fallbackContent = $cellContent;
         return null;
     }
 
@@ -387,8 +394,6 @@ abstract class CellContent implements ContainerInterface, ExportInterface
     protected function getComponents(string $nonce = ''): array
     {
         $result = [];
-        $this->cell->resetEvents();
-        $this->cell->setNonce($nonce);
         if (method_exists($this, 'defineToolbarContent')) {
             $this->toolbar = ContentClassFactory::getToolbar($this->cell);
             $this->defineToolbarContent();
