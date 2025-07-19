@@ -49,20 +49,21 @@ abstract class CellContent implements ContainerInterface, ExportInterface
     // overwrite in child:
     protected string           $cellContentType;
     protected Cell             $cell;
-    protected ?string          $filterValue   = null;
+    protected ?string          $filterValue        = null;
     protected stdClass         $user;
     protected ?int             $user_id;
     protected ?string          $username;
     protected ToolbarInterface $toolbar;
-    private string             $outputCharset = 'UTF-8';
+    private string             $outputCharset      = 'UTF-8';
     protected string           $locale;
-    private ?string            $cellHeader    = null;
-    private array              $idCache       = [];
-    private array              $events        = [];
+    private ?string            $cellHeader         = null;
+    private array              $idCache            = [];
+    private array              $events             = [];
     protected ?ClientData      $clientData;
     protected ?ID\ID           $selectedID;
     protected ?Struct\GetData  $getDataID;
     private DateTimeZone       $clientTimeZone;
+    private CellContent        $fallbackContent;
 
     /**
      * TODO: OPTIMIZE: constructor too long... several actions create an instance of cell content and need only very few of it
@@ -362,6 +363,22 @@ abstract class CellContent implements ContainerInterface, ExportInterface
     }
 
     abstract public function getCellContent(): ?ClientCell;
+
+    public function useFallbackContent(CellContent $cellContent): ?CellContent
+    {
+        $this->fallbackContent    = $cellContent;
+        return null;
+    }
+
+    public function hasFallbackContent(): bool
+    {
+        return isset($this->fallbackContent);
+    }
+
+    public function getFallbackContent(): CellContent
+    {
+        return $this->fallbackContent;
+    }
 
     /**
      * @return array<ClientCellComponent|ContentComponent>

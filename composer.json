@@ -36,7 +36,6 @@
     "phpoffice/phpspreadsheet": "^1.11.0",
     "stevenmaguire/oauth2-keycloak": "5.1.0",
     "tecnickcom/tcpdf": "^6.2.13",
-    "byteshard/soap": "^1.0",
     "byteshard/rest": "^1.0",
     "byteshard/enum": "^1.2",
     "byteshard/contracts": "^1.0",

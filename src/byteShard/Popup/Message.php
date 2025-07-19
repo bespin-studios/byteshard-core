@@ -187,22 +187,36 @@ class Message
         $result['state'] = HttpResponseState::SUCCESS->value;
         $result['popup'] = [
             'bs_message_popup' => [
-                'height' => $this->height,
-                'class'  => 'popup_bs_message_popup',
-                'width'  => $this->width,
-                'layout' => [
-                    'pattern' => Pattern::PATTERN_1C,
-                    'cells'   => [
-                        'a' => new ClientCell(
-                            new ClientCellProperties(nonce: '', label: $label),
-                            new ContentComponent(
-                                type   : ContentType::DhtmlxForm,
-                                content: $content,
-                                events : [new ClientCellEvent('onButtonClick', 'doOnCloseButtonClick')],
-                                format : $format
-                            )
-                        )
-                    ]
+                'open' => [
+                    'setup'   => [
+                        'height' => $this->height,
+                        'class'  => 'popup_bs_message_popup',
+                        'width'  => $this->width
+                    ],
+                    'type'    => 'ByteShardPopup',
+                    'content' => [
+                        [
+                            'type'    => ContentType::DhtmlxLayout,
+                            'setup'   => [
+                                'pattern' => Pattern::PATTERN_1C
+                            ],
+                            'content' => [
+                                [
+                                    'type'    => ContentType::DhtmlxLayoutCell,
+                                    'setup'   => [
+                                        'patternId' => 'a',
+                                        'label'     => $label
+                                    ],
+                                    'content' => [new ContentComponent(
+                                        type   : ContentType::DhtmlxForm,
+                                        content: $content,
+                                        events : [new ClientCellEvent('onButtonClick', 'doOnCloseButtonClick')],
+                                        format : $format
+                                    )]
+                                ]
+                            ]
+                        ]
+                    ],
                 ]
             ]
         ];
