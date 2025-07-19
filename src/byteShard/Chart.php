@@ -39,6 +39,9 @@ class Chart extends CellContent
                 $this->defineCellContent();
                 break;
         }
+        if ($this->hasFallbackContent()) {
+            return $this->getFallbackContent()->getCellContent();
+        }
         $components   = parent::getComponents();
         $components[] = new ContentComponent(
             type   : ContentType::DhtmlxChart,
