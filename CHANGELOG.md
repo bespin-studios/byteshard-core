@@ -1,3 +1,15 @@
+# [2.13.0](https://github.com/bespin-studios/byteshard-core/compare/v2.12.8...v2.13.0) (2025-07-19)
+
+
+### Bug Fixes
+
+* message popup didn't work with new content structure ([84ee2c4](https://github.com/bespin-studios/byteshard-core/commit/84ee2c45f780c4ef8f595d1330db80e15822c0f4))
+
+
+### Features
+
+* add fallback content to cell content classes ([9bb69d5](https://github.com/bespin-studios/byteshard-core/commit/9bb69d5a7d820cd6ee0eda865364dd9bb8e4cd6a))
+
 ## [2.12.8](https://github.com/bespin-studios/byteshard-core/compare/v2.12.7...v2.12.8) (2025-07-17)
 
 
