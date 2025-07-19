@@ -1,3 +1,10 @@
+# [2.14.0](https://github.com/bespin-studios/byteshard-core/compare/v2.13.0...v2.14.0) (2025-07-19)
+
+
+### Features
+
+* add fallback content to cell content classes ([2bf5efd](https://github.com/bespin-studios/byteshard-core/commit/2bf5efdb4795db37dfd416e43e300fc90ebea245))
+
 # [2.13.0](https://github.com/bespin-studios/byteshard-core/compare/v2.12.8...v2.13.0) (2025-07-19)
 
 
