@@ -28,8 +28,9 @@ class Chart extends CellContent
     private int    $origin;
     private string $label;
 
-    public function getCellContent(): ?ClientCell
+    public function getCellContent(bool $resetNonce = true): ?ClientCell
     {
+        parent::getCellContent($resetNonce);
         switch ($this->getAccessType()) {
             case Enum\AccessType::NONE:
                 //TODO: return a dhtmlxForm with a no permission label
@@ -40,7 +41,7 @@ class Chart extends CellContent
                 break;
         }
         if ($this->hasFallbackContent()) {
-            return $this->getFallbackContent()->getCellContent();
+            return $this->getFallbackContent()->getCellContent(false);
         }
         $components   = parent::getComponents();
         $components[] = new ContentComponent(

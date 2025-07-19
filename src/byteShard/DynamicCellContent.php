@@ -14,9 +14,4 @@ abstract class DynamicCellContent extends CellContent
         $this->cell->setContentClassName(str_replace('App\\Cell\\', '', $dynamicClassName));
         return $this->cell;
     }
-
-    public function getCellContent(): ?ClientCell
-    {
-        return null;
-    }
 }

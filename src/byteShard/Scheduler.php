@@ -82,11 +82,12 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
         }
     }
 
-    public function getCellContent(): ?ClientCell
+    public function getCellContent(bool $resetNonce = true): ?ClientCell
     {
+        parent::getCellContent($resetNonce);
         $this->defineCellContent();
         if ($this->hasFallbackContent()) {
-            return $this->getFallbackContent()->getCellContent();
+            return $this->getFallbackContent()->getCellContent(false);
         }
         $components = parent::getComponents();
         $this->restorePreviousSelectedId();
