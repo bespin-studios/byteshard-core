@@ -1,3 +1,10 @@
+## [2.14.1](https://github.com/bespin-studios/byteshard-core/compare/v2.14.0...v2.14.1) (2025-07-21)
+
+
+### Bug Fixes
+
+* use interface for form settings ([c2d7036](https://github.com/bespin-studios/byteshard-core/commit/c2d7036c9026cf0832971efa1a4669d898f5316e))
+
 # [2.14.0](https://github.com/bespin-studios/byteshard-core/compare/v2.13.0...v2.14.0) (2025-07-19)
 
 
