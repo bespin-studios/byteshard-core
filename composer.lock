@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6d82b9f1d6bb27699c2452e4a5cd3f6a",
+    "content-hash": "2b93c3a4a48bf6715b8e07bdd82cd0cb",
     "packages": [
         {
             "name": "byteshard/auth",
@@ -51,16 +51,16 @@
         },
         {
             "name": "byteshard/contracts",
-            "version": "v1.0.3",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-contracts.git",
-                "reference": "2c426c369f85b8bdc3c9cf301e072d269b64cad6"
+                "reference": "e35240c262c7bc20b04718a38ceee3c08cc6ba75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-contracts/zipball/2c426c369f85b8bdc3c9cf301e072d269b64cad6",
-                "reference": "2c426c369f85b8bdc3c9cf301e072d269b64cad6",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-contracts/zipball/e35240c262c7bc20b04718a38ceee3c08cc6ba75",
+                "reference": "e35240c262c7bc20b04718a38ceee3c08cc6ba75",
                 "shasum": ""
             },
             "require": {
@@ -88,9 +88,9 @@
             "description": "Package for interfaces and other things used by the byteShard components",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-contracts/issues",
-                "source": "https://github.com/bespin-studios/byteshard-contracts/tree/v1.0.3"
+                "source": "https://github.com/bespin-studios/byteshard-contracts/tree/v1.1.0"
             },
-            "time": "2025-07-10T06:14:17+00:00"
+            "time": "2025-07-19T09:36:36+00:00"
         },
         {
             "name": "byteshard/debug",
@@ -358,51 +358,6 @@
                 "source": "https://github.com/bespin-studios/byteshard-rest/tree/v1.2.2"
             },
             "time": "2025-05-20T12:15:48+00:00"
-        },
-        {
-            "name": "byteshard/soap",
-            "version": "v1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/bespin-studios/byteshard-soap.git",
-                "reference": "d9c97b3efb94d26666ea720ac4dedd513f960b20"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-soap/zipball/d9c97b3efb94d26666ea720ac4dedd513f960b20",
-                "reference": "d9c97b3efb94d26666ea720ac4dedd513f960b20",
-                "shasum": ""
-            },
-            "require": {
-                "ext-dom": "*",
-                "ext-simplexml": "*",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^2",
-                "phpunit/phpunit": "^10.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "byteShard\\": "src/byteShard"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MPL-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Lars Hennig"
-                }
-            ],
-            "description": "SOAP Connector",
-            "support": {
-                "issues": "https://github.com/bespin-studios/byteshard-soap/issues",
-                "source": "https://github.com/bespin-studios/byteshard-soap/tree/v1.0.1"
-            },
-            "time": "2025-05-21T09:25:11+00:00"
         },
         {
             "name": "byteshard/validate",
@@ -3192,16 +3147,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.17",
+            "version": "2.1.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "89b5ef665716fa2a52ecd2633f21007a6a349053"
+                "reference": "ee1f390b7a70cdf74a2b737e554f68afea885db7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/89b5ef665716fa2a52ecd2633f21007a6a349053",
-                "reference": "89b5ef665716fa2a52ecd2633f21007a6a349053",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ee1f390b7a70cdf74a2b737e554f68afea885db7",
+                "reference": "ee1f390b7a70cdf74a2b737e554f68afea885db7",
                 "shasum": ""
             },
             "require": {
@@ -3246,7 +3201,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-05-21T20:55:28+00:00"
+            "time": "2025-07-17T17:22:31+00:00"
         },
         {
             "name": "psr/container",
