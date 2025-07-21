@@ -6,7 +6,6 @@
 
 namespace byteShard\Form;
 
-use byteShard\Form\Enum;
 use byteShard\Internal\SimpleXML;
 use SimpleXMLElement;
 
@@ -14,7 +13,7 @@ use SimpleXMLElement;
  * Class Settings
  * @package byteShard\CellContent\Form
  */
-class Settings
+class Settings implements FormSettingsInterface
 {
     protected string              $inputHeight = 'auto';
     protected string              $inputWidth  = 'auto';

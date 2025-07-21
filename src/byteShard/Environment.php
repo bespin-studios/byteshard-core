@@ -13,6 +13,7 @@ use byteShard\Database\Model;
 use byteShard\Database\Struct\Parameters;
 use byteShard\Enum\LogLevel;
 use byteShard\Form\Enum\Label\Position;
+use byteShard\Form\FormSettingsInterface;
 use byteShard\Form\Settings;
 use byteShard\Internal\Authentication\Authentication;
 use byteShard\Internal\Authentication\AuthenticationAction;
@@ -531,13 +532,9 @@ abstract class Environment implements ParametersInterface, JsonSerializable
     }
 
     /**
-     * override in application environment in case you want to pass application specific settings
-     * @param int|null $labelWidth
-     * @param int|null $inputWidth
-     * @param Position|null $position
-     * @return Settings
+     * override in application environment in case you want to pass application-specific settings
      */
-    public function getFormSettings(?int $labelWidth = null, ?int $inputWidth = null, ?Position $position = null): Settings
+    public function getFormSettings(?int $labelWidth = null, ?int $inputWidth = null, ?Position $position = null): FormSettingsInterface
     {
         $formSettings = new Settings();
         if ($labelWidth !== null) {

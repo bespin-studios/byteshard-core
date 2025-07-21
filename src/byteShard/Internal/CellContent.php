@@ -9,9 +9,12 @@ namespace byteShard\Internal;
 use byteShard\Action\ConfirmAction;
 use byteShard\Cell;
 use byteShard\Enum;
+use byteShard\Environment;
 use byteShard\Exception;
 use byteShard\File\FileInterface;
 use byteShard\File\Text;
+use byteShard\Form\FormInterface;
+use byteShard\Form\FormSettingsInterface;
 use byteShard\ID;
 use byteShard\ID\CellIDElement;
 use byteShard\ID\TabIDElement;
@@ -368,7 +371,21 @@ abstract class CellContent implements ContainerInterface, ExportInterface
             $this->cell->setNonce();
         }
         $this->cell->resetEvents();
+        self::applyGlobalFormSettings($this);
         return null;
+    }
+
+    private static function applyGlobalFormSettings(CellContent $cellContent): void
+    {
+        if ($cellContent instanceof FormInterface) {
+            global $env;
+            if ($env instanceof Environment) {
+                $settings = $env->getFormSettings();
+                if ($settings instanceof FormSettingsInterface) {
+                    $cellContent->addFormSettings($settings);
+                }
+            }
+        }
     }
 
     public function useFallbackContent(CellContent $cellContent): ?CellContent
@@ -384,6 +401,8 @@ abstract class CellContent implements ContainerInterface, ExportInterface
 
     public function getFallbackContent(): CellContent
     {
+        self::applyGlobalFormSettings($this->fallbackContent);
+        $this->fallbackContent->setClientTimeZone($this->getClientTimeZone());
         return $this->fallbackContent;
     }
 
