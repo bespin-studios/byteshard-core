@@ -7,10 +7,14 @@
 namespace byteShard\Internal;
 
 use ArgumentCountError;
+use byteShard\Enum\ContentType;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Enum\LogLevel;
 use byteShard\Enum\LogLocation;
 use byteShard\Internal\Exception\ExceptionInterface;
+use byteShard\Internal\Struct\ClientCell;
+use byteShard\Internal\Struct\ClientCellProperties;
+use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Locale;
 use byteShard\Internal\ErrorHandler\Template;
 use byteShard\Popup\Message;
@@ -365,13 +369,14 @@ class ErrorHandler
             // this will lead to "unknown error" in case no message was passed
             $message = Locale::get('byteShard.errorHandler.print_cell_content.no_message');
         }
-        $result['content']           = '<?xml version="1.0" encoding="utf-8"?><items><item type="label" name="Error" label="'.$message.(($error_code !== '' && $error_code !== null && $error_code !== '0') ? ' ('.$error_code.')' : '').'"/></items>';
-        $result['contentType']       = 'DHTMLXForm';
-        $result['contentEvents']     = [];
-        $result['contentParameters'] = [];
-        $result['contentFormat']     = 'XML';
-        $result['toolbar']           = false;
-        $result['state']             = HttpResponseState::SUCCESS->value;
+        $result = new ClientCell(
+            new ClientCellProperties(),
+            new ContentComponent(
+                type   : ContentType::DhtmlxForm,
+                content: '<?xml version="1.0" encoding="utf-8"?><items><item type="label" name="Error" label="'.$message.(($error_code !== '' && $error_code !== null && $error_code !== '0') ? ' ('.$error_code.')' : '').'"/></items>'
+            )
+        );
+        $result->setState(HttpResponseState::SUCCESS);
         if (!headers_sent()) {
             header('Status: 200');
             header('HTTP/1.0  200');
@@ -447,7 +452,7 @@ class ErrorHandler
                 $filename     = $this->logDir.DIRECTORY_SEPARATOR.(($date !== false) ? date('YmdHis').'_' : '').$filename;
                 $insertScript = true;
                 if (preg_match('//u', $string)) {
-                    $string = mb_convert_encoding($string,  'ISO-8859-1', 'UTF-8');
+                    $string = mb_convert_encoding($string, 'ISO-8859-1', 'UTF-8');
                 }
 
                 if (is_writable($this->logDir)) {
@@ -473,7 +478,7 @@ class ErrorHandler
                 $filename .= '.log';
                 $filename = $this->logDir.DIRECTORY_SEPARATOR.(($date !== false) ? date('YmdHis').'_' : '').$filename;
                 if (preg_match('//u', $string)) {
-                    $string = mb_convert_encoding($string,  'ISO-8859-1', 'UTF-8');
+                    $string = mb_convert_encoding($string, 'ISO-8859-1', 'UTF-8');
                 }
                 if (is_writable($this->logDir)) {
                     $file_handle = fopen($filename, 'a+b');
