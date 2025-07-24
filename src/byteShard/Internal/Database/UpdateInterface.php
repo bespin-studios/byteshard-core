@@ -12,7 +12,9 @@ interface UpdateInterface
      * @param string $query
      * @param array $parameters
      * @param BaseConnection|null $connection
-     * @return int
+     * @param string|null $classMap
+     * @param bool $fetchPropsLate
+     * @return int|array
      */
-    public static function update(string $query, array $parameters = [], ?BaseConnection $connection = null): int;
+    public static function update(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): int|array;
 }

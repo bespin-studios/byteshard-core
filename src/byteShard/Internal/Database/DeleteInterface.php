@@ -12,7 +12,9 @@ interface DeleteInterface
      * @param string $query
      * @param array $parameters
      * @param BaseConnection|null $connection
-     * @return int
+     * @param string|null $classMap
+     * @param bool $fetchPropsLate
+     * @return int|array
      */
-    public static function delete(string $query, array $parameters = [], ?BaseConnection $connection = null): int;
+    public static function delete(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): int|array;
 }
