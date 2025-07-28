@@ -12,7 +12,9 @@ interface InsertInterface
      * @param string $query
      * @param array $parameters
      * @param BaseConnection|null $connection
-     * @return int|bool
+     * @param string|null $classMap
+     * @param bool $fetchPropsLate
+     * @return int|bool|array
      */
-    public static function insert(string $query, array $parameters = [], ?BaseConnection $connection = null): int|bool;
+    public static function insert(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): int|bool|array;
 }

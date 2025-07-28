@@ -330,7 +330,7 @@ class Update extends Data
         if ($dbDriver === Environment::DRIVER_MYSQL_PDO) {
             foreach ($this->queries as $update) {
                 $numberOfChangedRecords = Database::update($update['query'], $update['param']);
-                if ($numberOfChangedRecords > 0) {
+                if (is_int($numberOfChangedRecords) && $numberOfChangedRecords > 0) {
                     $this->changes = true;
                 }
             }

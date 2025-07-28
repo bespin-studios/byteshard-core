@@ -86,7 +86,7 @@ class Database
     }
 
     /**
-     * function to get set of records from database/table
+     * function to get a set of records from a database / table
      * @param string $query
      * @param array $parameters
      * @param BaseConnection|null $connection
@@ -170,51 +170,57 @@ class Database
      * @param string $query
      * @param array $parameters
      * @param BaseConnection|null $connection
-     * @return bool|int
+     * @param string|null $classMap
+     * @param bool $fetchPropsLate
+     * @return int|bool|array
      * @throws Exception
      */
-    public static function insert(string $query, array $parameters = [], ?BaseConnection $connection = null): int|bool
+    public static function insert(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): int|bool|array
     {
         global $dbDriver;
         return match ($dbDriver) {
             Environment::DRIVER_MYSQL_PDO => MySQL\PDO\Recordset::insert($query, $parameters, $connection),
-            Environment::DRIVER_PGSQL_PDO => PGSQL\PDO\Recordset::insert($query, $parameters, $connection),
+            Environment::DRIVER_PGSQL_PDO => PGSQL\PDO\Recordset::insert($query, $parameters, $connection, $classMap, $fetchPropsLate),
             default                       => false,
         };
     }
 
     /**
-     * function to delete records from table
+     * function to delete records from a table
      * @param string $query
      * @param array $parameters
      * @param BaseConnection|null $connection
-     * @return int
+     * @param string|null $classMap
+     * @param bool $fetchPropsLate
+     * @return int|array
      * @throws Exception
      */
-    public static function delete(string $query, array $parameters = [], ?BaseConnection $connection = null): int
+    public static function delete(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): int|array
     {
         global $dbDriver;
         return match ($dbDriver) {
             Environment::DRIVER_MYSQL_PDO => MySQL\PDO\Recordset::delete($query, $parameters, $connection),
-            Environment::DRIVER_PGSQL_PDO => PGSQL\PDO\Recordset::delete($query, $parameters, $connection),
+            Environment::DRIVER_PGSQL_PDO => PGSQL\PDO\Recordset::delete($query, $parameters, $connection, $classMap, $fetchPropsLate),
             default                       => 0,
         };
     }
 
     /**
-     * function to update records in table
+     * function to update records in a table
      * @param string $query
      * @param array $parameters
      * @param BaseConnection|null $connection
-     * @return int
+     * @param string|null $classMap
+     * @param bool $fetchPropsLate
+     * @return int|array
      * @throws Exception
      */
-    public static function update(string $query, array $parameters = [], ?BaseConnection $connection = null): int
+    public static function update(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): int|array
     {
         global $dbDriver;
         return match ($dbDriver) {
             Environment::DRIVER_MYSQL_PDO => MySQL\PDO\Recordset::update($query, $parameters, $connection),
-            Environment::DRIVER_PGSQL_PDO => PGSQL\PDO\Recordset::update($query, $parameters, $connection),
+            Environment::DRIVER_PGSQL_PDO => PGSQL\PDO\Recordset::update($query, $parameters, $connection, $classMap, $fetchPropsLate),
             default                       => 0,
         };
     }
