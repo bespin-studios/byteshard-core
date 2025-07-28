@@ -1,3 +1,11 @@
+## [2.14.2](https://github.com/bespin-studios/byteshard-core/compare/v2.14.1...v2.14.2) (2025-07-28)
+
+
+### Bug Fixes
+
+* confirmation popup didn't open anymore ([0358aa7](https://github.com/bespin-studios/byteshard-core/commit/0358aa7349982ecc199370c56f57de419adaa4fd))
+* error handler wasn't displaying the correct error message in the client ([a9156b2](https://github.com/bespin-studios/byteshard-core/commit/a9156b265c0a764e0e05ab2058901f31e1049c5b))
+
 ## [2.14.1](https://github.com/bespin-studios/byteshard-core/compare/v2.14.0...v2.14.1) (2025-07-21)
 
 
