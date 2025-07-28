@@ -20,12 +20,11 @@ use byteShard\Internal\Form\FormObject;
 use byteShard\Internal\Form\FormObject\Proxy;
 use byteShard\Internal\PopupInterface;
 use byteShard\Internal\Request\EventType;
-use byteShard\Internal\Struct\ClientCell;
 use byteShard\Internal\Struct\ClientCellEvent;
-use byteShard\Internal\Struct\ClientCellProperties;
 use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Internal\Struct\GetData;
+use byteShard\Layout\Enum\Pattern;
 use byteShard\Locale;
 use byteShard\Session;
 use byteShard\Utils\Strings;
@@ -86,7 +85,7 @@ class Confirmation implements PopupInterface
     }
 
     /**
-     * display input field.
+     * Display input field.
      * The user must enter $verification_value to be able to confirm
      * @param string $verificationValue the text that must be entered to enable the proceed button
      * @param string $verificationLabel displayed as an input note
@@ -176,28 +175,45 @@ class Confirmation implements PopupInterface
                 'bs_confirmation'    => $this->verificationValue
             ];
         }
-        $result['popup'][$this->confirmationPopupId] = [
-            'height' => $this->height !== null ? $this->height : self::DEFAULT_HEIGHT,
-            'width'  => $this->width !== null ? $this->width : self::DEFAULT_WIDTH,
-            'modal'  => true,
-            'class'  => 'confirmationPopup',
-            'layout' => [
-                'pattern' => '1C',
-                'cells'   => [
-                    'a' => new ClientCell(
-                        new ClientCellProperties(nonce: '', label: $this->label, id: $this->confirmationPopupId),
-                        new ContentComponent(
-                            type   : ContentType::DhtmlxForm,
-                            content: $content,
-                            events : [new ClientCellEvent('onButtonClick', 'doOnButtonClick'), new ClientCellEvent('onButtonClick', 'doOnCloseButtonClick')],
-                            setup  : ['op' => $this->getObjectProperties()],
-                            update : $post
-                        )
-                    )
+        $result['popup'][$this->confirmationPopupId]['open'] = [
+            'setup'   => [
+                'height' => $this->height !== null ? $this->height : self::DEFAULT_HEIGHT,
+                'width'  => $this->width !== null ? $this->width : self::DEFAULT_WIDTH,
+                'modal'  => true,
+                'class'  => 'confirmationPopup',
+                'id'     => $this->confirmationPopupId
+            ],
+            'type'    => 'ByteShardPopup',
+            'content' => [
+                [
+                    'type'    => ContentType::DhtmlxLayout,
+                    'setup'   => [
+                        'pattern' => Pattern::PATTERN_1C
+                    ],
+                    'content' => [
+                        [
+                            'type'    => ContentType::DhtmlxLayoutCell,
+                            'setup'   => [
+                                'patternId' => 'a',
+                                'label'     => $this->label,
+                                'ID'        => $this->confirmationPopupId
+                            ],
+                            'content' => [
+                                new ContentComponent(
+                                    type   : ContentType::DhtmlxForm,
+                                    content: $content,
+                                    events : [new ClientCellEvent('onButtonClick', 'doOnButtonClick'), new ClientCellEvent('onButtonClick', 'doOnCloseButtonClick')],
+                                    setup  : ['op' => $this->getObjectProperties()],
+                                    update : $post
+                                )
+                            ]
+                        ]
+                    ]
                 ]
-            ]
+            ],
         ];
-        $result['state']                             = HttpResponseState::SUCCESS->value;
+
+        $result['state'] = HttpResponseState::SUCCESS->value;
         return $result;
     }
 
