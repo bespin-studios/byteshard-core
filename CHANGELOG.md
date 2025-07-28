@@ -1,3 +1,10 @@
+# [2.15.0](https://github.com/bespin-studios/byteshard-core/compare/v2.14.2...v2.15.0) (2025-07-28)
+
+
+### Features
+
+* add support for the possible postgres RETURNING option for insert/update and deletes ([7252db3](https://github.com/bespin-studios/byteshard-core/commit/7252db362c7a5c81f769152ce127fb81fd2580fd))
+
 ## [2.14.2](https://github.com/bespin-studios/byteshard-core/compare/v2.14.1...v2.14.2) (2025-07-28)
 
 
