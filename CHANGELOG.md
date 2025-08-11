@@ -1,3 +1,10 @@
+# [2.16.0](https://github.com/bespin-studios/byteshard-core/compare/v2.15.0...v2.16.0) (2025-08-11)
+
+
+### Features
+
+* add combo type for image or checkbox ([d9471bc](https://github.com/bespin-studios/byteshard-core/commit/d9471bc9c8c4128568913dd20e7cfdb577a46517))
+
 # [2.15.0](https://github.com/bespin-studios/byteshard-core/compare/v2.14.2...v2.15.0) (2025-07-28)
 
 
