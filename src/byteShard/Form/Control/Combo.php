@@ -8,6 +8,7 @@ namespace byteShard\Form\Control;
 
 use byteShard\Cell;
 use byteShard\Enum;
+use byteShard\Form\Enum\ComboType;
 use byteShard\Internal\ClientData\EncryptedObjectValueInterface;
 use byteShard\Internal\Form;
 use byteShard\Session;
@@ -56,11 +57,12 @@ class Combo extends Form\FormObject implements Form\InputWidthInterface, Encrypt
     private bool                  $allowNewEntries        = false;
     private array                 $comboParameters        = [];
     private array                 $selectedOption         = [];
+    private ComboType             $comboType              = ComboType::DEFAULT;
     /**
      * used to store the currently selected if of a combo box. this is only updated if the onChange event is triggered
      * @var mixed
      */
-    private mixed  $selectedId;
+    private mixed $selectedId;
 
     public function __construct(?string $id, string $comboClass = '')
     {
@@ -94,9 +96,23 @@ class Combo extends Form\FormObject implements Form\InputWidthInterface, Encrypt
         if ($this->comboClass !== '') {
             $attributes['connector'] = $this->getUrl($cell);
         }
+        switch ($this->comboType) {
+            case ComboType::IMAGE:
+                $attributes['comboType'] = 'image';
+                break;
+            case ComboType::CHECKBOX:
+                $attributes['comboType'] = 'checkbox';
+                break;
+        }
         return $attributes;
     }
-    
+
+    public function setComboType(ComboType $type): self
+    {
+        $this->comboType = $type;
+        return $this;
+    }
+
     public function getUrl(?Cell $cell): string
     {
         $id['!c'] = $this->comboClass;
