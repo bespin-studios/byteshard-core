@@ -3,6 +3,7 @@
 namespace byteShard\Internal\Authentication;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
@@ -24,6 +25,7 @@ class OIDC
         }
         if (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
             unset($_SESSION['oauth2state']);
+            unset($_SESSION['code_verifier']);
             exit('Invalid state, make sure HTTP sessions are enabled.');
         }
         unset($_SESSION['oauth2state']);
@@ -52,14 +54,23 @@ class OIDC
 
     private function redirectToAuthProvider(): never
     {
-        $authUrl                 = $this->provider->getAuthorizationUrl();
-        $_SESSION['oauth2state'] = $this->provider->getState();
+        $codeVerifier              = bin2hex(random_bytes(64));
+        $codeChallenge             = rtrim(strtr(base64_encode(hash('sha256', $codeVerifier, true)), '+/', '-_'), '=');
+        $authUrl                   = $this->provider->getAuthorizationUrl(
+            [
+                'code_challenge'        => $codeChallenge,
+                'code_challenge_method' => 'S256',
+            ]
+        );
+        $_SESSION['oauth2state']   = $this->provider->getState();
+        $_SESSION['code_verifier'] = $codeVerifier;
         header('Location: '.$authUrl);
         exit;
     }
 
     /**
      * @throws IdentityProviderException
+     * @throws GuzzleException
      */
     public function refresh(string $refreshToken): void
     {
@@ -68,11 +79,17 @@ class OIDC
 
     private function getAccessToken(string $code): AccessTokenInterface
     {
+        $codeVerifier = $_SESSION['code_verifier'];
+        unset($_SESSION['code_verifier']);
         try {
-            return $this->provider->getAccessToken('authorization_code', [
-                'code' => $code
-            ]);
-        } catch (Exception $e) {
+            return $this->provider->getAccessToken(
+                'authorization_code',
+                [
+                    'code'          => $code,
+                    'code_verifier' => $codeVerifier,
+                ]
+            );
+        } catch (Exception|GuzzleException $e) {
             exit('Failed to get access token: '.$e->getMessage());
         }
     }
@@ -81,7 +98,7 @@ class OIDC
     {
         try {
             return $this->provider->getResourceOwner($this->token);
-        } catch (Exception $e) {
+        } catch (Exception|GuzzleException $e) {
             exit('Failed to get resource owner: '.$e->getMessage());
         }
     }
