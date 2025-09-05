@@ -2,6 +2,7 @@
 
 namespace byteShard;
 
+use byteShard\Enum\Access;
 use byteShard\Enum\ContentType;
 use byteShard\Internal\ApplicationRootInterface;
 use byteShard\Internal\Permission\NoApplicationPermissionError;
@@ -32,7 +33,7 @@ class SideBar implements ApplicationRootInterface
         $this->customHeader = $header;
     }
 
-    public function getRootParameters(?string $selectedId = null): ContentComponent
+    public function getRootParameters(?string $selectedId = null, Access $parentAccess = Access::WRITE): ContentComponent
     {
         $type     = ContentType::DhtmlxSideBar;
         $content  = [];
@@ -47,7 +48,10 @@ class SideBar implements ApplicationRootInterface
         $this->setSelectedSideBarCell($selectedId);
         if (!empty($this->sideBarCells)) {
             foreach ($this->sideBarCells as $sideBarCell) {
-                $content[] = $sideBarCell->getItemConfig($selectedId);
+                $sideBarCell->setParentAccessType($parentAccess);
+                if ($sideBarCell->getAccessType() > Access::NONE->value) {
+                    $content[] = $sideBarCell->getItemConfig($selectedId);
+                }
             }
         } else {
             $tab = new NoApplicationPermissionError();

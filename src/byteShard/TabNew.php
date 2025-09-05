@@ -6,6 +6,7 @@
 
 namespace byteShard;
 
+use byteShard\Enum\Access;
 use byteShard\Enum\ContentType;
 use byteShard\ID\TabIDElement;
 use byteShard\Internal\Layout;
@@ -280,12 +281,12 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
                 foreach ($cells as $cell) {
                     Session::registerCell($cell);
                 }
-                $content[]       = $this->content->getItemConfig();
+                $content[]       = $this->content->getItemConfig(Access::from($this->getAccessType()));
                 $setup['bubble'] = $this->content->bubble();
                 break;
             case $this->content instanceof TabBar:
             case $this->content instanceof SideBar:
-                $content[] = $this->content->getRootParameters($selectedId);
+                $content[] = $this->content->getRootParameters($selectedId, Access::from($this->getAccessType()));
                 break;
         }
         $setup['ID']    = $this->id->getEncryptedContainerId();
