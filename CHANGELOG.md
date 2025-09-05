@@ -1,3 +1,10 @@
+## [2.16.1](https://github.com/bespin-studios/byteshard-core/compare/v2.16.0...v2.16.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* add support for PKCE ([60910d2](https://github.com/bespin-studios/byteshard-core/commit/60910d2bbc2e43348d3557b9a64b15181f773057))
+
 # [2.16.0](https://github.com/bespin-studios/byteshard-core/compare/v2.15.0...v2.16.0) (2025-08-11)
 
 
