@@ -2,6 +2,8 @@
 
 namespace byteShard;
 
+use byteShard\Enum\Access;
+use byteShard\Enum\AccessType;
 use byteShard\Enum\ContentType;
 use byteShard\Internal\ApplicationRootInterface;
 use byteShard\Internal\Permission\NoApplicationPermissionError;
@@ -29,7 +31,7 @@ class TabBar implements ApplicationRootInterface
         }
     }
 
-    public function getRootParameters(?string $selectedId = null): ContentComponent
+    public function getRootParameters(?string $selectedId = null, Access $parentAccess = Access::WRITE): ContentComponent
     {
         $this->initTabs();
         $this->setSelectedTab($selectedId);
@@ -37,7 +39,10 @@ class TabBar implements ApplicationRootInterface
         $events  = [];
         if (!empty($this->tabs)) {
             foreach ($this->tabs as $tab) {
-                $content[] = $tab->getItemConfig($selectedId);
+                $tab->setParentAccessType($parentAccess);
+                if ($tab->getAccessType() > AccessType::NONE) {
+                    $content[] = $tab->getItemConfig($selectedId);
+                }
             }
             $events   = $this->events;
             $events[] = new ClientCellEvent('onSelect', 'doOnSelect');

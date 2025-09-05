@@ -8,6 +8,7 @@ namespace byteShard\Internal;
 
 use byteShard\Accordion;
 use byteShard\Cell;
+use byteShard\Enum\Access;
 use byteShard\Enum\AccessType;
 use byteShard\Enum\ContentType;
 use byteShard\Exception;
@@ -155,7 +156,7 @@ class Layout
         return $this;
     }
 
-    public function getItemConfig(): ContentComponent
+    public function getItemConfig(?Access $parentAccess = null): ContentComponent
     {
         $content = [];
         $events  = [];
@@ -182,6 +183,9 @@ class Layout
             $horizontal = '';
             $vertical   = '';
             foreach ($this->cells as $id => $cell) {
+                if ($parentAccess !== null) {
+                    $cell->setParentAccessType($parentAccess);
+                }
                 $content[] = $cell->getItemConfig($id);
                 if ($cell->getHorizontalAutoSize()) {
                     if ($horizontal === '') {
