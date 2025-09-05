@@ -1,3 +1,10 @@
+## [2.16.2](https://github.com/bespin-studios/byteshard-core/compare/v2.16.1...v2.16.2) (2025-09-05)
+
+
+### Bug Fixes
+
+* Permissions were not working correctly on new tabs and sidebars ([801dff8](https://github.com/bespin-studios/byteshard-core/commit/801dff8ae76aba1c0e0a2eb9225f79caf0f2f6dc))
+
 ## [2.16.1](https://github.com/bespin-studios/byteshard-core/compare/v2.16.0...v2.16.1) (2025-09-05)
 
 
