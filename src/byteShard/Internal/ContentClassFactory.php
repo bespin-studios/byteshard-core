@@ -6,6 +6,7 @@ use byteShard\Cell;
 use byteShard\Exception;
 use byteShard\Form\FormInterface;
 use byteShard\Grid\GridInterface;
+use byteShard\Internal\Ribbon\RibbonClassInterface;
 use byteShard\Toolbar\ToolbarInterface;
 
 class ContentClassFactory
@@ -21,6 +22,19 @@ class ContentClassFactory
             return new $toolbarClass($cell);
         } else {
             throw new Exception('Toolbar class not found or not a subclass of '.ToolbarInterface::class);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function getRibbon(Cell $cell): RibbonClassInterface
+    {
+        $ribbonClass = '\\byteShard\\Ribbon';
+        if (class_exists($ribbonClass) && is_subclass_of($ribbonClass, RibbonClassInterface::class)) {
+            return new $ribbonClass($cell);
+        } else {
+            throw new Exception('Ribbon class not found or not a subclass of '.RibbonClassInterface::class);
         }
     }
 

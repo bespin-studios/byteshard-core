@@ -17,4 +17,5 @@ enum ElementType: string
     case Popup = 'popup';
     case BsPoll = 'bsPoll';
     case DhxScheduler = 'dhxScheduler';
+    case DhxRibbon = 'dhxRibbon';
 }

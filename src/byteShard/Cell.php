@@ -6,6 +6,7 @@
 
 namespace byteShard;
 
+use byteShard\Enum\Access;
 use byteShard\Enum\ContentType;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Form\Control\Upload;
@@ -642,33 +643,25 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      * @param string $encryptedName encrypted name which will be returned by the client
      * @param string $name internal name, usually maps to the database field
      * @param int $accessType 0, 1, 2 (Enum\AccessType enum)
-     * @param ?string $columnType database column type aka varchar, int etc. (Enum\DB\ColumnType)
      * @param ?string $objectType Form\Control\Input or Grid\Column\Calendar etc
      * @param null|string $label name/column-name that is displayed in the client. Might be used for generic error messages / warnings
-     * @param array $validations validations on that object like min length
      * @param ?string $dateFormat the format the client returns a date in
      * @param ?string $encryptedRadioValue the encrypted value of a radio control
      * @param ?string $radioValue the value of a radio control
      * @internal
      */
-    public function setContentControlType(string $encryptedName, string $name, int $accessType, ?string $columnType = null, ?string $objectType = null, ?string $label = null, array $validations = [], ?string $dateFormat = null, ?string $encryptedRadioValue = null, ?string $radioValue = null, bool $encryptedValue = false): void
+    public function setContentControlType(string $encryptedName, string $name, int $accessType, ?string $objectType = null, ?string $label = null, ?string $dateFormat = null, ?string $encryptedRadioValue = null, ?string $radioValue = null): void
     {
         // reverse lookup
         $this->refactorContentEncrypted[$name] = $encryptedName;
         // object data
         $this->refactorContentControls[$encryptedName]['name']       = $name;
         $this->refactorContentControls[$encryptedName]['accessType'] = $accessType;
-        if ($columnType !== null) {
-            $this->refactorContentControls[$encryptedName]['type'] = $columnType;
-        }
         if ($objectType !== null) {
             $this->refactorContentControls[$encryptedName]['objectType'] = $objectType;
         }
         if ($label !== null) {
             $this->refactorContentControls[$encryptedName]['label'] = $label;
-        }
-        if (!empty($validations)) {
-            $this->refactorContentControls[$encryptedName]['validations'] = $validations;
         }
         if ($dateFormat !== null) {
             $this->refactorContentControls[$encryptedName]['date_format'] = $dateFormat;
@@ -676,7 +669,6 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         if ($radioValue !== null) {
             $this->refactorContentControls[$encryptedName]['radio_value'][$encryptedRadioValue] = $radioValue;
         }
-        $this->refactorContentControls[$encryptedName]['encryptedValue'] = $encryptedValue;
     }
 
     /**
@@ -1025,7 +1017,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
 
     public function getItemConfig(string $patternId): Struct\ContentComponent
     {
-        $setup   = [
+        $setup = [
             'ID'        => $this->id->getEncryptedCellId(),
             'EID'       => $this->id->getEncryptedCellIdForEvent(),
             'patternId' => $patternId
@@ -1324,10 +1316,9 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     }
 
     /**
-     * @param int $accessType
      * @return $this
      */
-    public function setAccessType(int $accessType): self
+    public function setAccessType(Access|int $accessType): self
     {
         $this->PermissionTrait_setAccessType($accessType);
         $this->passAccessType();

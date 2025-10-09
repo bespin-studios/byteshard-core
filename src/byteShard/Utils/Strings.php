@@ -18,6 +18,7 @@ use HTMLPurifier_Config;
  */
 class Strings
 {
+    private static ?HTMLPurifier $instance = null;
 
     /**
      * works like vsprintf but matches keys
@@ -33,17 +34,17 @@ class Strings
             $args = get_object_vars($args);
         }
         if (is_array($args)) {
-            $map = array_flip(array_keys($args));
+            $map    = array_flip(array_keys($args));
             $newStr = preg_replace_callback('/(^|[^%])%([a-zA-Z0-9_-]+)(\$.*?['.$formatSpecifier.'])/',
-                function($m) use ($map) {
-                    /**@var array $map*/
+                function ($m) use ($map) {
+                    /**@var array $map */
                     if (array_key_exists($m[2], $map)) {
                         return $m[1].'%'.($map[$m[2]] + 1).$m[3];
                     }
                     return $m[1].Locale::get('byteShard.utils.string.vksprintf');
                 },
                 $str);
-            $newStr = preg_replace_callback('/(^|[^%])%([0-9]+)(?![0-9$'.$formatSpecifier.'])/', function($m) {
+            $newStr = preg_replace_callback('/(^|[^%])%([0-9]+)(?![0-9$'.$formatSpecifier.'])/', function ($m) {
                 return $m[1].'%%'.$m[2];
             }, $newStr);
             try {
@@ -95,8 +96,12 @@ class Strings
 
     public static function purify(string $string, bool $htmlSpecialChars = false, ?HTMLPurifier $purifier = null): string
     {
-        if (preg_match('/<|>|&|\'|"|\(|\)/', $string) === 1) {
-            if ($purifier === null) {
+        if (strpbrk($string, '<>&\'"()') === false) {
+            return $string;
+        }
+
+        if ($purifier === null) {
+            if (self::$instance === null) {
                 $config = HTMLPurifier_Config::createDefault();
                 $config->set('Attr.AllowedFrameTargets', ['_blank']);
                 $config->set('Cache.SerializerPath', sys_get_temp_dir());
@@ -110,13 +115,13 @@ class Strings
                     'tel'    => true,
                     'sip'    => true
                 ]);
-                $purifier = new HTMLPurifier($config);
+                self::$instance = new HTMLPurifier($config);
             }
-            if ($htmlSpecialChars === true) {
-                return htmlspecialchars($purifier->purify($string), ENT_QUOTES|ENT_SUBSTITUTE, 'UTF-8', false);
-            }
-            return $purifier->purify($string);
+            $purifier = self::$instance;
         }
-        return $string;
+        if ($htmlSpecialChars === true) {
+            return htmlspecialchars($purifier->purify($string), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false);
+        }
+        return $purifier->purify($string);
     }
 }

@@ -70,10 +70,10 @@ class DataHarmonizer
         $data       = $this->request->getData();
 
         return match ($this->request->getElementType()) {
-            ElementType::DhxForm, ElementType::DhxToolbar => $this->harmonizeFormData($affectedId, $data),
-            ElementType::DhxGrid, ElementType::DhxTree    => $this->harmonizeGridData($affectedId, $data),
-            ElementType::BsPoll                           => $this->harmonizePollData($affectedId, $data),
-            default                                       => ['', '', null, null, []],
+            ElementType::DhxForm, ElementType::DhxToolbar, ElementType::DhxRibbon => $this->harmonizeFormData($affectedId, $data),
+            ElementType::DhxGrid, ElementType::DhxTree                            => $this->harmonizeGridData($affectedId, $data),
+            ElementType::BsPoll                                                   => $this->harmonizePollData($affectedId, $data),
+            default                                                               => ['', '', null, null, []],
         };
     }
 
