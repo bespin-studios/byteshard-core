@@ -1,3 +1,10 @@
+# [2.17.0](https://github.com/bespin-studios/byteshard-core/compare/v2.16.2...v2.17.0) (2025-10-09)
+
+
+### Features
+
+* initial ribbon implementation ([bc707e3](https://github.com/bespin-studios/byteshard-core/commit/bc707e389ba93df7f737ef20fa3cf5a71eb15cd4))
+
 ## [2.16.2](https://github.com/bespin-studios/byteshard-core/compare/v2.16.1...v2.16.2) (2025-09-05)
 
 
