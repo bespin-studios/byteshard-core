@@ -101,7 +101,7 @@ class EventHandler
         }
 
         //TODO: onSelect is shared on Tab and Tree
-        if (in_array($this->request->getElementType(), [ElementType::DhxForm, ElementType::DhxGrid, ElementType::DhxTree, ElementType::DhxToolbar, ElementType::BsPoll])) {
+        if (in_array($this->request->getElementType(), [ElementType::DhxForm, ElementType::DhxGrid, ElementType::DhxTree, ElementType::DhxToolbar, ElementType::BsPoll, ElementType::DhxRibbon])) {
             [$eventType, $eventId, $objectValue, $confirmationId, $clientData, $getData] = $this->restoreConfirmationData($eventType, $eventId, $objectValue, $clientData, $getData);
             $this->cell?->setActionId($eventId);
             switch ($eventType) {
@@ -186,7 +186,13 @@ class EventHandler
 
     private function getCellContent(): CellContent
     {
+        if ($this->cell === null) {
+            $this->cell = new Cell();
+        }
         if (!isset($this->cellContent)) {
+            if ($this->className === null) {
+                $this->className = '\\App\\Cell\\'.$this->id->getCellId();
+            }
             $this->cellContent = new $this->className($this->cell);
         }
         if ($this->clientTimeZone !== null) {

@@ -773,7 +773,7 @@ final class Proxy
             case Control\Link::class:
                 break;
             case Control\Block::class:
-                $cell->setContentControlType($this->clientName, $this->internalName, $this->getAccessType(), $this->dbColumnType, $this->formObjectType, ($this->attributes['label'] ?? null), [], $this->getDateFormat(), null, null, $this->encryptOptionValues);
+                $cell->setContentControlType(encryptedName: $this->clientName, name: $this->internalName, accessType: $this->getAccessType(), objectType: $this->formObjectType, label: ($this->attributes['label'] ?? null), dateFormat: $this->getDateFormat());
                 break;
             case Control\ClosePopupButton::class:
                 //case Control\Label::class: // Label is needed to disable/enable/hide/show form object
@@ -791,10 +791,10 @@ final class Proxy
                     $cell->setNestedControls($this->clientName, $this->encryptedValue, $nested_items);
                 }
 
-                $cell->setContentControlType($this->clientName, $this->internalName, $this->getAccessType(), $this->dbColumnType, $this->formObjectType, ($this->attributes['label'] ?? null), [], $this->getDateFormat(), $this->encryptedValue, $this->unencryptedValue);
+                $cell->setContentControlType(encryptedName: $this->clientName, name: $this->internalName, accessType: $this->getAccessType(), objectType: $this->formObjectType, label: ($this->attributes['label'] ?? null), dateFormat: $this->getDateFormat(), encryptedRadioValue: $this->encryptedValue, radioValue: $this->unencryptedValue);
                 break;
             default:
-                $cell->setContentControlType($this->clientName, $this->internalName, $this->getAccessType(), $this->dbColumnType, $this->formObjectType, ($this->attributes['label'] ?? null), [], $this->getDateFormat(), null, null, $this->encryptOptionValues);
+                $cell->setContentControlType(encryptedName: $this->clientName, name: $this->internalName, accessType: $this->getAccessType(), objectType: $this->formObjectType, label: ($this->attributes['label'] ?? null), dateFormat: $this->getDateFormat());
                 break;
         }
         $formAlterations->setProperties($this->objectProperties);

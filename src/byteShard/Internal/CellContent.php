@@ -24,6 +24,8 @@ use byteShard\Internal\Event\EventMigrationInterface;
 use byteShard\Internal\Export\ExportInterface;
 use byteShard\Internal\Export\HandlerInterface;
 use byteShard\Internal\Permission\PermissionImplementation;
+use byteShard\Internal\Ribbon\RibbonClassInterface;
+use byteShard\Internal\Ribbon\RibbonObjectInterface;
 use byteShard\Internal\Struct\ClientCell;
 use byteShard\Internal\Struct\ClientCellComponent;
 use byteShard\Internal\Struct\ClientData;
@@ -31,6 +33,7 @@ use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Internal\Struct\Navigation_ID;
 use byteShard\Locale;
 use byteShard\Popup\Message;
+use byteShard\Ribbon\RibbonInterface;
 use byteShard\Scheduler;
 use byteShard\Session;
 use byteShard\Toolbar\ToolbarInterface;
@@ -50,23 +53,24 @@ abstract class CellContent implements ContainerInterface, ExportInterface
     }
 
     // overwrite in child:
-    protected string           $cellContentType;
-    protected Cell             $cell;
-    protected ?string          $filterValue   = null;
-    protected stdClass         $user;
-    protected ?int             $user_id;
-    protected ?string          $username;
-    protected ToolbarInterface $toolbar;
-    private string             $outputCharset = 'UTF-8';
-    protected string           $locale;
-    private ?string            $cellHeader    = null;
-    private array              $idCache       = [];
-    private array              $events        = [];
-    protected ?ClientData      $clientData;
-    protected ?ID\ID           $selectedID;
-    protected ?Struct\GetData  $getDataID;
-    private DateTimeZone       $clientTimeZone;
-    private CellContent        $fallbackContent;
+    protected string               $cellContentType;
+    protected Cell                 $cell;
+    protected ?string              $filterValue   = null;
+    protected stdClass             $user;
+    protected ?int                 $user_id;
+    protected ?string              $username;
+    protected ToolbarInterface     $toolbar;
+    protected RibbonClassInterface $ribbon;
+    private string                 $outputCharset = 'UTF-8';
+    protected string               $locale;
+    private ?string                $cellHeader    = null;
+    private array                  $idCache       = [];
+    private array                  $events        = [];
+    protected ?ClientData          $clientData;
+    protected ?ID\ID               $selectedID;
+    protected ?Struct\GetData      $getDataID;
+    private DateTimeZone           $clientTimeZone;
+    private CellContent            $fallbackContent;
 
     /**
      * TODO: OPTIMIZE: constructor too long... several actions create an instance of cell content and need only very few of it
@@ -259,6 +263,14 @@ abstract class CellContent implements ContainerInterface, ExportInterface
         return $this->cell->createLocaleBaseToken('Cell');
     }
 
+    protected function getScopeLocaleTokenBasedOnNamespace(string $type = 'Cell'): string
+    {
+        $namespace = str_replace('App\\Cell\\', '', get_class($this));
+        $parts = explode('\\', $namespace);
+        $cell = array_pop($parts);
+        return implode('_', $parts).'::'.$type.'.'.$cell;
+    }
+
     /**
      * @param $id
      * @return array
@@ -420,6 +432,13 @@ abstract class CellContent implements ContainerInterface, ExportInterface
             if ($toolbar !== null) {
                 $result[] = $toolbar;
             }
+        } elseif ($this instanceof RibbonInterface) {
+            $this->ribbon = ContentClassFactory::getRibbon($this->cell);
+            $this->defineRibbonContent();
+            $ribbon = $this->ribbon->getComponent();
+            if ($ribbon !== null) {
+                $result[] = $ribbon;
+            }
         }
         return $result;
     }
@@ -536,6 +555,21 @@ abstract class CellContent implements ContainerInterface, ExportInterface
             if (method_exists($this->toolbar, 'setAccessType')) {
                 $this->toolbar->setAccessType($accessType);
             }
+        }
+        return $this;
+    }
+
+    protected function addRibbonObject(RibbonObjectInterface ...$ribbonObject): void
+    {
+        if (isset($this->ribbon)) {
+            $this->ribbon->addRibbonObject(...$ribbonObject);
+        }
+    }
+
+    protected function setRibbonAccessType(int $accessType): self
+    {
+        if (isset($this->ribbon)) {
+            $this->ribbon->setAccessType($accessType);
         }
         return $this;
     }
