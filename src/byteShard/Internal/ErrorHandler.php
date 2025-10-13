@@ -164,7 +164,7 @@ class ErrorHandler
                     }
                 }
                 $deprecatedContext = ['file' => $file, 'line' => $line, 'called_in_file' => $calledInFile, 'called_in_line' => $calledInLine];
-                $this->sendMessageToLogger('deprecated', LogLevel::DEBUG, $message, $deprecatedContext);
+                $this->sendMessageToLogger('deprecated', LogLevel::WARNING, $message, $deprecatedContext);
                 break;
             default:
                 $e = new Exception($message);
@@ -214,7 +214,7 @@ class ErrorHandler
             $output_buffer = ob_get_clean();
         }
         if (!empty($output_buffer)) {
-            $this->sendMessageToLogger('default', LogLevel::DEBUG, $output_buffer, array('callback_type' => 'output_buffer'));
+            $this->sendMessageToLogger('default', LogLevel::WARNING, $output_buffer, array('callback_type' => 'output_buffer'));
         }
         $this->printError($e);
         $this->exception = true;
@@ -270,7 +270,7 @@ class ErrorHandler
             if (ob_get_status()) {
                 $tmp = ob_get_clean();
                 if ($tmp !== false) {
-                    $this->sendMessageToLogger('default', LogLevel::DEBUG, $tmp, array('callback_type' => 'output_buffer'));
+                    $this->sendMessageToLogger('default', LogLevel::WARNING, $tmp, array('callback_type' => 'output_buffer'));
                 }
             }
             if ($this->debugBacktrace === true) {
@@ -316,7 +316,7 @@ class ErrorHandler
         } elseif ($this->exception === false && !empty($GLOBALS['output_buffer'])) {
             // no exception was caught. Any print/echo/var_dump will be in output_buffer
             // reroute output_buffer to log
-            $this->sendMessageToLogger('default', LogLevel::DEBUG, $GLOBALS['output_buffer'], array('callback_type' => 'output_buffer'));
+            $this->sendMessageToLogger('default', LogLevel::WARNING, $GLOBALS['output_buffer'], array('callback_type' => 'output_buffer'));
         }
     }
 
