@@ -1,3 +1,17 @@
+# [2.18.0](https://github.com/bespin-studios/byteshard-core/compare/v2.17.0...v2.18.0) (2025-10-21)
+
+
+### Bug Fixes
+
+* add dependency update ([00b239f](https://github.com/bespin-studios/byteshard-core/commit/00b239f09366e58d808239476b0d32352acbf4a4))
+* adjust log level ([504d243](https://github.com/bespin-studios/byteshard-core/commit/504d2431390b0c52c28cc85b15ddc79cac9512f8))
+* update the log format for the deprecated log stream handler as well ([dc25d15](https://github.com/bespin-studios/byteshard-core/commit/dc25d157d5992b712e22c7f4c2aed8bb8ab454c6))
+
+
+### Features
+
+* add an idea how to do error logging without logging to files ([2910f4f](https://github.com/bespin-studios/byteshard-core/commit/2910f4f4e8cc2c39402c85a61dc8928fbfbd7dfa))
+
 # [2.17.0](https://github.com/bespin-studios/byteshard-core/compare/v2.16.2...v2.17.0) (2025-10-09)
 
 
