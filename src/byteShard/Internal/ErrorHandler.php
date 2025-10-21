@@ -11,14 +11,14 @@ use byteShard\Enum\ContentType;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Enum\LogLevel;
 use byteShard\Enum\LogLocation;
+use byteShard\Exception;
+use byteShard\Internal\ErrorHandler\Template;
 use byteShard\Internal\Exception\ExceptionInterface;
 use byteShard\Internal\Struct\ClientCell;
 use byteShard\Internal\Struct\ClientCellProperties;
 use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Locale;
-use byteShard\Internal\ErrorHandler\Template;
 use byteShard\Popup\Message;
-use byteShard\Exception;
 use Error;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -38,21 +38,17 @@ class ErrorHandler
 
     private ?string $resultObjectType = null;
     /** @var LoggerInterface[] */
-    private array       $loggers               = [];
+    private array       $loggers        = [];
     private LogLocation $logLocation;
     private string      $logDir;
     private string      $appUrl;
-    private string      $printLogFilename      = 'print';
-    private string      $errorLogFilename      = 'error';
-    private string      $exceptionLogFilename  = 'exception';
-    private string      $deprecatedLogFilename = 'deprecated';
-    private bool        $exception             = false;
-    private int         $num                   = 0;
+    private bool        $exception      = false;
     private string      $exportId;
-    private bool        $sessionClosed         = false;
+    private bool        $sessionClosed  = false;
     private string      $sessionIndexOfExports;
-    private bool        $debugBacktrace        = false;
-    private ?string     $outOfMemoryHelper;
+    private bool        $debugBacktrace = false;
+    /** @noinspection @PhpPropertyOnlyWrittenInspection */
+    private ?string $outOfMemoryHelper;
 
     public function __construct(string $logDir, string $appUrl, ?string $resultObjectType = null, LogLocation $logLocation = LogLocation::FILE)
     {
@@ -60,6 +56,7 @@ class ErrorHandler
         $this->appUrl            = $appUrl;
         $this->logLocation       = $logLocation;
         $this->outOfMemoryHelper = str_repeat('*', 1024 * 1024);
+        // check if the log directory is writable
         if ($this->logLocation === LogLocation::FILE && !is_writable($this->logDir)) {
             ini_set('display_errors', 'on');
             error_reporting(E_ALL);
@@ -166,8 +163,8 @@ class ErrorHandler
                         $found = true;
                     }
                 }
-                $content = '['.date('Y-m-d H:i:s').'] '.$message.' '.json_encode(array('file' => $file, 'line' => $line, 'called_in_file' => $calledInFile, 'called_in_line' => $calledInLine));
-                $this->printToFile($content, $this->deprecatedLogFilename, false, false);
+                $deprecatedContext = ['file' => $file, 'line' => $line, 'called_in_file' => $calledInFile, 'called_in_line' => $calledInLine];
+                $this->sendMessageToLogger('deprecated', LogLevel::WARNING, $message, $deprecatedContext);
                 break;
             default:
                 $e = new Exception($message);
@@ -213,45 +210,28 @@ class ErrorHandler
     {
         global $output_buffer;
         // process exit before eof without triggering an error beforehand
-        $phpCanWriteToLog = true;
         if ($output_buffer === null) {
             $output_buffer = ob_get_clean();
         }
         if (!empty($output_buffer)) {
-            $phpCanWriteToLog = $this->printToFile($output_buffer, $this->printLogFilename);
+            $this->sendMessageToLogger('default', LogLevel::WARNING, $output_buffer, array('callback_type' => 'output_buffer'));
         }
-        if ($phpCanWriteToLog === true) {
-            if ($e instanceof ExceptionInterface) {
-                $channel = $e->getLogChannel();
-                if (!array_key_exists($channel, $this->loggers)) {
-                    $channel = 'default';
-                }
-                if (defined('LOGLEVEL') && LOGLEVEL === LogLevel::DEBUG) {
-                    $this->sendMessageToLogger($channel, $e->getLogLevel(), $e->getMessage(), array('callback_type' => 'exception', 'code' => $e->getCode(), 'file' => $e->getFile(), 'line' => $e->getLine(), 'trace' => $e->getStackTrace()));
-                } else {
-                    $this->sendMessageToLogger($channel, $e->getLogLevel(), $e->getMessage(), array('callback_type' => 'exception', 'code' => $e->getCode(), 'file' => $e->getFile(), 'line' => $e->getLine()));
-                }
-            } else {
-                if ($this->logLocation === LogLocation::STDERR) {
-                    $this->sendMessageToLogger('default', LogLevel::ERROR, $e->getMessage(), array('callback_type' => 'exception', 'code' => '00000000', 'file' => $e->getFile(), 'line' => $e->getLine()));
-                } else {
-                    $this->printToFile(print_r($e, true), $this->exceptionLogFilename);
-                }
-            }
-        }
+        $this->printError($e);
         $this->exception = true;
         if ($this->resultObjectType !== null) {
             switch ($this->resultObjectType) {
                 case self::RESULT_OBJECT_CELL_CONTENT:
                     $this->printCellContent(
                         ($e instanceof ExceptionInterface) ? $e->getClientMessage() : '',
-                        ($e instanceof ExceptionInterface) ? $e->getCode() : '');
+                        ($e instanceof ExceptionInterface) ? $e->getCode() : ''
+                    );
                     break;
                 case self::RESULT_OBJECT_POPUP:
                     $this->printPopupContent(
                         ($e instanceof ExceptionInterface) ? $e->getClientMessage() : '',
                         ($e instanceof ExceptionInterface) ? $e->getCode() : '',
-                        ($e instanceof ExceptionInterface) ? $e->getUploadFileName() : '');
+                        ($e instanceof ExceptionInterface) ? $e->getUploadFileName() : ''
+                    );
                     break;
                 case self::RESULT_OBJECT_HTML:
                     Template::printGenericExceptionTemplate($e->getMessage());
@@ -269,7 +249,7 @@ class ErrorHandler
                     $this->printRestApiError($e);
                 case self::RESULT_OBJECT_LOGIN:
                 default:
-                    $this->printLoginContent($phpCanWriteToLog);
+                    $this->printLoginContent();
             }
         }
     }
@@ -290,13 +270,13 @@ class ErrorHandler
             if (ob_get_status()) {
                 $tmp = ob_get_clean();
                 if ($tmp !== false) {
-                    $this->printToFile($tmp, $this->printLogFilename);
+                    $this->sendMessageToLogger('default', LogLevel::WARNING, $tmp, array('callback_type' => 'output_buffer'));
                 }
             }
             if ($this->debugBacktrace === true) {
                 $error[] = debug_backtrace();
             }
-            $phpCanWriteToLog = $this->printToFile('Shutdown - '.print_r($error, true), $this->errorLogFilename);
+            $this->sendMessageToLogger('default', LogLevel::ERROR, 'Shutdown - '.print_r($error, true), $error);
             if ($this->resultObjectType !== null) {
                 $message = '';
                 if (is_array($error) && array_key_exists('file', $error) && array_key_exists('message', $error)) {
@@ -330,13 +310,13 @@ class ErrorHandler
                         $this->printRestApiError();
                     case self::RESULT_OBJECT_LOGIN:
                     default:
-                        $this->printLoginContent($phpCanWriteToLog);
+                        $this->printLoginContent();
                 }
             }
         } elseif ($this->exception === false && !empty($GLOBALS['output_buffer'])) {
             // no exception was caught. Any print/echo/var_dump will be in output_buffer
-            // reroute output_buffer to file
-            $this->printToFile($GLOBALS['output_buffer'], $this->printLogFilename);
+            // reroute output_buffer to log
+            $this->sendMessageToLogger('default', LogLevel::WARNING, $GLOBALS['output_buffer'], array('callback_type' => 'output_buffer'));
         }
     }
 
@@ -415,10 +395,7 @@ class ErrorHandler
         print json_encode($result);
     }
 
-    /**
-     * @param bool $phpCanWriteToLog
-     */
-    private function printLoginContent(bool $phpCanWriteToLog): never
+    private function printLoginContent(): never
     {
         // if an error occurs before the byteShard framework is loaded, the user will be redirected to the login page, ERROR = true is saved in the session to be evaluated by the login form
         if ($this->appUrl !== '') {
@@ -432,125 +409,39 @@ class ErrorHandler
         }
         //TODO: check if some cookies have to be unset
         if (!headers_sent()) {
-            $parameter = $phpCanWriteToLog ? '/' : '/?error=nolog';
-            header('Location: '.$path.'login'.$parameter);
+            header('Location: '.$path.'login/');
         }
         exit;
     }
 
-    /**
-     * @param string $string
-     * @param string $filename
-     * @param bool $date
-     * @param bool $reformat
-     * @return bool
-     */
-    private function printToFile(string $string, string $filename, bool $date = true, bool $reformat = true): bool
+    private function printError(string|\Throwable $throwable): void
     {
-        if ($this->logLocation === LogLocation::FILE) {
-            if ($reformat === true) {
-                $filename     .= '.html';
-                $filename     = $this->logDir.DIRECTORY_SEPARATOR.(($date !== false) ? date('YmdHis').'_' : '').$filename;
-                $insertScript = true;
-                if (preg_match('//u', $string)) {
-                    $string = mb_convert_encoding($string, 'ISO-8859-1', 'UTF-8');
-                }
-
-                if (is_writable($this->logDir)) {
-                    if (file_exists($filename)) {
-                        $cont = file_get_contents($filename);
-                        if ($cont !== false && str_contains($cont, '<b>Logged on:</b>')) {
-                            $insertScript = false;
-                            $count        = substr_count($cont, 'href="javascript: toggleDiv');
-                            if ($count > 0) {
-                                $this->num = $count;
-                            }
-                        }
-                        unset($cont);
-                    }
-                    $file_handle = fopen($filename, 'a+b');
-                    if ($file_handle !== false) {
-                        fwrite($file_handle, $this->formatString($string, $insertScript));
-                        fclose($file_handle);
-                    }
-                    return true; // log file is writable
-                }
-            } else {
-                $filename .= '.log';
-                $filename = $this->logDir.DIRECTORY_SEPARATOR.(($date !== false) ? date('YmdHis').'_' : '').$filename;
-                if (preg_match('//u', $string)) {
-                    $string = mb_convert_encoding($string, 'ISO-8859-1', 'UTF-8');
-                }
-                if (is_writable($this->logDir)) {
-                    $file_handle = fopen($filename, 'a+b');
-                    if ($file_handle !== false) {
-                        fwrite($file_handle, $string."\n");
-                        fclose($file_handle);
-                    }
-                    return true; // log file is writable
-                }
+        $includeTrace = defined('LOGLEVEL') && LOGLEVEL === LogLevel::DEBUG;
+        $channel      = 'default';
+        $logLevel     = LogLevel::ERROR;
+        if ($throwable instanceof ExceptionInterface) {
+            $channel = $throwable->getLogChannel();
+            if (!array_key_exists($channel, $this->loggers)) {
+                $channel = 'default';
             }
+            $logLevel = $throwable->getLogLevel();
+            $trace    = $throwable->getStackTrace();
+        } else {
+            $trace = $throwable->getTrace();
+        }
 
-        } elseif ($this->logLocation === LogLocation::STDERR) {
-            $this->sendMessageToLogger('default', LogLevel::NOTICE, $string);
-            return true; // we can always write to stderr
+        $context = [
+            'callback_type' => 'exception',
+            'class'         => get_class($throwable),
+            'code'          => $throwable->getCode(),
+            'file'          => $throwable->getFile(),
+            'line'          => $throwable->getLine(),
+            'message'       => $throwable->getMessage(),
+        ];
+        if ($includeTrace === true) {
+            $context['trace'] = $trace;
         }
-        return false; // log file is NOT writable
-    }
 
-    /**
-     * @param string $input_string
-     * @param bool $script
-     * @return string
-     */
-    private function formatString(string $input_string, bool $script = true): string
-    {
-        // this formats the output of arrays and objects so that data is more readable
-        $output_string = '';
-        if ($script === true) {
-            $output_string .= "<script>function toggleDiv(num){var a=document.getElementById('d'+num);var b=document.getElementById('a'+num);var c=a.style.display;if(c==='none'){b.innerHTML='-';a.style.display='inline';}else{b.innerHTML='+';a.style.display='none';}}</script>
-<style type=\"text/css\"><!--.arr {color:#0033FF}.ass {color:#C0C0C0}.ind {color:#00CC00}.pri {color:#CC0000}.pro {color:#9900CC}--></style>
-";
-        }
-        $user = '';
-        if (!empty($_SESSION) && is_array($_SESSION)) {
-            foreach ($_SESSION as $val) {
-                if ($val instanceof Session) {
-                    $username = $val->getUsername();
-                    if (!empty($username)) {
-                        $user = ' - by: '.$val->getUsername();
-                    }
-                    break;
-                }
-            }
-        }
-        $output_string .= '<b>Logged on:</b> '.date('d.m.y G:i:s').$user."\n";
-        $output_string .= "<pre>\n";
-        $captured      = preg_split("/\r?\n/", $input_string);
-        if ($captured !== false) {
-            foreach ($captured as $line) {
-                $output_string .= preg_replace(
-                        "/(\s+)\)$/",
-                        '$1)</span>',
-                        preg_replace_callback("/(\s+)\($/", $this->n_div(...), $line))."\n";
-            }
-        }
-        $output_string .= "</pre>\n";
-        //Format the output
-        $output_string = preg_replace("/\[(\d*)\]/i", '[<span class="ind">$1</span>]', $output_string);
-        if (!is_string($output_string)) {
-            return $input_string;
-        }
-        return str_replace(['=> Array', ':protected', ':private', '=>'], ['=&gt; <span class="arr">Array</span>', ':<span class="pro">protected</span>', ':<span class="pri">private</span>', '<span class="ass">=&gt;</span>'], $output_string);
-    }
-
-    /**
-     * @param array{1: string} $matches
-     * @return string
-     */
-    private function n_div(array $matches): string
-    {
-        $this->num++;
-        return $matches[1].'<a id=a'.$this->num.' href="javascript: toggleDiv('.$this->num.')">+</a><span id=d'.$this->num.' style="display:none">(';
+        $this->sendMessageToLogger($channel, $logLevel, $throwable->getMessage(), $context);
     }
 }

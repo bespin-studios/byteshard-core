@@ -137,16 +137,16 @@
         },
         {
             "name": "byteshard/enum",
-            "version": "v1.8.0",
+            "version": "v1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-enum.git",
-                "reference": "1ea002902bcbc270cfa2e7fb5b34eb47bc14aeb2"
+                "reference": "4a0d570ace2a39f8d7eb88d92530873519ddb8ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-enum/zipball/1ea002902bcbc270cfa2e7fb5b34eb47bc14aeb2",
-                "reference": "1ea002902bcbc270cfa2e7fb5b34eb47bc14aeb2",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-enum/zipball/4a0d570ace2a39f8d7eb88d92530873519ddb8ab",
+                "reference": "4a0d570ace2a39f8d7eb88d92530873519ddb8ab",
                 "shasum": ""
             },
             "require": {
@@ -173,9 +173,9 @@
             "description": "Global enums for the byteShard framework",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-enum/issues",
-                "source": "https://github.com/bespin-studios/byteshard-enum/tree/v1.8.0"
+                "source": "https://github.com/bespin-studios/byteshard-enum/tree/v1.8.1"
             },
-            "time": "2025-09-30T07:49:42+00:00"
+            "time": "2025-10-13T12:28:23+00:00"
         },
         {
             "name": "byteshard/exception",

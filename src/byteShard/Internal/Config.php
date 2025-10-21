@@ -9,6 +9,7 @@ namespace byteShard\Internal;
 use byteShard\Authentication\JWTProperties;
 use byteShard\Database\Enum\ConnectionType;
 use byteShard\Database\Struct\Parameters;
+use byteShard\Enum\LogFormat;
 use byteShard\Enum\LogLevel;
 use byteShard\Enum\LogLocation;
 use byteShard\Environment;
@@ -37,6 +38,7 @@ abstract class Config implements JsonSerializable
     protected string          $log_channel_name             = 'byteShard';
     protected LogLevel        $log_level                    = LogLevel::ERROR;
     protected LogLocation     $log_location                 = LogLocation::FILE;
+    protected LogFormat       $log_format                   = LogFormat::JSON;
     protected ?string         $url                          = null;
     protected ?string         $url_context                  = null;
     protected string          $ldap_url                     = '';
@@ -450,6 +452,14 @@ abstract class Config implements JsonSerializable
     public function getLogLevel(): LogLevel
     {
         return $this->log_level;
+    }
+
+    /**
+     * @return LogFormat
+     */
+    public function getLogFormatting(): LogFormat
+    {
+        return $this->log_format;
     }
 
     /**

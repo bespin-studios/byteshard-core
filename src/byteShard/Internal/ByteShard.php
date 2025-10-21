@@ -6,19 +6,23 @@
 
 namespace byteShard\Internal;
 
+use byteShard\Enum\LogFormat;
 use byteShard\Enum\LogLevel;
 use byteShard\Enum\LogLocation;
 use byteShard\Environment;
 use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 class ByteShard
 {
-    protected Config        $config;
-    protected ?ErrorHandler $errorHandler  = null;
-    private ?StreamHandler  $streamHandler = null;
+    protected Config            $config;
+    protected ?ErrorHandler     $errorHandler               = null;
+    private ?StreamHandler      $streamHandler              = null;
+    private ?StreamHandler      $deprecatedLogStreamHandler = null;
+    private ?FormatterInterface $formatter                  = null;
 
     public function __construct(Config $config)
     {
@@ -44,19 +48,30 @@ class ByteShard
 
         // create a stream handler and two log channels and pass them to the error handler
         if ($this->config->getLogLocation() === LogLocation::STDERR) {
-            $this->streamHandler = new StreamHandler('php://stderr', LogLevel::getMonologLevel($this->config->getLogLevel()));
+            $this->streamHandler              = new StreamHandler('php://stderr', LogLevel::getMonologLevel($this->config->getLogLevel()));
+            $this->deprecatedLogStreamHandler = $this->streamHandler;
         } else {
-            $this->streamHandler = new StreamHandler($this->config->getLogFilePath(), LogLevel::getMonologLevel($this->config->getLogLevel()));
+            $this->streamHandler              = new StreamHandler($this->config->getLogFilePath(), LogLevel::getMonologLevel($this->config->getLogLevel()));
+            $this->deprecatedLogStreamHandler = new StreamHandler($this->config->getLogPath().'/deprecated.log', LogLevel::getMonologLevel($this->config->getLogLevel()));
         }
-        $this->streamHandler->setFormatter(new LineFormatter(null, null, false, true));
-        $bs_logger = new Logger('byteShard');
-        $bs_logger->pushHandler($this->streamHandler);
-        $default_logger = new Logger($this->config->getLogChannelName());
-        $default_logger->pushHandler($this->streamHandler);
-        $this->errorHandler->addLogger('byteShard', $bs_logger);
-        $this->errorHandler->addLogger('default', $default_logger);
-        Debug::addLogger('byteShard', $bs_logger);
-        Debug::addLogger('default', $default_logger);
+        if ($this->config->getLogFormatting() === LogFormat::JSON) {
+            $this->formatter = new JsonFormatter();
+        } else {
+            $this->formatter = new LineFormatter(null, null, false, true);
+        }
+        $this->streamHandler->setFormatter($this->formatter);
+        $this->deprecatedLogStreamHandler->setFormatter($this->formatter);
+        $bsLogger = new Logger('byteShard');
+        $bsLogger->pushHandler($this->streamHandler);
+        $defaultLogger = new Logger($this->config->getLogChannelName());
+        $defaultLogger->pushHandler($this->streamHandler);
+        $deprecatedLogger = new Logger('deprecated');
+        $deprecatedLogger->pushHandler($this->deprecatedLogStreamHandler);
+        $this->errorHandler->addLogger('byteShard', $bsLogger);
+        $this->errorHandler->addLogger('default', $defaultLogger);
+        $this->errorHandler->addLogger('deprecated', $deprecatedLogger);
+        Debug::addLogger('byteShard', $bsLogger);
+        Debug::addLogger('default', $defaultLogger);
         return \byteShard\Config\ByteShard::getInstance($this->config);
     }
 
@@ -67,7 +82,9 @@ class ByteShard
 
     public function setLogFormatter(FormatterInterface $formatter): self
     {
+        $this->formatter = $formatter;
         $this->streamHandler->setFormatter($formatter);
+        $this->deprecatedLogStreamHandler->setFormatter($formatter);
         return $this;
     }
 }
