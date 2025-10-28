@@ -94,6 +94,7 @@ abstract class Environment implements ParametersInterface, JsonSerializable
      * @var array
      */
     protected array $locales = ['en'];
+
     public function getLocales(): array
     {
         return $this->locales;
@@ -556,11 +557,17 @@ abstract class Environment implements ParametersInterface, JsonSerializable
      */
     public function getNoApplicationPermissionContent(): object
     {
+        trigger_error('getNoApplicationPermissionContent() is deprecated. Please create a cell and return the namespace in getNoApplicationPermission()', E_USER_DEPRECATED);
         $result              = new stdClass();
         $result->label_width = 500;
         $result->tab_label   = Locale::get('byteShard.environment.tab.label.noPermission');
         $result->labels[]    = sprintf(Locale::get('byteShard.environment.cell.label.noPermission'), $this->application_name);
         return $result;
+    }
+
+    public function getNoApplicationPermission(): ?string
+    {
+        return null;
     }
 
     /**

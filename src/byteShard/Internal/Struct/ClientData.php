@@ -60,7 +60,10 @@ class ClientData extends stdClass implements Iterator, ClientDataInterface
     public static function createFromProcessedClientData(?DateTime $clientQueryTime, ?DateTimeZone $timeZone, ProcessedClientData ...$processedClientData): ClientData
     {
         $clientData = new ClientData();
-        $clientData->setSendDataTime(DateTime::createFromFormat('U.u', microtime(true)));
+        $time = DateTime::createFromFormat('U.u', microtime(true));
+        if ($time !== false) {
+            $clientData->setSendDataTime($time);
+        }
         if ($timeZone !== null) {
             $clientData->setClientTimeZone($timeZone);
         }

@@ -5,14 +5,14 @@ namespace byteShard;
 use byteShard\Enum\Access;
 use byteShard\Enum\ContentType;
 use byteShard\Internal\ApplicationRootInterface;
-use byteShard\Internal\Permission\NoApplicationPermissionError;
+use byteShard\Internal\Permission\NoPermission;
 use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\Struct\ContentComponent;
 
 class SideBar implements ApplicationRootInterface
 {
     /** @var array<string, SideBarItem> */
-    private array  $sideBarCells;
+    private array  $sideBarCells = [];
     private string $customHeader;
     private int    $width = 250;
 
@@ -54,14 +54,8 @@ class SideBar implements ApplicationRootInterface
                 }
             }
         } else {
-            $tab = new NoApplicationPermissionError();
-            if (!$tab->isInitialized()) {
-                $tab->defineTabContent();
-                $tab->setInitialized();
-            }
-            $tab->setSelected();
-            $type      = ContentType::DhtmlxTabBar;
-            $content[] = $tab->getItemConfig();
+            global $env;
+            return NoPermission::content($env->getNoApplicationPermission(), $env->getAppName());
         }
         return new ContentComponent(
             type   : $type,
@@ -83,6 +77,9 @@ class SideBar implements ApplicationRootInterface
 
     private function setSelectedSideBarCell(string $selectedId): void
     {
+        if (empty($this->sideBarCells)) {
+            return;
+        }
         $parts = explode('\\', $selectedId);
         $path  = '';
         foreach ($parts as $part) {

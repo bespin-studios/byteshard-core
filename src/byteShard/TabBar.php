@@ -6,7 +6,7 @@ use byteShard\Enum\Access;
 use byteShard\Enum\AccessType;
 use byteShard\Enum\ContentType;
 use byteShard\Internal\ApplicationRootInterface;
-use byteShard\Internal\Permission\NoApplicationPermissionError;
+use byteShard\Internal\Permission\NoPermission;
 use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\Struct\ContentComponent;
 
@@ -47,13 +47,8 @@ class TabBar implements ApplicationRootInterface
             $events   = $this->events;
             $events[] = new ClientCellEvent('onSelect', 'doOnSelect');
         } else {
-            $tab = new NoApplicationPermissionError();
-            if (!$tab->isInitialized()) {
-                $tab->defineTabContent();
-                $tab->setInitialized();
-            }
-            $tab->setSelected();
-            $content[] = $tab->getItemConfig();
+            global $env;
+            return NoPermission::content($env->getNoApplicationPermission(), $env->getAppName());
         }
         return new ContentComponent(
             type   : ContentType::DhtmlxTabBar,

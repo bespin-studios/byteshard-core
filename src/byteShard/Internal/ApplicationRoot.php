@@ -3,6 +3,7 @@
 namespace byteShard\Internal;
 
 use byteShard\Crypto\Symmetric;
+use byteShard\Enum\ContentType;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Environment;
 
