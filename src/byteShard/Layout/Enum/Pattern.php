@@ -168,5 +168,18 @@ enum Pattern: string
      * Seven Cell Layout<br>┌─────────┐<br>├─┬─┬─┬─┬─┤<br>├─┴─┴─┴─┴─┤<br>└─────────┘
      */
     case PATTERN_7I = '7I';
+
+    public function numberOfCells(): int
+    {
+        return match ($this) {
+            Pattern::PATTERN_1C                                                                                                                                                                                                                                        => 1,
+            Pattern::PATTERN_2E, Pattern::PATTERN_2U                                                                                                                                                                                                                   => 2,
+            Pattern::PATTERN_3E, Pattern::PATTERN_3J, Pattern::PATTERN_3L, Pattern::PATTERN_3T, Pattern::PATTERN_3U, Pattern::PATTERN_3W                                                                                                                               => 3,
+            Pattern::PATTERN_4A, Pattern::PATTERN_4C, Pattern::PATTERN_4E, Pattern::PATTERN_4F, Pattern::PATTERN_4G, Pattern::PATTERN_4H, Pattern::PATTERN_4I, Pattern::PATTERN_4J, Pattern::PATTERN_4L, Pattern::PATTERN_4T, Pattern::PATTERN_4U, Pattern::PATTERN_4W => 4,
+            Pattern::PATTERN_5C, Pattern::PATTERN_5E, Pattern::PATTERN_5G, Pattern::PATTERN_5H, Pattern::PATTERN_5I, Pattern::PATTERN_5K, Pattern::PATTERN_5S, Pattern::PATTERN_5U, Pattern::PATTERN_5W                                                                => 5,
+            Pattern::PATTERN_6A, Pattern::PATTERN_6C, Pattern::PATTERN_6E, Pattern::PATTERN_6H, Pattern::PATTERN_6I, Pattern::PATTERN_6J, Pattern::PATTERN_6W                                                                                                          => 6,
+            Pattern::PATTERN_7H, Pattern::PATTERN_7I                                                                                                                                                                                                                   => 7,
+        };
+    }
 }
 

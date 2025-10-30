@@ -4,9 +4,11 @@ namespace byteShard\Internal\Ribbon;
 
 use byteShard\Enum\Event;
 use byteShard\Internal\Permission\PermissionImplementation;
+use byteShard\Internal\SimpleXML;
 use byteShard\Locale;
 use byteShard\Session;
 use byteShard\Utils\Strings;
+use SimpleXMLElement;
 
 class RibbonControl implements RibbonObjectInterface
 {
@@ -19,10 +21,11 @@ class RibbonControl implements RibbonObjectInterface
     /**
      * @var array<RibbonObjectInterface>
      */
-    private array   $nested     = [];
-    protected array $attributes = [];
+    protected array $nested      = [];
+    protected array $attributes  = [];
     private string  $encryptedId = '';
-    private string  $baseLocale = '';
+    private string  $baseLocale  = '';
+    protected string $type = '';
 
     public function __construct(private readonly string $id)
     {
@@ -96,5 +99,29 @@ class RibbonControl implements RibbonObjectInterface
     public function getEvents(): array
     {
         return $this->events;
+    }
+
+    public function addObjectToXml(?SimpleXMLElement $parent): void
+    {
+        if ($parent === null) {
+            return;
+        }
+        $item = $parent->addChild('item');
+        if ($item === null) {
+            return;
+        }
+        $item->addAttribute('type', $this->type);
+
+        $attributes = $this->getContents();
+        if (array_key_exists('disabled', $attributes)) {
+            unset($attributes['disabled']);
+            $attributes['disable'] = '1';
+        }
+        foreach ($attributes as $name => $value) {
+            SimpleXML::addAttribute($item, $name, $value);
+        }
+        foreach ($this->nested as $nestedItem) {
+            $nestedItem->addObjectToXml($item);
+        }
     }
 }

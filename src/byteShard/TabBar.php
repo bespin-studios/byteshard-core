@@ -36,7 +36,7 @@ class TabBar implements ApplicationRootInterface
         $this->initTabs();
         $this->setSelectedTab($selectedId);
         $content = [];
-        $events  = [];
+        $events  = $this->events;
         if (!empty($this->tabs)) {
             foreach ($this->tabs as $tab) {
                 $tab->setParentAccessType($parentAccess);
@@ -44,17 +44,17 @@ class TabBar implements ApplicationRootInterface
                     $content[] = $tab->getItemConfig($selectedId);
                 }
             }
-            $events   = $this->events;
             $events[] = new ClientCellEvent('onSelect', 'doOnSelect');
-        } else {
-            global $env;
-            return NoPermission::content($env->getNoApplicationPermission(), $env->getAppName());
         }
-        return new ContentComponent(
-            type   : ContentType::DhtmlxTabBar,
-            content: $content,
-            events : $events
-        );
+        if (!empty($content)) {
+            return new ContentComponent(
+                type   : ContentType::DhtmlxTabBar,
+                content: $content,
+                events : $events
+            );
+        }
+        global $env;
+        return NoPermission::content($env->getNoApplicationPermission(), $env->getAppName());
     }
 
     private function initTabs(): void

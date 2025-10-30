@@ -18,19 +18,15 @@ class Button extends RibbonControl
     use ImageDisabled;
     use Label;
 
+    protected string $type = 'button';
+
     /**
      * Accepts only Event::OnClick
      * @phpstan-param (Event::OnClick) ...$events
      */
-    public function addEvents(Event ...$events): RibbonControl
+    public function addEvents(Event ...$events): self
     {
         parent::addEvents(...$events);
         return $this;
-    }
-
-    public function getContents(): array
-    {
-        $this->attributes['type'] = 'button';
-        return parent::getContents();
     }
 }

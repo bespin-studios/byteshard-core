@@ -123,6 +123,10 @@ class SessionTabs
         return false;
     }
 
+    /**
+     * @return array
+     * @deprecated only called in Session::getNavigationArray
+     */
     public function getTabContent(): array
     {
         $result = [];
@@ -154,6 +158,10 @@ class SessionTabs
         return $tab->getNavigationData();
     }
 
+    /**
+     * @return array
+     * @deprecated only called in Session::getNavigationArray
+     */
     private function getTabs(): array
     {
         if (empty($this->tabs)) {
@@ -206,11 +214,6 @@ class SessionTabs
                                     $currentTab->setSelected();
                                 }
                                 $currentTab = $currentTab->getDirectChildren();
-                            }
-                        } elseif (isset($currentTab) && $currentTab instanceof TabNew) {
-                            $currentTab = $currentTab->getTabNew(ID::factory(new TabIDElement($tabPath)));
-                            if ($index > 0 && $currentTab instanceof TabNew) {
-                                $currentTab->setSelected();
                             }
                         }
                     }

@@ -96,48 +96,16 @@ class Ribbon implements RibbonClassInterface
         }
     }
 
-    private function addRibbonObjectToXML(RibbonObjectInterface $object, SimpleXMLElement $xml): void
-    {
-        $item = $xml->addChild('item');
-        foreach ($object->getContents() as $name => $value) {
-            SimpleXML::addAttribute($item, $name, $value);
-        }
-        foreach ($object->getNestedItems() as $nestedItem) {
-            $this->addRibbonObjectToXML($nestedItem, $item);
-        }
-    }
-
     private function getXML(): string
     {
         SimpleXML::initializeDecode();
         $xml = new SimpleXMLElement('<?xml version="1.0" encoding="'.$this->outputCharset.'" ?><ribbon/>');
-        $block = $xml->addChild('item');
-        SimpleXML::addAttribute($block, 'type', 'block');
-        SimpleXML::addAttribute($block, 'mode', 'rows');
 
         foreach ($this->ribbonObjects as $object) {
             if ($object->getAccessType() > AccessType::NONE) {
-                $this->addRibbonObjectToXML($object, $block);
+                $object->addObjectToXml($xml);
             }
         }
         return SimpleXML::asString($xml);
-        return '<ribbon>
-    <item type="block" text="Buttons" mode="cols">
-     <item type="button" text="New" isbig="true" img="app/img/toolbar_icons/add.svg" imgdis="48/open.gif"/>
-     <item type="button" text="copy" isbig="flae" img="18/copy.gif"/>
-     <item type="button" text="cut" img="18/cut.gif"/>
-     <item type="button" text="New" img="18/new.gif"/>
-     <item type="button" text="open" isbig="true" img="48/open.gif"/>
-     <item type="newLevel"/>
-     <item type="button" text="paste" img="18/paste.gif"/>
-     <item type="button" text="print" img="18/print.gif"/>
-    </item>
-    <item type="block" text="ButtonsTwoState" text_pos="top">
-      <item type="buttonTwoState" text="new" img="18/new.gif" state="true"/>
-      <item type="buttonTwoState" text="open" img="18/open.gif"/>
-      <item type="buttonTwoState" text="cut" img="18/cut.gif"/>
-      <item type="buttonTwoState" text="save" img="48/save.gif" isbig="true"/>
-    </item>
-</ribbon>';
     }
 }

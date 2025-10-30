@@ -77,7 +77,7 @@ class EventHandler
         $this->request               = $request;
         $this->environment           = $environment;
 
-        if ($this->id->isCellId() === true) {
+        if ($this->id?->isCellId() === true) {
             $this->cell = Session::getCell($this->id);
             if ($this->cell !== null) {
                 $this->className = $this->cell->getContentClass();

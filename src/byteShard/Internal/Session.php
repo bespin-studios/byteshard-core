@@ -670,8 +670,15 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
         $this->customHeader = $header;
     }
 
+    /**
+     * @param bool $debug
+     * @param string|null $dhtmlxCssImagePath
+     * @return array
+     * @deprecated
+     */
     public function getNavigationArray(bool $debug, ?string $dhtmlxCssImagePath): array
     {
+        trigger_error('Old style tabs are deprecated. Please use TabNew for the time being.', E_USER_DEPRECATED);
         $result['content'] = [
             [
                 'type'    => Enum\ContentType::DhtmlxTabBar,
