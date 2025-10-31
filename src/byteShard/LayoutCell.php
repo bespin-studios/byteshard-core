@@ -10,6 +10,9 @@ use byteShard\Utils\Strings;
 
 class LayoutCell
 {
+    public const HEIGHT    = 'CellHeight';
+    public const WIDTH     = 'CellWidth';
+    public const COLLAPSED = 'Collapsed';
     private ?string           $collapsedLabel = null;
     private bool              $collapsed      = false;
     private ?int              $width          = null;
@@ -121,6 +124,7 @@ class LayoutCell
 
     public function getItemConfig(): ContentComponent
     {
+        $size  = Session::getSizeData($this->id->getCellId());
         $setup = [
             'ID'        => $this->id->getEncryptedCellId(),
             'EID'       => $this->id->getEncryptedCellIdForEvent(),
@@ -129,14 +133,18 @@ class LayoutCell
         if ($this->collapsedLabel !== null) {
             $setup['collapsedLabel'] = $this->collapsedLabel;
         }
-        if ($this->collapsed === true) {
+        if ($this->collapsed === true || array_key_exists(self::COLLAPSED, $size)) {
             $setup['collapsed'] = true;
         }
         if ($this->width !== null) {
             $setup['width'] = $this->width;
+        } else if (array_key_exists(self::WIDTH, $size)) {
+            $setup['width'] = $size[self::WIDTH];
         }
         if ($this->height !== null) {
             $setup['height'] = $this->height;
+        } else if (array_key_exists(self::HEIGHT, $size)) {
+            $setup['height'] = $size[self::HEIGHT];
         }
         if ($this->fixedWidth === true) {
             $setup['fixSize']['width'] = true;

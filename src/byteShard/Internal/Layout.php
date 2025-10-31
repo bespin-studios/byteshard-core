@@ -163,7 +163,7 @@ class Layout
         $setup   = [];
         // TODO:: choose layout depending on permissions
         if ($this->pattern === null) {
-            $count                         = count($this->cells);
+            $count            = count($this->cells);
             $setup['pattern'] = match ($count) {
                 2       => Pattern::PATTERN_2E->value,
                 3       => Pattern::PATTERN_3E->value,
@@ -226,66 +226,6 @@ class Layout
         );
     }
 
-    public function getNavigationData(): array
-    {
-        trigger_error('getNavigationData is deprecated, refactor to getItemConfig', E_USER_DEPRECATED);
-        // TODO:: choose layout depending on permissions
-        if ($this->pattern === null) {
-            $count             = count($this->cells);
-            $result['pattern'] = match ($count) {
-                2       => Pattern::PATTERN_2E->value,
-                3       => Pattern::PATTERN_3E->value,
-                4       => Pattern::PATTERN_4A->value,
-                5       => Pattern::PATTERN_5C->value,
-                6       => Pattern::PATTERN_6A->value,
-                7       => Pattern::PATTERN_7H->value,
-                default => Pattern::PATTERN_1C->value,
-            };
-        } else {
-            $result['pattern'] = $this->pattern->value;
-        }
-        foreach ($this->separators as $separator) {
-            $result['separatorSize'][] = $separator->getSeparatorSize();
-        }
-        if (!empty($this->cells)) {
-            $horizontal = '';
-            $vertical   = '';
-            foreach ($this->cells as $id => $cell) {
-                $result['cells'][$id] = $cell->getNavigationData();
-                if ($cell->getHorizontalAutoSize()) {
-                    if ($horizontal === '') {
-                        $horizontal = $id;
-                    } else {
-                        $horizontal .= ';'.$id;
-                    }
-                }
-                if ($cell->getVerticalAutoSize()) {
-                    if ($vertical === '') {
-                        $vertical = $id;
-                    } else {
-                        $vertical .= ';'.$id;
-                    }
-                }
-            }
-            if ($horizontal !== '') {
-                $result['autoSize']['horizontal'] = $horizontal;
-            }
-            if ($vertical !== '') {
-                $result['autoSize']['vertical'] = $vertical;
-            }
-            if ($this->eventOnCollapse === true) {
-                $result['events']['onCollapse'][] = 'doOnCollapse';
-            }
-            if ($this->eventOnExpand === true) {
-                $result['events']['onExpand'][] = 'doOnExpand';
-            }
-            if ($this->eventOnPanelResizeFinish) {
-                $result['events']['onPanelResizeFinish'][] = 'doOnPanelResizeFinish';
-            }
-        }
-        return $result;
-    }
-
     public function bubble(): int
     {
         $bubble = 0;
@@ -316,85 +256,8 @@ class Layout
         return $result;
     }
 
-    public function getResizeDirection(string $cells): string
+    public function getPattern(): ?Pattern
     {
-        //TODO: patterns with 5++ cells
-        $tmp = explode(',', $cells);
-        foreach ($tmp as $val) {
-            $cell[$val] = true;
-        }
-        switch ($this->pattern) {
-            case Pattern::PATTERN_2E:
-            case Pattern::PATTERN_3E:
-            case Pattern::PATTERN_4E:
-            case Pattern::PATTERN_5E:
-                return 'h';
-            case Pattern::PATTERN_2U:
-            case Pattern::PATTERN_3W:
-            case Pattern::PATTERN_4W:
-            case Pattern::PATTERN_5W:
-            case Pattern::PATTERN_6W:
-                return 'w';
-            case Pattern::PATTERN_4A:
-            case Pattern::PATTERN_3J:
-                if (isset($cell['c'])) {
-                    return 'w';
-                }
-                return 'h';
-            case Pattern::PATTERN_3L:
-                if (isset($cell['a'])) {
-                    return 'w';
-                }
-                return 'h';
-            case Pattern::PATTERN_3T:
-            case Pattern::PATTERN_4T:
-                if (isset($cell['a'])) {
-                    return 'h';
-                }
-                return 'w';
-            case Pattern::PATTERN_3U:
-            case Pattern::PATTERN_4F:
-                if (isset($cell['c'])) {
-                    return 'h';
-                }
-                return 'w';
-            case Pattern::PATTERN_4C:
-                if (!isset($cell['a'])) {
-                    return 'h';
-                }
-                return 'w';
-            case Pattern::PATTERN_4G:
-                if (isset($cell['d'])) {
-                    return 'w';
-                }
-                return 'h';
-            case Pattern::PATTERN_4H:
-                if (!isset($cell['a']) && !isset($cell['d'])) {
-                    return 'h';
-                }
-                return 'w';
-            case Pattern::PATTERN_4I:
-                if (!isset($cell['a']) && !isset($cell['d'])) {
-                    return 'w';
-                }
-                return 'h';
-            case Pattern::PATTERN_4J:
-                if (isset($cell['b'])) {
-                    return 'h';
-                }
-                return 'w';
-            case Pattern::PATTERN_4L:
-                if (isset($cell['b'])) {
-                    return 'w';
-                }
-                return 'h';
-            case Pattern::PATTERN_4U:
-                if (isset($cell['d'])) {
-                    return 'h';
-                }
-                return 'w';
-            default:
-                return '';
-        }
+        return $this->pattern;
     }
 }

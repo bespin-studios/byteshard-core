@@ -27,6 +27,11 @@ class Layout
         }
     }
 
+    public function getPattern(): Pattern
+    {
+        return $this->pattern;
+    }
+
     public function setContentContainerId(\byteShard\ID\ID $id): void
     {
         foreach ($this->cells as $cell) {
@@ -82,7 +87,7 @@ class Layout
                 $cellId    = $cell->getId();
                 $patternId = $cellId->getPatternCellId();
                 $this->registerLegacyCellInSession($parentAccess, $cellId);
-                $content[] = $cell->getItemConfig($patternId);
+                $content[] = $cell->getItemConfig();
                 if ($cell->getHorizontalAutoSize()) {
                     $horizontal[] = $patternId;
                 }

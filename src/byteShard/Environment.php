@@ -657,9 +657,6 @@ abstract class Environment implements ParametersInterface, JsonSerializable
             \byteShard\Session::setPermissionObject($this->initializePermissions());
             \byteShard\Session::setPermissionsAreInitialized();
         }
-        if (\byteShard\Session::areCellSizesLoaded() === false && $this->loadStoredCellSizes() === true) {
-            \byteShard\Session::setCellSizesAreLoaded();
-        }
         if (\byteShard\Session::areTabsInitialized() === false && method_exists($this, 'initializeTabs') && $this->initializeTabs(\byteShard\Session::getSessionObject()) === true) {
             \byteShard\Session::setTabsAreInitialized();
         }
@@ -727,32 +724,6 @@ abstract class Environment implements ParametersInterface, JsonSerializable
         $session = \byteShard\Session::createSession($this->locale, $this->require_ssl);
         $this->initSessionCallback($session);
         return $session;
-    }
-
-    /**
-     * @return boolean
-     */
-    protected function loadStoredCellSizes(): bool
-    {
-        $model  = $this->getDataModel();
-        $userId = \byteShard\Session::getUserId();
-        if ($userId !== null) {
-            $layouts = $model->getCellSize(\byteShard\Session::getUserId());
-            foreach ($layouts as $layout) {
-                $layout = array_change_key_case((array)$layout);
-                switch ($layout['type']) {
-                    case Cell::HEIGHT:
-                    case Cell::WIDTH:
-                        \byteShard\Session::setSavedCellSize($layout['tab'].'\\'.$layout['cell'], $layout['type'], (int)$layout['value']);
-                        break;
-                    case Cell::COLLAPSED:
-                        \byteShard\Session::setSavedCellCollapse($layout['tab'].'\\'.$layout['cell']);
-                        break;
-                }
-            }
-            return true;
-        }
-        return false;
     }
 
     public function getLastTab($userId): string

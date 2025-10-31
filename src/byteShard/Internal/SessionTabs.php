@@ -258,8 +258,8 @@ class SessionTabs
 
     public function getTab(ID $id): Tab|TabNew|null
     {
-        $tabId = $id->getTabId();
-        if (class_exists($tabId) && is_subclass_of(TabNew::class, $tabId)) {
+        $tabId = '\\App\\Tab\\'.$id->getTabId();
+        if (class_exists($tabId) && is_subclass_of($tabId, TabNew::class)) {
             return new $tabId();
         }
         return $this->getLegacyTab($id);

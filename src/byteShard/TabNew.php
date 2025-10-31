@@ -34,7 +34,7 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
     private bool                       $initialized = false;
     private Layout|TabBar|SideBar|null $content     = null;
     private bool                       $toolbar     = false;
-    private array $cellConfig = [];
+    private array                      $cellConfig  = [];
 
     public function __construct(string|UnitEnum ...$permissions)
     {
@@ -44,12 +44,22 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
         }
     }
 
-    public function setContent(Layout|TabBar|SideBar $content): TabNew {
+    public function setContent(Layout|TabBar|SideBar $content): TabNew
+    {
         $this->content = $content;
         if ($content instanceof Layout) {
             $this->content->setContentContainerId($this->id);
         }
         return $this;
+    }
+
+    public function getContent(): Layout|TabBar|SideBar|null
+    {
+        if (!$this->isInitialized()) {
+            $this->defineTabContent();
+            $this->setInitialized();
+        }
+        return $this->content;
     }
 
     public function getSelected(): bool
