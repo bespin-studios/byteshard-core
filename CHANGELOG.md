@@ -1,3 +1,16 @@
+# [2.19.0](https://github.com/bespin-studios/byteshard-core/compare/v2.18.0...v2.19.0) (2025-11-14)
+
+
+### Bug Fixes
+
+* update byteShard/contracts ([013cb7a](https://github.com/bespin-studios/byteshard-core/commit/013cb7a695e44c1ee3f1bc490159c69e71c32019))
+
+
+### Features
+
+* full class support for no app permission ([d625b8d](https://github.com/bespin-studios/byteshard-core/commit/d625b8dafb56e7ae13874277b633393e4aa490ed))
+* native layout and layoutCell objects. ([8364a23](https://github.com/bespin-studios/byteshard-core/commit/8364a23d9a51b42692498cce1473c1dabb1c6361))
+
 # [2.18.0](https://github.com/bespin-studios/byteshard-core/compare/v2.17.0...v2.18.0) (2025-10-21)
 
 
