@@ -274,16 +274,16 @@
         },
         {
             "name": "byteshard/locale",
-            "version": "v1.0.2",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-locale.git",
-                "reference": "26bfd67861290e1d9bf8c729d877855e085efa5b"
+                "reference": "8d66d83c5b5f8aa74451595107ad219fd1e9cb02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-locale/zipball/26bfd67861290e1d9bf8c729d877855e085efa5b",
-                "reference": "26bfd67861290e1d9bf8c729d877855e085efa5b",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-locale/zipball/8d66d83c5b5f8aa74451595107ad219fd1e9cb02",
+                "reference": "8d66d83c5b5f8aa74451595107ad219fd1e9cb02",
                 "shasum": ""
             },
             "require": {
@@ -311,9 +311,9 @@
             "description": "Locale components for the byteShard framework",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-locale/issues",
-                "source": "https://github.com/bespin-studios/byteshard-locale/tree/v1.0.2"
+                "source": "https://github.com/bespin-studios/byteshard-locale/tree/v1.1.0"
             },
-            "time": "2025-05-27T13:40:43+00:00"
+            "time": "2025-11-14T13:54:31+00:00"
         },
         {
             "name": "byteshard/rest",

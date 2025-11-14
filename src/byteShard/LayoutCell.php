@@ -5,11 +5,14 @@ namespace byteShard;
 use byteShard\Enum\ContentType;
 use byteShard\ID\CellIDElement;
 use byteShard\ID\PatternIDElement;
+use byteShard\Internal\Permission\PermissionImplementation;
 use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Utils\Strings;
 
 class LayoutCell
 {
+    use PermissionImplementation;
+
     public const HEIGHT    = 'CellHeight';
     public const WIDTH     = 'CellWidth';
     public const COLLAPSED = 'Collapsed';

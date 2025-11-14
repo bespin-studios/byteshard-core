@@ -19,9 +19,13 @@ class Layout
     private bool  $eventOnExpand            = true;
     private bool  $eventOnCollapse          = true;
 
-    public function __construct(private readonly Pattern $pattern)
+    public function __construct(private readonly Pattern $pattern, string ...$cells)
     {
-        for ($i = 0; $i < $pattern->numberOfCells(); $i++) {
+        $numberOfCells = $pattern->numberOfCells();
+        if ($numberOfCells !== count($cells)) {
+            throw new Exception('The number of cells must match the pattern');
+        }
+        for ($i = 0; $i < $numberOfCells; $i++) {
             $char          = chr(($i % 26) + 97);
             $this->cells[] = new LayoutCell($char);
         }
