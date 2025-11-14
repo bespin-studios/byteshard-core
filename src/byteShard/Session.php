@@ -9,6 +9,7 @@ namespace byteShard;
 use byteShard\Crypto\Symmetric;
 use byteShard\ID\CellIDElement;
 use byteShard\ID\TabIDElement;
+use byteShard\Internal\Database\ModelCache;
 use byteShard\Internal\LayoutContainer;
 use byteShard\Internal\PopupInterface;
 use byteShard\Internal\Server;
@@ -125,19 +126,9 @@ class Session
         self::getSessionObject()?->addCells(...$cells);
     }
 
-    public static function setSavedCellSize(string $cell, string $type, int $dimension): void
-    {
-        self::getSessionObject()?->setSavedCellSize($cell, $type, $dimension);
-    }
-
-    public static function setSavedCellCollapse(string $cell): void
-    {
-        self::getSessionObject()?->setSavedCellCollapse($cell);
-    }
-
     public static function getSizeData(string $name): array
     {
-        return self::getSessionObject()?->getSizeData($name) ?? [];
+        return ModelCache::getSizeData($name);
     }
 
     public static function getAdditionalUserdata(): array
@@ -160,7 +151,7 @@ class Session
         return self::getSessionObject()?->getCell($id);
     }
 
-    public static function getTab(\byteShard\ID\ID $id): ?LayoutContainer
+    public static function getTab(\byteShard\ID\ID $id): Tab|TabNew|null
     {
         return self::getSessionObject()?->getTab($id);
     }
@@ -304,16 +295,6 @@ class Session
     public static function setPermissionObject(?Permission $permissionObject): void
     {
         self::getSessionObject()?->setPermissionObject($permissionObject);
-    }
-
-    public static function areCellSizesLoaded(): bool
-    {
-        return self::getSessionObject()?->areCellSizesLoaded();
-    }
-
-    public static function setCellSizesAreLoaded(): void
-    {
-        self::getSessionObject()?->setCellSizesAreLoaded();
     }
 
     public static function areTabsInitialized(): bool {

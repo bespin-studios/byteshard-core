@@ -119,7 +119,7 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
         return true;
     }
 
-    public function getTab(ID\ID $id): ?Tab
+    public function getTab(ID\ID $id): Tab|TabNew|null
     {
         //TODO: refactor, but still works
         return $this->tabs->getTab($id);
@@ -333,16 +333,6 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
     public function setTabsAreInitialized(): void
     {
         $this->user['tabsAreInitialized'] = true;
-    }
-
-    public function areCellSizesLoaded(): bool
-    {
-        return isset($this->user['cellSizesAreLoaded']) && $this->user['cellSizesAreLoaded'] === true;
-    }
-
-    public function setCellSizesAreLoaded(): void
-    {
-        $this->user['cellSizesAreLoaded'] = true;
     }
 
     public function setPermissionObject(?Permission $permissionObject): void
@@ -670,8 +660,15 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
         $this->customHeader = $header;
     }
 
+    /**
+     * @param bool $debug
+     * @param string|null $dhtmlxCssImagePath
+     * @return array
+     * @deprecated
+     */
     public function getNavigationArray(bool $debug, ?string $dhtmlxCssImagePath): array
     {
+        trigger_error('Old style tabs are deprecated. Please use TabNew for the time being.', E_USER_DEPRECATED);
         $result['content'] = [
             [
                 'type'    => Enum\ContentType::DhtmlxTabBar,
@@ -719,23 +716,5 @@ class Session implements TabParentInterface, EncryptedIDStorageInterface
     public function setLocales(array $locales): void
     {
         $this->sessionLocale->setSupportedApplicationLocales($locales);
-    }
-
-    public function getSizeData(string $name): array
-    {
-        if (array_key_exists($name, $this->cellSize)) {
-            return $this->cellSize[$name];
-        }
-        return [];
-    }
-
-    public function setSavedCellSize(string $cell, string $type, int $dimension): void
-    {
-        $this->cellSize[$cell][$type] = $dimension;
-    }
-
-    public function setSavedCellCollapse(string $cell): void
-    {
-        $this->cellSize[$cell][Cell::COLLAPSED] = true;
     }
 }

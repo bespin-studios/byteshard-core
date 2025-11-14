@@ -12,8 +12,6 @@ interface TabLegacyInterface
 
     public function selectFirstTab(): void;
 
-    public function getNavigationData(): array;
-
     public function getCells(): array;
     
     public function selectFirstTabIfNoneSelected(): void;

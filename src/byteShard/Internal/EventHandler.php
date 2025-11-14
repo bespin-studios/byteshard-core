@@ -25,17 +25,19 @@ use byteShard\Event\OnStateChangeInterface;
 use byteShard\Exception;
 use byteShard\Grid;
 use byteShard\ID;
+use byteShard\Internal\Action\Layout\ImplicitLayoutActions;
 use byteShard\Internal\ClientData\DataHarmonizer;
 use byteShard\Internal\Permission\PermissionImplementation;
 use byteShard\Internal\Request\ElementType;
 use byteShard\Internal\Request\EventType;
-use byteShard\Internal\Struct;
 use byteShard\Locale;
 use byteShard\Popup;
 use byteShard\Popup\Confirmation;
 use byteShard\Popup\Message;
 use byteShard\Scheduler\Event\OnScrollForward;
 use byteShard\Session;
+use byteShard\Tab;
+use byteShard\TabNew;
 use Closure;
 use DateTime;
 use DateTimeZone;
@@ -77,7 +79,7 @@ class EventHandler
         $this->request               = $request;
         $this->environment           = $environment;
 
-        if ($this->id->isCellId() === true) {
+        if ($this->id?->isCellId() === true) {
             $this->cell = Session::getCell($this->id);
             if ($this->cell !== null) {
                 $this->className = $this->cell->getContentClass();
@@ -265,12 +267,18 @@ class EventHandler
     private function onPanelResizeFinish(string $affectedCells, array $resizeData): array
     {
         $tab = Session::getTab($this->id);
-        if ($tab !== null) {
-            $layout    = $tab->getLayout();
-            $direction = $layout->getResizeDirection($affectedCells);
-            if (array_key_exists('type', $resizeData)) {
-                unset($resizeData['type']);
+        if ($tab instanceof TabNew) {
+            $content = $tab->getContent();
+            if ($content instanceof \byteShard\Layout) {
+                $pattern         = $content->getPattern();
+                $resizeDirection = ImplicitLayoutActions::getResizeDirection($affectedCells, $pattern);
+                return ImplicitLayoutActions::onPanelResizeFinish($resizeDirection, $resizeData, $tab->getId(), $this->environment);
             }
+        } else if ($tab instanceof Tab) {
+            $layout    = $tab->getLayout();
+            $pattern   = $layout->getPattern();
+            $direction = ImplicitLayoutActions::getResizeDirection($affectedCells, $pattern);
+            $result    = ImplicitLayoutActions::onPanelResizeFinish($direction, $resizeData, $tab->getNewId()->getTabId(), $this->environment);
             if (isset($resizeData['autoSizes'], $resizeData['cells'])) {
                 $autoSizes = $resizeData['autoSizes'];
                 $cellSizes = $resizeData['cells'];
@@ -296,20 +304,18 @@ class EventHandler
                         $cellId = clone $tab->getNewId();
                         $cellId->addIdElement(new ID\CellIDElement($tabName.'\\'.$cellName));
                         $cell = $tab->getCell($cellId);
-                        if ($direction === 'w' && array_key_exists('width', $cellSize)) {
-                            if ($cell instanceof Cell) {
+                        if ($cell instanceof Cell) {
+                            if ($direction === 'w' && array_key_exists('width', $cellSize)) {
                                 $cell->setWidthOnResize((int)$cellSize['width']);
-                            }
-                            $this->setCellWidth($tabName, $cellName, round($cellSize['width']));
-                        } elseif ($direction === 'h' && array_key_exists('height', $cellSize)) {
-                            if ($cell instanceof Cell) {
+                            } elseif ($direction === 'h' && array_key_exists('height', $cellSize)) {
                                 $cell->setHeightOnResize((int)$cellSize['height']);
                             }
-                            $this->setCellHeight($tabName, $cellName, round($cellSize['height']));
                         }
+
                     }
                 }
             }
+            return $result;
         }
         return ['state' => HttpResponseState::SUCCESS->value];
     }
@@ -321,7 +327,10 @@ class EventHandler
     private function onCollapse(string $cellName): array
     {
         $tab = Session::getTab($this->id);
-        if ($tab !== null) {
+        if ($tab instanceof TabNew) {
+            $tabName = $tab->getId();
+            $this->environment->storeUserSetting($tabName, $cellName, Cell::COLLAPSED, 'Cell', 1);
+        } else if ($tab instanceof Tab) {
             $tabName = $tab->getNewId()->getTabId();
             $cellId  = clone $tab->getNewId();
             $cellId->addIdElement(new ID\CellIDElement($tabName.'\\'.$cellName));
@@ -339,7 +348,10 @@ class EventHandler
     private function onExpand(string $cellName): array
     {
         $tab = Session::getTab($this->id);
-        if ($tab !== null) {
+        if ($tab instanceof TabNew) {
+            $tabName = $tab->getId();
+            $this->environment->deleteUserSetting($tabName, $cellName, Cell::COLLAPSED, 'Cell');
+        } else if ($tab instanceof Tab) {
             $tabName = $tab->getNewId()->getTabId();
             $cellId  = clone $tab->getNewId();
             $cellId->addIdElement(new ID\CellIDElement($tabName.'\\'.$cellName));

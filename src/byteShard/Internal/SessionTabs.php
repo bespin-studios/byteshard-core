@@ -123,6 +123,10 @@ class SessionTabs
         return false;
     }
 
+    /**
+     * @return array
+     * @deprecated only called in Session::getNavigationArray
+     */
     public function getTabContent(): array
     {
         $result = [];
@@ -154,6 +158,10 @@ class SessionTabs
         return $tab->getNavigationData();
     }
 
+    /**
+     * @return array
+     * @deprecated only called in Session::getNavigationArray
+     */
     private function getTabs(): array
     {
         if (empty($this->tabs)) {
@@ -207,11 +215,6 @@ class SessionTabs
                                 }
                                 $currentTab = $currentTab->getDirectChildren();
                             }
-                        } elseif (isset($currentTab) && $currentTab instanceof TabNew) {
-                            $currentTab = $currentTab->getTabNew(ID::factory(new TabIDElement($tabPath)));
-                            if ($index > 0 && $currentTab instanceof TabNew) {
-                                $currentTab->setSelected();
-                            }
                         }
                     }
                 }
@@ -255,8 +258,8 @@ class SessionTabs
 
     public function getTab(ID $id): Tab|TabNew|null
     {
-        $tabId = $id->getTabId();
-        if (class_exists($tabId) && is_subclass_of(TabNew::class, $tabId)) {
+        $tabId = '\\App\\Tab\\'.$id->getTabId();
+        if (class_exists($tabId) && is_subclass_of($tabId, TabNew::class)) {
             return new $tabId();
         }
         return $this->getLegacyTab($id);

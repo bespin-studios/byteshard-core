@@ -9,20 +9,20 @@ namespace byteShard;
 use byteShard\Enum\Access;
 use byteShard\Enum\ContentType;
 use byteShard\ID\TabIDElement;
-use byteShard\Internal\Layout;
 use byteShard\Internal\NavigationItem;
 use byteShard\Internal\Permission\PermissionImplementation;
 use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Internal\TabLegacyInterface;
+use byteShard\Internal\TabNewDeprecation;
 use byteShard\Internal\Toolbar\ToolbarContainer;
-use byteShard\Layout\Enum\Pattern;
 use byteShard\Utils\Strings;
 use UnitEnum;
 
 abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarContainer
 {
     use PermissionImplementation;
+    use TabNewDeprecation;
 
     private ID\ID  $id;
     private array  $tabs     = [];
@@ -34,6 +34,7 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
     private bool                       $initialized = false;
     private Layout|TabBar|SideBar|null $content     = null;
     private bool                       $toolbar     = false;
+    private array                      $cellConfig  = [];
 
     public function __construct(string|UnitEnum ...$permissions)
     {
@@ -41,6 +42,24 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
         foreach ($permissions as $permission) {
             $this->setPermission($permission);
         }
+    }
+
+    public function setContent(Layout|TabBar|SideBar $content): TabNew
+    {
+        $this->content = $content;
+        if ($content instanceof Layout) {
+            $this->content->setContentContainerId($this->id);
+        }
+        return $this;
+    }
+
+    public function getContent(): Layout|TabBar|SideBar|null
+    {
+        if (!$this->isInitialized()) {
+            $this->defineTabContent();
+            $this->setInitialized();
+        }
+        return $this->content;
     }
 
     public function getSelected(): bool
@@ -51,23 +70,6 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
     public function setToolbar(): void
     {
         $this->toolbar = true;
-    }
-
-    /**
-     * @API
-     */
-    public function addTab(TabNew ...$tabs): void
-    {
-        trigger_error('byteShard\TabNew::addTab is deprecated. Please create a new \byteShard\TabBar and add it with byteShard\TabNew::setTabBar', E_USER_DEPRECATED);
-        if (!$this->content instanceof TabBar) {
-            $this->content = new TabBar();
-        }
-        $this->content->addTabs(...$tabs);
-    }
-
-    public function setTabBar(TabBar $tabBar): void
-    {
-        $this->content = $tabBar;
     }
 
     public function isClosable(): bool
@@ -124,27 +126,6 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
         return false;
     }
 
-    public function getTabNew(\byteShard\ID\ID $id): ?self
-    {
-        if (!empty($this->tabs)) {
-            $tabId = $id->getTabId();
-            if (array_key_exists($tabId, $this->tabs)) {
-                return $this->tabs[$tabId];
-            } else {
-                if (str_contains($tabId, '\\')) {
-                    $idParts       = explode('\\', $tabId);
-                    $parentIdParts = [];
-
-                    $parentId = implode('\\', $parentIdParts);
-                    if (array_key_exists($parentId, $this->tabs)) {
-                        return $this->tabs[$parentId]->getTabNew($id);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
     public function selectFirstTab(): void
     {
         $this->selected = true;
@@ -172,54 +153,6 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
         return Strings::purify(Locale::get(str_replace('\\', '_', $this->id->getTabId()).'::Tab.Label'));
     }
 
-    /**
-     * @return Cell[]
-     */
-    public function getCells(): array
-    {
-        trigger_error('byteShard\TabNew::getCells is deprecated.', E_USER_DEPRECATED);
-        $cells = isset($this->layout) ? $this->layout->getCells() : [];
-        foreach ($this->tabs as $tab) {
-            foreach ($tab->getCells() as $cell) {
-                $cells[] = $cell;
-            }
-        }
-        return $cells;
-    }
-
-    /**
-     * @param Pattern $pattern
-     * @return void
-     * @API
-     */
-    public function setPattern(Pattern $pattern): void
-    {
-        $this->initLayout();
-        $this->content->setPattern($pattern);
-    }
-
-    /**
-     * @param Cell ...$cells
-     * @return void
-     * @throws Exception
-     * @API
-     */
-    public function addCell(Cell ...$cells): void
-    {
-        $this->initLayout();
-        foreach ($cells as $cell) {
-            $this->content->addCell($cell);
-        }
-    }
-
-    private function initLayout(): void
-    {
-        if (!$this->content instanceof Layout) {
-            $this->content = new Layout($this->id->getEncryptedContainerId(), $this->id->getTabId(), $this->id);
-        }
-    }
-
-
     public function isInitialized(): bool
     {
         return $this->initialized;
@@ -228,43 +161,6 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
     public function setInitialized(): void
     {
         $this->initialized = true;
-    }
-
-    /**
-     * @internal
-     */
-    public function getNavigationData(): array
-    {
-        if (!$this->isInitialized()) {
-            $this->defineTabContent();
-            $this->setInitialized();
-        }
-        $result['ID']    = $this->id->getEncryptedContainerId();
-        $result['label'] = $this->getLabel();
-        if ($this->selected === true) {
-            $result['selected'] = true;
-        }
-        if ($this->closable === true) {
-            $result['closable'] = true;
-        }
-        if (isset($this->toolbar)) {
-            $result['toolbar'] = true;
-        }
-        if (isset($this->layout)) {
-            $result['layout'] = $this->layout->getNavigationData();
-            $result['bubble'] = $this->layout->bubble();
-        } else {
-            $bubble = 0;
-            foreach ($this->tabs as $tab) {
-                if ($tab instanceof TabNew) {
-                    $nestedTabData      = $tab->getNavigationData();
-                    $result['nested'][] = $nestedTabData;
-                    $bubble             += $nestedTabData['bubble'];
-                }
-            }
-            $result['bubble'] = $bubble;
-        }
-        return $result;
     }
 
     public function getItemConfig(string $selectedId = ''): ContentComponent
@@ -277,10 +173,6 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
         $setup   = [];
         switch (true) {
             case $this->content instanceof Layout:
-                $cells = $this->content->getCells();
-                foreach ($cells as $cell) {
-                    Session::registerCell($cell);
-                }
                 $content[]       = $this->content->getItemConfig(Access::from($this->getAccessType()));
                 $setup['bubble'] = $this->content->bubble();
                 break;

@@ -7,14 +7,13 @@
 namespace byteShard;
 
 use byteShard\Enum\Access;
-use byteShard\Enum\ContentType;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Form\Control\Upload;
 use byteShard\Form\FormInterface;
 use byteShard\ID\IDElement;
-use byteShard\ID\UploadId;
 use byteShard\Internal\Action;
 use byteShard\Internal\Cell\Storage;
+use byteShard\Internal\CellDeprecation;
 use byteShard\Internal\CellInterface;
 use byteShard\Internal\ContainerInterface;
 use byteShard\Internal\ContentClassFactory;
@@ -22,7 +21,6 @@ use byteShard\Internal\Event\Event;
 use byteShard\Internal\Event\EventStorage;
 use byteShard\Internal\Event\EventStorageInterface;
 use byteShard\Internal\Permission\PermissionImplementation;
-use byteShard\Internal\Session;
 use byteShard\Internal\Struct;
 use byteShard\Internal\Toolbar\ToolbarContainer;
 use byteShard\Tree\TreeInterface;
@@ -32,7 +30,7 @@ use UnitEnum;
 /**
  * Class Cell
  */
-class Cell implements CellInterface, EventStorageInterface, ContainerInterface, ToolbarContainer
+class Cell extends CellDeprecation implements CellInterface, EventStorageInterface, ContainerInterface, ToolbarContainer
 {
     use PermissionImplementation {
         setPermission as PermissionTrait_setPermission;
@@ -64,26 +62,20 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     private string        $layoutCellId  = '';
     private ?ID\ID        $id            = null;
     private string        $actionId;
-    private string        $cssClass      = '';
+
     private string        $contentFormat = 'XML';
     private string        $clickedLinkId;
 
     private ?string $refactorCellId                   = null;
     private ?string $refactorCellNamespace            = null;
-    private ?string $refactorCellCollapsedLabel       = null;
+
     private bool    $refactorCellRegistered           = false;
-    private bool    $refactorCellUserWidth            = false;
-    private ?int    $refactorCellWidth                = null;
-    private bool    $refactorCellUserHeight           = false;
-    private ?int    $refactorCellHeight               = null;
-    private bool    $refactorCellHideHeader           = false;
-    private bool    $refactorCellHideArrow            = false;
-    private bool    $refactorCellUseFixedHeight       = false;
-    private bool    $refactorCellUseFixedWidth        = false;
+
+
     private ?string $refactorCellOriginalContentClass = null;
     private ?string $refactorCellLocaleName           = null;
     private ?string $refactorCellName                 = null;
-    private bool    $refactorCellCollapsed            = false;
+
 
     private ?string $refactorContentRequestTimestamp = null;
     private array   $refactorContentControls         = [];
@@ -109,16 +101,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         return $this->getNewId()->getEncryptedCellIdForEvent();
     }
 
-    /**
-     * add a css class to the layoutCell
-     * @param string $class
-     * @return $this
-     */
-    public function setCssClass(string $class): self
-    {
-        $this->cssClass = $class;
-        return $this;
-    }
+
 
     /**
      * @param $id
@@ -139,61 +122,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     // Setter
     //###############################################################
 
-    /**
-     * This will set the initial width of the cell which can later be changed by the user (unless otherwise specified)
-     * On any subsequent login the width is currently evaluated from the cookie
-     * On any subsequent reload the width is evaluated from the framework
-     * The width will only be set the first time this method is called.
-     *
-     * @param int $int
-     * @return $this
-     */
-    public function setWidth(int $int): self
-    {
-        if ($this->refactorCellUserWidth === false) {
-            $this->refactorCellWidth = $int;
-        }
-        return $this;
-    }
 
-    /**
-     * @param int $int
-     * @return $this
-     * @internal store the cell width in the session after the user resized a cell
-     */
-    public function setWidthOnResize(int $int): self
-    {
-        $this->refactorCellWidth = $int;
-        return $this;
-    }
-
-    /**
-     * This will set the initial height of the cell which can later be changed by the user (unless otherwise specified)
-     * On any subsequent login the height is currently evaluated from the cookie
-     * On any subsequent reload the height is evaluated from the framework
-     * The height will only be set the first time this method is called.
-     *
-     * @param int $int
-     * @return $this
-     */
-    public function setHeight(int $int): self
-    {
-        if ($this->refactorCellUserHeight === false) {
-            $this->refactorCellHeight = $int;
-        }
-        return $this;
-    }
-
-    /**
-     * @param int $height
-     * @return $this
-     * @internal store the cell height in the session after the user resized a cell
-     */
-    public function setHeightOnResize(int $height): self
-    {
-        $this->refactorCellHeight = $height;
-        return $this;
-    }
 
     /**
      * Todo: description
@@ -226,56 +155,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         return $this;
     }
 
-    /**
-     * This will hide the header row of a cell
-     * Note: collapse / expand buttons and meta information in certain CellContents will not be available
-     *
-     * @param bool|true $bool
-     * @return $this
-     */
-    public function setHideHeader(bool $bool = true): self
-    {
-        $this->refactorCellHideHeader = $bool;
-        return $this;
-    }
 
-    /**
-     * @return $this
-     * @API
-     */
-    public function setHideArrow(): self
-    {
-        $this->refactorCellHideArrow = true;
-        return $this;
-    }
-
-    /**
-     * This will make the cell not resizable horizontally
-     * (works only in a Layout with at least 2 columns and at least one column must be auto sizable)
-     *
-     * @param bool|true $bool
-     * @return $this
-     * @API
-     */
-    public function setFixedWidth(bool $bool = true): self
-    {
-        $this->refactorCellUseFixedWidth = $bool;
-        return $this;
-    }
-
-    /**
-     * This will make the cell not resizable vertically
-     * (works only in a Layout with at least 2 rows and at least one row must be auto sizable)
-     *
-     * @param bool|true $bool
-     * @return $this
-     * @API
-     */
-    public function setFixedHeight(bool $bool = true): self
-    {
-        $this->refactorCellUseFixedHeight = $bool;
-        return $this;
-    }
 
     public function setNonce(string $nonce = ''): string
     {
@@ -515,7 +395,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
     public function getIDForEvent(string $eventName): mixed
     {
         try {
-            $decrypted = \byteShard\Session::decrypt($eventName);
+            $decrypted = Session::decrypt($eventName);
             try {
                 $object = json_decode($decrypted);
                 if (is_object($object)) {
@@ -851,7 +731,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
      */
     private function setDimensions(): void
     {
-        $size = \byteShard\Session::getSizeData($this->refactorCellNamespace.'\\'.$this->refactorCellId);
+        $size = Session::getSizeData($this->refactorCellNamespace.'\\'.$this->refactorCellId);
         foreach ($size as $type => $val) {
             switch ($type) {
                 case self::HEIGHT:
@@ -1015,119 +895,10 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         return Strings::purify(Locale::get($this->createLocaleBaseToken('Cell').'.Label'));
     }
 
-    public function getItemConfig(string $patternId): Struct\ContentComponent
-    {
-        $setup = [
-            'ID'        => $this->id->getEncryptedCellId(),
-            'EID'       => $this->id->getEncryptedCellIdForEvent(),
-            'patternId' => $patternId
-        ];
-        if ($this->refactorCellCollapsedLabel !== null) {
-            $setup['collapsedLabel'] = $this->refactorCellCollapsedLabel;
-        }
-        if ($this->refactorCellCollapsed === true) {
-            $setup['collapsed'] = true;
-        }
-        if ($this->refactorCellWidth !== null) {
-            $setup['width'] = $this->refactorCellWidth;
-        }
-        if ($this->refactorCellHeight !== null) {
-            $setup['height'] = $this->refactorCellHeight;
-        }
-        if ($this->refactorCellUseFixedWidth === true) {
-            $setup['fixSize']['width'] = true;
-        }
-        if ($this->refactorCellUseFixedHeight === true) {
-            $setup['fixSize']['height'] = true;
-        }
-        if ($this->refactorCellHideHeader === true) {
-            $setup['hideHeader'] = true;
-            $setup['label']      = '';
-        } else {
-            $setup['label'] = $this->getLabel();
-        }
-        if ($this->refactorCellHideArrow === true) {
-            $setup['hideArrow'] = true;
-        }
-        if ($this->cssClass !== '') {
-            $setup['class'] = $this->cssClass;
-        }
-        return new Struct\ContentComponent(
-            type   : ContentType::DhtmlxLayoutCell,
-            content: [],
-            setup  : $setup,
-        );
-    }
 
-    public function getNavigationData(?Session $session = null): array
-    {
-        trigger_error('getNavigationData is deprecated, refactor to getItemConfig', E_USER_DEPRECATED);
-        $cellData        = [];
-        $cellData['ID']  = $this->id->getEncryptedCellId();
-        $cellData['EID'] = $this->id->getEncryptedCellIdForEvent();
-        if ($this->refactorCellCollapsedLabel !== null) {
-            $cellData['collapsedLabel'] = $this->refactorCellCollapsedLabel;
-        }
-        if ($this->refactorCellCollapsed === true) {
-            $cellData['collapsed'] = true;
-        }
-        if (!empty($this->toolbar)) {
-            $cellData['toolbar'] = true;
-        } else {
-            $cellData['toolbar'] = false;
-        }
-        if ($this->refactorCellWidth !== null) {
-            $cellData['width'] = $this->refactorCellWidth;
-        }
-        if ($this->refactorCellHeight !== null) {
-            $cellData['height'] = $this->refactorCellHeight;
-        }
-        if ($this->refactorCellUseFixedWidth === true) {
-            $cellData['fixSize']['width'] = true;
-        }
-        if ($this->refactorCellUseFixedHeight === true) {
-            $cellData['fixSize']['height'] = true;
-        }
-        if ($this->refactorCellHideHeader === true) {
-            $cellData['hideHeader'] = true;
-            $cellData['label']      = '';
-        } else {
-            $cellData['label'] = $this->getLabel();
-        }
-        if ($this->refactorCellHideArrow === true) {
-            $cellData['hideArrow'] = true;
-        }
-        if ($this->cssClass !== '') {
-            $cellData['class'] = $this->cssClass;
-        }
-        return $cellData;
-    }
 
-    /**
-     * @param bool $bool
-     * @return $this
-     */
-    public function setCollapsed(bool $bool = true): self
-    {
-        $this->refactorCellCollapsed = $bool;
-        return $this;
-    }
 
-    /**
-     * @return bool
-     */
-    public function getHorizontalAutoSize(): bool
-    {
-        return $this->refactorCellWidth === null;
-    }
 
-    /**
-     * @return bool
-     */
-    public function getVerticalAutoSize(): bool
-    {
-        return $this->refactorCellHeight === null;
-    }
 
     /**
      * @param string $value
@@ -1279,16 +1050,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         return $this->selectedId;
     }
 
-    /**
-     * @param string $collapsedLabel
-     * @return $this
-     * @API
-     */
-    public function setCollapsedLabel(string $collapsedLabel): self
-    {
-        $this->refactorCellCollapsedLabel = $collapsedLabel;
-        return $this;
-    }
+
 
     /**
      * @return string
@@ -1315,10 +1077,7 @@ class Cell implements CellInterface, EventStorageInterface, ContainerInterface, 
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function setAccessType(Access|int $accessType): self
+    public function setAccessType(int|Access $accessType): self
     {
         $this->PermissionTrait_setAccessType($accessType);
         $this->passAccessType();
