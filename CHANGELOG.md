@@ -1,3 +1,10 @@
+# [2.20.0](https://github.com/bespin-studios/byteshard-core/compare/v2.19.0...v2.20.0) (2025-11-14)
+
+
+### Features
+
+* use class names in layout ([85d61b6](https://github.com/bespin-studios/byteshard-core/commit/85d61b694ff5f3ee6f6988b8585813649c2e6d40))
+
 # [2.19.0](https://github.com/bespin-studios/byteshard-core/compare/v2.18.0...v2.19.0) (2025-11-14)
 
 
