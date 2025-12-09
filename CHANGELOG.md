@@ -1,3 +1,10 @@
+# [2.21.0](https://github.com/bespin-studios/byteshard-core/compare/v2.20.0...v2.21.0) (2025-12-09)
+
+
+### Features
+
+* use setContent on Popup to streamline usage ([f634e19](https://github.com/bespin-studios/byteshard-core/commit/f634e19ced52251092e4e14a3377313d8b098d6f))
+
 # [2.20.0](https://github.com/bespin-studios/byteshard-core/compare/v2.19.0...v2.20.0) (2025-11-14)
 
 
