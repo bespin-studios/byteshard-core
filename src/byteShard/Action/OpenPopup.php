@@ -15,8 +15,8 @@ use byteShard\ID\TabIDElement;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 use byteShard\Internal\Debug;
-use byteShard\Internal\LayoutContainer;
 use byteShard\Internal\Struct;
+use byteShard\Layout;
 use byteShard\Locale;
 use byteShard\Popup;
 use byteShard\Popup\Message;
@@ -31,7 +31,7 @@ use byteShard\Tab;
 class OpenPopup extends Action
 {
     /** @var Popup[] */
-    private array  $popups = [];
+    private array $popups = [];
 
     /**
      * OpenPopup constructor.
@@ -53,7 +53,7 @@ class OpenPopup extends Action
      */
     public function addPopup(Popup $popup): self
     {
-        $this->popups[] = $popup;
+        $this->popups[$popup->getName()] = $popup;
         $this->addUniqueID(array_keys($this->popups));
         return $this;
     }
@@ -71,7 +71,7 @@ class OpenPopup extends Action
             foreach ($popups as $key => $popup) {
                 if ($popup instanceof Popup) {
                     if (get_class($popup) !== Popup::class) {
-                        $popupClass                = get_class($popup);
+                        $popupClass = get_class($popup);
                         $popup->addTabIdElement(new TabIDElement($cellId->getTabId()));
                         $this->popups[$popupClass] = $popup;
                     } else {
@@ -122,14 +122,12 @@ class OpenPopup extends Action
             $popup = null;
             if ($popupId instanceof Popup && get_class($popupId) !== Popup::class && str_starts_with(strtolower(get_class($popupId)), 'app\\popup\\')) {
                 $popup = $popupId;
-                if (method_exists($popup, 'definePopup')) {
-                    $popup->definePopup();
+                $popup->definePopup();
+                $content = $popup->getContent();
+                if ($content instanceof Layout) {
+                    $id = clone $popup->getNewId();
+                    $content->setContentContainerId($id);
                 }
-                if ($popup->hasContentAttached() === false) {
-                    $popup->addCell(new Cell());
-                }
-                $popup->addIdElementToAllCells(new TabIDElement($popup->getNewId()->getTabId()));
-                Session::addCells(...$popup->getCells());
             } elseif (is_string($popupId)) {
                 // deprecated
                 $popup = Session::getPopup($popupId);
