@@ -6,6 +6,7 @@
 
 namespace byteShard;
 
+use byteShard\Enum\Access;
 use byteShard\Event\OnPopupCloseInterface;
 use byteShard\Internal\Event\Event;
 use byteShard\Internal\Layout;
@@ -27,6 +28,8 @@ class Popup extends LayoutContainer implements PopupInterface
     private int     $conditionFailedWidth;
     private Closure $conditionCallback;
 
+    private ?\byteShard\Layout $content = null;
+
     /**
      * Popup constructor.
      * @param string $id
@@ -47,6 +50,22 @@ class Popup extends LayoutContainer implements PopupInterface
             $id = substr($id, 9);
         }
         parent::__construct($id);
+    }
+
+    public function setContent(\byteShard\Layout $content): self
+    {
+        $this->content = $content;
+        return $this;
+    }
+
+    public function getContent(): ?\byteShard\Layout
+    {
+        return $this->content;
+    }
+
+    public function definePopup(): void
+    {
+        // implement in app
     }
 
     public function getName(): string
@@ -191,7 +210,7 @@ class Popup extends LayoutContainer implements PopupInterface
      */
     public function getNavigationArray(): array
     {
-        $id     = $this->getNewId()->getEncryptedContainerId();
+        $id                    = $this->getNewId()->getEncryptedContainerId();
         $result['setup']['id'] = $id;
         if (isset($this->popup['height'])) {
             $result['setup']['height'] = $this->popup['height'];
@@ -205,7 +224,10 @@ class Popup extends LayoutContainer implements PopupInterface
         if ($this instanceof OnPopupCloseInterface || $this->eventOnPopupClose === true) {
             $result['setup']['closeEvent'] = true;
         }
-        if ($this->layout instanceof Layout) {
+        if ($this->content instanceof \byteShard\Layout) {
+            $result['content'][] = $this->content->getItemConfig(Access::from($this->getAccessType()));
+            $result['type']      = 'ByteShardPopup';
+        } else if ($this->layout instanceof Layout) {
             $result['content'][] = $this->layout->getItemConfig();
             $result['type']      = 'ByteShardPopup';
         } else {
@@ -265,7 +287,7 @@ class Popup extends LayoutContainer implements PopupInterface
     /**
      * @API
      */
-    public function setConditionFailedHeight(int $height)
+    public function setConditionFailedHeight(int $height): void
     {
         $this->conditionFailedHeight = $height;
     }
@@ -273,7 +295,7 @@ class Popup extends LayoutContainer implements PopupInterface
     /**
      * @API
      */
-    public function setConditionFailedWidth(int $width)
+    public function setConditionFailedWidth(int $width): void
     {
         $this->conditionFailedWidth = $width;
     }

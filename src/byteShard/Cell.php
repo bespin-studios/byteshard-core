@@ -682,7 +682,7 @@ class Cell extends CellDeprecation implements CellInterface, EventStorageInterfa
 
     public function getEncodedId(): string
     {
-        return $this->id->getEncodedCellId(false);
+        return $this->id->getEncodedCellId(false, false);
     }
 
     public function getEncryptedId(): string
