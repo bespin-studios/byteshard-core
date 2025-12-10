@@ -1,3 +1,10 @@
+# [2.22.0](https://github.com/bespin-studios/byteshard-core/compare/v2.21.1...v2.22.0) (2025-12-10)
+
+
+### Features
+
+* setContext in layoutCell ([a6592a5](https://github.com/bespin-studios/byteshard-core/commit/a6592a5c8e742e1d9a6a93f73225b9623e9eb069))
+
 ## [2.21.1](https://github.com/bespin-studios/byteshard-core/compare/v2.21.0...v2.21.1) (2025-12-10)
 
 
