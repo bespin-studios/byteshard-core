@@ -27,7 +27,7 @@ class Layout
         }
         for ($i = 0; $i < $numberOfCells; $i++) {
             $char          = chr(($i % 26) + 97);
-            $this->cells[] = new LayoutCell($char);
+            $this->cells[] = new LayoutCell($char, $cells[$i]);
         }
     }
 
