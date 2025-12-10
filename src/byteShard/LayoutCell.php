@@ -26,10 +26,16 @@ class LayoutCell
     private bool              $hideArrow      = false;
     private ?string           $cssClass       = null;
     private ?\byteShard\ID\ID $id             = null;
+    private string            $context;
 
     public function __construct(private readonly string $patternId, private readonly string $contentClass = '')
     {
 
+    }
+
+    public function setContext(string $context): void
+    {
+        $this->context = $context;
     }
 
     public function getId(): ?\byteShard\ID\ID
@@ -137,6 +143,9 @@ class LayoutCell
             'EID'       => $this->id->getEncryptedCellIdForEvent(),
             'patternId' => $this->patternId
         ];
+        if (isset($this->context)) {
+            $setup['context'] = Session::encrypt($this->context);
+        }
         if ($this->collapsedLabel !== null) {
             $setup['collapsedLabel'] = $this->collapsedLabel;
         }
