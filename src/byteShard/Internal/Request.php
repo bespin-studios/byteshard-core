@@ -24,6 +24,7 @@ class Request
     private mixed         $data;
     private ?ID           $id;
     private array         $objectProperties;
+    private string        $context;
 
     public function __construct()
     {
@@ -43,7 +44,13 @@ class Request
         $this->affectedId       = $request['id'] ?? '';
         $this->data             = isset($request['dat']) ? Sanitizer::sanitize($request['dat']) : null;
         $this->objectProperties = $this->decryptObjectProperties($request['op'] ?? '');
+        $this->context          = isset($request['ctx']) ? \byteShard\Session::decrypt($request['ctx']) : '';
         $this->mapLegacyRequestData($request);
+    }
+
+    public function getContext(): string
+    {
+        return $this->context;
     }
 
     private function decryptObjectProperties(string $objectProperties): array
