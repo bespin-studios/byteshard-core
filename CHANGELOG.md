@@ -1,3 +1,10 @@
+## [2.21.1](https://github.com/bespin-studios/byteshard-core/compare/v2.21.0...v2.21.1) (2025-12-10)
+
+
+### Bug Fixes
+
+* use direct content relation for popup layouts ([741db92](https://github.com/bespin-studios/byteshard-core/commit/741db923c6c9382e3dbaf1a00ebd0f07859dd0b2))
+
 # [2.21.0](https://github.com/bespin-studios/byteshard-core/compare/v2.20.0...v2.21.0) (2025-12-09)
 
 
