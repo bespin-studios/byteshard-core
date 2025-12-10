@@ -27,7 +27,7 @@ class LayoutCell
     private ?string           $cssClass       = null;
     private ?\byteShard\ID\ID $id             = null;
 
-    public function __construct(private readonly string $patternId)
+    public function __construct(private readonly string $patternId, private readonly string $contentClass = '')
     {
 
     }
@@ -42,7 +42,11 @@ class LayoutCell
         $this->id     = clone $contentContainerId;
         $contentClass = '';
         if ($contentContainerId->isPopupId()) {
-            $contentClass = trim($contentContainerId->getPopupId(), '\\').'\\'.$this->patternId;
+            if ($this->contentClass !== '') {
+                $contentClass = $this->contentClass;
+            } else {
+                $contentClass = trim($contentContainerId->getPopupId(), '\\').'\\'.$this->patternId;
+            }
         } else if ($contentContainerId->isTabId()) {
             $contentClass = trim($contentContainerId->getTabId(), '\\').'\\'.$this->patternId;
         }
