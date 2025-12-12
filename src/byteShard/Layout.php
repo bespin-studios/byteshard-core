@@ -131,7 +131,7 @@ class Layout
             if (class_exists($className)) {
                 $interfaces = class_implements($className);
                 if (isset($interfaces[Cell\Bubble::class])) {
-                    $layoutCell = new $className(new Cell());
+                    $layoutCell = new $className(new Cell(), null);
                     try {
                         $bubble += $layoutCell->bubble();
                     } catch (\Exception) {

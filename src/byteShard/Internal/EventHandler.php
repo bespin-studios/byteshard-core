@@ -55,6 +55,7 @@ class EventHandler
     private ?DateTimeZone       $clientTimeZone = null;
     private ?DateTime           $clientRequestDataTime;
     private CellContent         $cellContent;
+    private string              $context        = '';
     private string              $nonce;
     private ?ID\ID              $id;
     private array               $objectProperties;
@@ -78,6 +79,7 @@ class EventHandler
         $this->clientRequestDataTime = $request->getDataAge();
         $this->request               = $request;
         $this->environment           = $environment;
+        $this->context               = $request->getContext();
 
         if ($this->id?->isCellId() === true) {
             $this->cell = Session::getCell($this->id);
@@ -195,7 +197,7 @@ class EventHandler
             if ($this->className === null) {
                 $this->className = '\\App\\Cell\\'.$this->id->getCellId();
             }
-            $this->cellContent = new $this->className($this->cell);
+            $this->cellContent = new $this->className($this->cell, $this->context);
         }
         if ($this->clientTimeZone !== null) {
             $this->cellContent->setClientTimeZone($this->clientTimeZone);

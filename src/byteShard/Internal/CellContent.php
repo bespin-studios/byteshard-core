@@ -71,7 +71,6 @@ abstract class CellContent implements ContainerInterface, ExportInterface
     protected ?Struct\GetData      $getDataID;
     private DateTimeZone           $clientTimeZone;
     private CellContent            $fallbackContent;
-    private string                 $context;
 
     /**
      * TODO: OPTIMIZE: constructor too long... several actions create an instance of cell content and need only very few of it
@@ -79,7 +78,7 @@ abstract class CellContent implements ContainerInterface, ExportInterface
      * @param Cell $cell
      * @throws Exception
      */
-    public function __construct(Cell $cell)
+    public function __construct(Cell $cell, private ?string $context)
     {
         $this->locale         = Session::getLocale();
         $this->user_id        = Session::getUserId();
