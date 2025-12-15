@@ -44,9 +44,9 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
     private array $entries             = [];
     private bool  $initWithCurrentDate = true;
 
-    public function __construct(Cell $cell)
+    public function __construct(Cell $cell, ?string $context)
     {
-        parent::__construct($cell);
+        parent::__construct($cell, $context);
         $this->currentDate = new DateTime();
         //TODO: get client timezone from client
         $this->setClientTimeZone(new DateTimeZone('Europe/Berlin'));
