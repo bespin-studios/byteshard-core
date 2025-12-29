@@ -13,6 +13,7 @@ use byteShard\Form\FormInterface;
 use byteShard\Grid\GridInterface;
 use byteShard\ID\ID;
 use byteShard\Internal\CellContent;
+use byteShard\Internal\ContentClassFactory;
 use byteShard\Internal\Request;
 use byteShard\Internal\Request\ElementType;
 use byteShard\Internal\Struct\ClientData;
@@ -216,7 +217,7 @@ class DataHarmonizer
                     }
                     $cell                   = Session::getCell($id);
                     $className              = $cell->getContentClass();
-                    $cellContent            = new $className($cell);
+                    $cellContent            = ContentClassFactory::cellContent($className, '', $cell);
                     $nonce                  = array_key_exists('cn', $data) ? base64_decode($data['cn']) : '';
                     $processedDataStructure = $this->decryptAndValidate($data['data'], $nonce, $this->clientTimeZone, $cellContent);
                     if ($cellContent instanceof GridInterface) {
