@@ -615,17 +615,10 @@ abstract class Environment implements ParametersInterface, JsonSerializable
         }
     }
 
-    /**
-     * @param string $tabName
-     * @param string $cellName
-     * @param string $type
-     * @param string $item
-     */
     public function deleteUserSetting(string $tabName, string $cellName, string $type, string $item): void
     {
         $userId = \byteShard\Session::getUserId();
         if ($userId !== null) {
-            $tabName = str_replace('\\', '\\\\', $tabName);
             $this->getDataModel()->deleteUserSetting($tabName, $cellName, $type, $item, $userId);
         }
     }

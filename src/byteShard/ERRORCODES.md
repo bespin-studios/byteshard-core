@@ -24,7 +24,6 @@ Please use the defined error codes and append incrementing numbers starting at `
 <tr><td>'byteshard\\action\\openwindow'</td><td>'10200',</td></tr>
 <tr><td>'byteshard\\action\\poll'</td><td>'10210',</td></tr>
 <tr><td>'byteshard\\action\\pollcellmethod'</td><td>'10220',</td></tr>
-<tr><td>'byteshard\\action\\pollmethod'</td><td>'10230',</td></tr>
 <tr><td>'byteshard\\action\\reloadcell'</td><td>'10240',</td></tr>
 <tr><td>'byteshard\\action\\reloadformobject'</td><td>'10250',</td></tr>
 <tr><td>'byteshard\\action\\saveformdata'</td><td>'10260',</td></tr>

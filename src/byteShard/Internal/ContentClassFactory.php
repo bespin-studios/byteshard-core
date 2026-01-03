@@ -7,10 +7,9 @@ use byteShard\Exception;
 use byteShard\Form\FormInterface;
 use byteShard\Grid\GridInterface;
 use byteShard\Internal\Ribbon\RibbonClassInterface;
+use byteShard\Internal\Toolbar\ToolbarClassInterface;
 use byteShard\Popup;
-use byteShard\Tab;
 use byteShard\TabNew;
-use byteShard\Toolbar\ToolbarInterface;
 
 class ContentClassFactory
 {

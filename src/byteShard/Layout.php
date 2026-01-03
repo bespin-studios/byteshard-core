@@ -66,6 +66,7 @@ class Layout
 
     private function registerLegacyCellInSession(?Access $parentAccess = null, ?\byteShard\ID\ID $cellId = null): void
     {
+        // Eventually we get rid of the Cell object in sessions, then this function should be removed
         $cell = new Cell();
         $cell->init($cellId?->getPatternCellId(), $cellId);
         if ($parentAccess !== null) {
