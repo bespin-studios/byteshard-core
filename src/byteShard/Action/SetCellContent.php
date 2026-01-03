@@ -12,6 +12,7 @@ use byteShard\Exception;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 use byteShard\Internal\CellContent;
+use byteShard\Internal\ContentClassFactory;
 use byteShard\Internal\Export\ExportInterface;
 use byteShard\Tab;
 use ReflectionClass;
@@ -79,7 +80,7 @@ class SetCellContent extends Action
                     $numberOfParameters = $argumentTest->getMethod($this->method)->getNumberOfParameters();
                     switch ($numberOfParameters) {
                         case 1:
-                            $call = new $methodClassName($container);
+                            $call = ContentClassFactory::cellContent($methodClassName, null, $cell);
                             if ($call instanceof ExportInterface) {
                                 $call->setProcessedClientData($this->getClientData());
                             }
@@ -91,7 +92,7 @@ class SetCellContent extends Action
                             }
                             break;
                         case 2:
-                            $call = new $methodClassName($container);
+                            $call = ContentClassFactory::cellContent($methodClassName, null, $cell);
                             if ($call instanceof ExportInterface) {
                                 $call->setProcessedClientData($this->getClientData());
                             }
@@ -107,8 +108,7 @@ class SetCellContent extends Action
                     }
                 }
             } elseif (!empty($this->className)) {
-                $className                                                                 = $this->className;
-                $contentClass                                                              = new $className($cell);
+                $contentClass = ContentClassFactory::cellContent($this->className, null, $cell);
                 $result['layout'][$cell->containerId()][$cell->cellId()]['setCellContent'] = $contentClass->getCellContent();
             }
             $result['state'] = HttpResponseState::SUCCESS->value;

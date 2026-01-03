@@ -74,6 +74,7 @@ trait EventStorage
     public function getActionsForEvent(string $eventId): array
     {
         if (array_key_exists('EventActions', $this->event) && array_key_exists($eventId, $this->event['EventActions'])) {
+            trigger_error('Session Actions are deprecated', E_USER_DEPRECATED);
             return $this->event['EventActions'][$eventId];
         }
         return [];

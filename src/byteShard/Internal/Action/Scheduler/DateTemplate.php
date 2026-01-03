@@ -10,6 +10,7 @@ use byteShard\Cell;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
+use byteShard\Internal\ContentClassFactory;
 use byteShard\Scheduler;
 
 class DateTemplate extends Action
@@ -44,7 +45,7 @@ class DateTemplate extends Action
                     $rangeString    = $range['from']->format('YmdHis').$range['to']->format('YmdHis');
                     // if the new visible date range differs from the one in the session, call the defineDateTemplate method and return an array with classes per date
                     if ($cell->getVisibleDateRange() !== $rangeString) {
-                        $scheduler = new $className($cell);
+                        $scheduler = ContentClassFactory::cellContent($className, null, $cell);
                         if ($scheduler instanceof Scheduler && $scheduler instanceof Scheduler\DateTemplate) {
                             $definedClasses = $scheduler->defineDateTemplate($range['from'], $range['to'], $clientTimeZone, Scheduler::getDatePeriod($range['from'], $range['to']));
                             $classes        = $scheduler->getClassTemplateArray(...array_values($definedClasses));

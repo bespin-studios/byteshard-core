@@ -7,7 +7,9 @@ use byteShard\Exception;
 use byteShard\Form\FormInterface;
 use byteShard\Grid\GridInterface;
 use byteShard\Internal\Ribbon\RibbonClassInterface;
-use byteShard\Toolbar\ToolbarInterface;
+use byteShard\Internal\Toolbar\ToolbarClassInterface;
+use byteShard\Popup;
+use byteShard\TabNew;
 
 class ContentClassFactory
 {
@@ -15,13 +17,13 @@ class ContentClassFactory
     /**
      * @throws Exception
      */
-    public static function getToolbar(Cell $cell): ToolbarInterface
+    public static function getToolbar(Cell $cell): ToolbarClassInterface
     {
         $toolbarClass = '\\byteShard\\Toolbar';
-        if (class_exists($toolbarClass) && is_subclass_of($toolbarClass, ToolbarInterface::class)) {
+        if (class_exists($toolbarClass) && is_subclass_of($toolbarClass, ToolbarClassInterface::class)) {
             return new $toolbarClass($cell);
         } else {
-            throw new Exception('Toolbar class not found or not a subclass of '.ToolbarInterface::class);
+            throw new Exception('Toolbar class not found or not a subclass of '.ToolbarClassInterface::class);
         }
     }
 
@@ -78,5 +80,32 @@ class ContentClassFactory
         } else {
             throw new Exception('Form class not found or not a subclass of '.FormInterface::class);
         }
+    }
+
+    public static function cellContent(string $contentClass, string $context, Cell $cell): CellContent
+    {
+        $cellContent = new $contentClass($cell, $context);
+        if ($cellContent instanceof CellContent) {
+            return $cellContent;
+        }
+        throw new Exception('('.$contentClass.') Cell content class not found or not a subclass of '.CellContent::class);
+    }
+
+    public static function popup(string $popupClass): Popup
+    {
+        $popup = new $popupClass();
+        if ($popup instanceof Popup) {
+            return $popup;
+        }
+        throw new Exception('('.$popupClass.') Popup class not found or not a subclass of '.Popup::class);
+    }
+
+    public static function tab(string $tabClass): TabNew
+    {
+        $tab = new $tabClass();
+        if ($tab instanceof TabNew) {
+            return $tab;
+        }
+        throw new Exception('('.$tabClass.') Tab class not found or not a subclass of '.TabNew::class);
     }
 }

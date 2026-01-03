@@ -11,6 +11,7 @@ use byteShard\ID\TabIDElement;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 use byteShard\Internal\Action\CellActionResult;
+use byteShard\Internal\ContentClassFactory;
 
 class AttachPopup extends Action
 {
@@ -30,7 +31,7 @@ class AttachPopup extends Action
         $content = [];
         $cells        = $this->getCells([$this->cell]);
         foreach ($cells as $cell) {
-            $contentClass = new $this->contentClass($cell);
+            $contentClass = ContentClassFactory::cellContent($this->contentClass, null, $cell);
             $id           = $cell->getNewId();
             $patternId    = 'a';
             if ($this->contentClass === '' || !str_starts_with(strtolower($this->contentClass), 'app\\cell')) {

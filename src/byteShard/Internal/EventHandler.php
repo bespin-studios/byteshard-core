@@ -22,6 +22,7 @@ use byteShard\Event\OnScrollBackwardInterface;
 use byteShard\Event\OnScrollForwardInterface;
 use byteShard\Event\OnSelectInterface;
 use byteShard\Event\OnStateChangeInterface;
+use byteShard\Event\OnTabCloseInterface;
 use byteShard\Exception;
 use byteShard\Grid;
 use byteShard\ID;
@@ -55,6 +56,7 @@ class EventHandler
     private ?DateTimeZone       $clientTimeZone = null;
     private ?DateTime           $clientRequestDataTime;
     private CellContent         $cellContent;
+    private string              $context        = '';
     private string              $nonce;
     private ?ID\ID              $id;
     private array               $objectProperties;
@@ -78,6 +80,7 @@ class EventHandler
         $this->clientRequestDataTime = $request->getDataAge();
         $this->request               = $request;
         $this->environment           = $environment;
+        $this->context               = $request->getContext();
 
         if ($this->id?->isCellId() === true) {
             $this->cell = Session::getCell($this->id);
@@ -195,7 +198,7 @@ class EventHandler
             if ($this->className === null) {
                 $this->className = '\\App\\Cell\\'.$this->id->getCellId();
             }
-            $this->cellContent = new $this->className($this->cell);
+            $this->cellContent = ContentClassFactory::cellContent($this->className, $this->context, $this->cell);
         }
         if ($this->clientTimeZone !== null) {
             $this->cellContent->setClientTimeZone($this->clientTimeZone);
@@ -382,23 +385,20 @@ class EventHandler
     }
 
     /**
-     * @param string $tabId
+     * @param string $encryptedTabId
      * @return array
      * @throws Exception
      */
-    public function onTabClose(string $tabId): array
+    public function onTabClose(string $encryptedTabId): array
     {
-        $result['state'] = HttpResponseState::SUCCESS->value;
-        /*if (($tab = Session::getTab($tabId)) !== null && ($actions = $tab->getContentActions('onTabClose')) !== null) {
-            $merge_array = array();
-            foreach ($actions as $action) {
-                if ($action instanceof Action) {
-                    $merge_array[] = $action->getResult($tab, $tabId);
-                }
-            }
-            $result = array_merge_recursive($result, ...$merge_array);
-        }*/
-        $result['state'] = $this->getState($result['state']);
+        $closedTabId = ID\ID::decryptFinalImplementation($encryptedTabId);
+        $tabClass    = '\\App\\Tab\\'.$closedTabId->getTabId();
+        if (class_exists($tabClass)) {
+            $tab     = ContentClassFactory::tab($tabClass);
+            $actions = ActionCollector::getEventActions(null, $this->id, OnTabCloseInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $tab);
+            return $this->runActions([], ...$actions);
+        }
+        $result['state'] = HttpResponseState::ERROR->value;
         return $result;
     }
 

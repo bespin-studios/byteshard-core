@@ -14,7 +14,6 @@ class TabBar implements ApplicationRootInterface
 {
     /** @var array<string, TabNew> */
     private array $tabs   = [];
-    private array $events = [];
 
     public function __construct(TabNew ...$tabs)
     {
@@ -25,9 +24,6 @@ class TabBar implements ApplicationRootInterface
     {
         foreach ($tabs as $tab) {
             $this->tabs[$tab->getId()] = $tab;
-            if ($tab->isClosable()) {
-                $this->events[] = new ClientCellEvent('onTabClose', 'doOnTabClose');
-            }
         }
     }
 
@@ -36,13 +32,20 @@ class TabBar implements ApplicationRootInterface
         $this->initTabs();
         $this->setSelectedTab($selectedId);
         $content = [];
-        $events  = $this->events;
+        $events  = [];
         if (!empty($this->tabs)) {
+            $atLeastOneTabIsClosable = false;
             foreach ($this->tabs as $tab) {
                 $tab->setParentAccessType($parentAccess);
                 if ($tab->getAccessType() > AccessType::NONE) {
                     $content[] = $tab->getItemConfig($selectedId);
+                    if ($tab->isClosable()) {
+                        $atLeastOneTabIsClosable = true;
+                    }
                 }
+            }
+            if ($atLeastOneTabIsClosable) {
+                $events[] = new ClientCellEvent('onTabClose', 'doOnTabClose');
             }
             $events[] = new ClientCellEvent('onSelect', 'doOnSelect');
         }

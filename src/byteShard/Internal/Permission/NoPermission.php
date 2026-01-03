@@ -4,6 +4,8 @@ namespace byteShard\Internal\Permission;
 
 use byteShard\Cell;
 use byteShard\Enum\ContentType;
+use byteShard\Exception;
+use byteShard\Internal\ContentClassFactory;
 use byteShard\Internal\Struct\ClientCell;
 use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Layout\Enum\Pattern;
@@ -16,7 +18,14 @@ class NoPermission
     {
 
         if ($contentClass !== null) {
-            $form = new $contentClass(new Cell());
+            $parts = explode('\\', $contentClass);
+            if ($parts[0] !== 'App' || $parts[1] !== 'Cell') {
+                throw new Exception('Cell '.$contentClass.' must be in the App\\Cell\\ namespace');
+            }
+            if (count($parts) < 4) {
+                throw new Exception('You can\'t declare cell '.$contentClass.' directly in the App\\Cell\\ namespace, it must be in a directory');
+            }
+            $form = ContentClassFactory::cellContent($contentClass, null, new Cell());
             $formContent = $form->getCellContent();
             if ($formContent instanceof ClientCell) {
                 $content = $formContent->content;

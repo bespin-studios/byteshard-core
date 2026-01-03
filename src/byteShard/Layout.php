@@ -66,6 +66,7 @@ class Layout
 
     private function registerLegacyCellInSession(?Access $parentAccess = null, ?\byteShard\ID\ID $cellId = null): void
     {
+        // Eventually we get rid of the Cell object in sessions, then this function should be removed
         $cell = new Cell();
         $cell->init($cellId?->getPatternCellId(), $cellId);
         if ($parentAccess !== null) {
@@ -131,7 +132,7 @@ class Layout
             if (class_exists($className)) {
                 $interfaces = class_implements($className);
                 if (isset($interfaces[Cell\Bubble::class])) {
-                    $layoutCell = new $className(new Cell());
+                    $layoutCell = new $className(new Cell(), null);
                     try {
                         $bubble += $layoutCell->bubble();
                     } catch (\Exception) {
