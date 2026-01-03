@@ -17,13 +17,13 @@ class ContentClassFactory
     /**
      * @throws Exception
      */
-    public static function getToolbar(Cell $cell): ToolbarInterface
+    public static function getToolbar(Cell $cell): ToolbarClassInterface
     {
         $toolbarClass = '\\byteShard\\Toolbar';
-        if (class_exists($toolbarClass) && is_subclass_of($toolbarClass, ToolbarInterface::class)) {
+        if (class_exists($toolbarClass) && is_subclass_of($toolbarClass, ToolbarClassInterface::class)) {
             return new $toolbarClass($cell);
         } else {
-            throw new Exception('Toolbar class not found or not a subclass of '.ToolbarInterface::class);
+            throw new Exception('Toolbar class not found or not a subclass of '.ToolbarClassInterface::class);
         }
     }
 
