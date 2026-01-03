@@ -1,3 +1,19 @@
+# [2.23.0](https://github.com/bespin-studios/byteshard-core/compare/v2.22.0...v2.23.0) (2026-01-03)
+
+
+### Bug Fixes
+
+* add context to scheduler ([dc7bcf7](https://github.com/bespin-studios/byteshard-core/commit/dc7bcf7fa297d1d40a2ebd06a9a79120e2d793a8))
+* composer php version issues (maintain backward compatibility to php 8.3 for now ([17cc936](https://github.com/bespin-studios/byteshard-core/commit/17cc936643dfe35b3bec2b0470132f03384267f1))
+* fix toolbarClassInterface not being used ([128e803](https://github.com/bespin-studios/byteshard-core/commit/128e8038b664626f9428143b122a2bd5643454f1))
+* onTabClose didn't work anymore ([8b40f9d](https://github.com/bespin-studios/byteshard-core/commit/8b40f9df7493bd7d77c83ff241131e4c838f836b))
+* progress to action refactoring ([046c579](https://github.com/bespin-studios/byteshard-core/commit/046c5790b6ecbfb5a94ed38d471a732c5157212b))
+
+
+### Features
+
+* setContext in layoutCell also during events. ([49516f7](https://github.com/bespin-studios/byteshard-core/commit/49516f746512be81af14bf9b8399bd984edb90e2))
+
 # [2.22.0](https://github.com/bespin-studios/byteshard-core/compare/v2.21.1...v2.22.0) (2025-12-10)
 
 
