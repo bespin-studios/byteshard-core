@@ -8,6 +8,11 @@
       "name": "Lars Hennig"
     }
   ],
+  "config": {
+    "platform": {
+      "php": "8.3.99"
+    }
+  },
   "require": {
     "php": "^8.1",
     "ext-ctype": "*",
