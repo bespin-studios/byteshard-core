@@ -18,24 +18,12 @@ class ButtonGroup extends FormObject implements CollectionInterface
     protected ButtonInterface $cancelButton;
     protected ButtonInterface $approveButton;
 
-    public function __construct(string $id = '', ?Action $cancelAction = null, Action ...$approveActions)
+    public function __construct(string $id = '')
     {
         parent::__construct($id);
         $this->container     = new Block();
         $this->cancelButton  = new Button(implode('.', array_filter([$id, 'cancel'])));
-        $this->approveButton = new Button(implode('.', array_filter([$id, 'approve'])));
-
-        if ($cancelAction) {
-            $cancelEvent = new OnButtonClick();
-            $cancelEvent->addActions($cancelAction);
-            $this->cancelButton->addEvents($cancelEvent);
-        }
-
-        $approveEvent = new OnButtonClick();
-        if ($approveActions) {
-            $approveEvent->addActions(...$approveActions);
-        }
-        $this->approveButton->addEvents($approveEvent);
+        $this->approveButton = new ButtonWithOnClickEvent(implode('.', array_filter([$id, 'approve'])));
     }
 
     /**
@@ -66,28 +54,6 @@ class ButtonGroup extends FormObject implements CollectionInterface
     {
         $this->cancelButton->setClassName('bs_cancel');
         $this->approveButton->setClassName('bs_approve');
-        return $this;
-    }
-
-    /**
-     * @param Action ...$actions
-     * @return $this
-     */
-    public function setCancelActions(Action ...$actions): self
-    {
-        $this->cancelButton->addEvents($event = new OnButtonClick());
-        $event->addActions(...$actions);
-        return $this;
-    }
-
-    /**
-     * @param Action ...$actions
-     * @return $this
-     */
-    public function setApproveActions(Action ...$actions): self
-    {
-        $this->approveButton->addEvents($event = new OnButtonClick());
-        $event->addActions(...$actions);
         return $this;
     }
 
