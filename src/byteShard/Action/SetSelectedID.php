@@ -58,7 +58,9 @@ class SetSelectedID extends Action
             switch ($actionInitDTO->eventType) {
                 case 'onEmptyClick':
                     // scheduler
-                    $idElements[] = new DateIDElement($affectedId['!#SelectedSchedulerDate']);
+                    if (is_array($this->getActionInitDTO()->legacyId) && array_key_exists('!#SelectedSchedulerDate', $this->getActionInitDTO()->legacyId)) {
+                        $idElements[] = new DateIDElement($this->getActionInitDTO()->legacyId['!#SelectedSchedulerDate']);
+                    }
                     break;
                 case 'onChange':
                     $idElements[] = new IDElement($actionInitDTO->eventId, $actionInitDTO->clientData->{$actionInitDTO->eventId});

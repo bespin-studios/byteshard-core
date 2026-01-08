@@ -23,6 +23,7 @@ use byteShard\TabNew;
 class ClosePopup extends Action
 {
     private array $popups;
+    private string $popupId;
 
     /**
      * ClosePopup constructor.
@@ -31,6 +32,12 @@ class ClosePopup extends Action
     public function __construct(string ...$cells)
     {
         $this->popups = parent::getUniqueCellNameArray(...$cells);
+    }
+
+    public function setPopupId(string $popupId): self
+    {
+        $this->popupId = $popupId;
+        return $this;
     }
 
     protected function runAction(): ActionResultInterface
@@ -47,9 +54,11 @@ class ClosePopup extends Action
                 
                 $action[Action\ActionTargetEnum::Popup->value][$encryptedPopupId]['close'] = true;
             }
-            $action['state'] = HttpResponseState::SUCCESS->value;
-            return new Action\ActionResultMigrationHelper($action);
         }
-        return new Action\ActionResult();
+        if (isset($this->popupId)) {
+            $action[Action\ActionTargetEnum::Popup->value][$this->popupId]['close'] = true;
+        }
+        $action['state'] = HttpResponseState::SUCCESS->value;
+        return new Action\ActionResultMigrationHelper($action);
     }
 }

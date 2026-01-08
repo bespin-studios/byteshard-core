@@ -36,7 +36,7 @@ class Close extends Action
         $this->result['state'] = HttpResponseState::SUCCESS->value;
     }
 
-    public function getResult(ContainerInterface $container, $id): array
+    public function getResult(): array
     {
         if (isset($this->field, $this->table, $this->id->{$this->field})) {
             if ($_SESSION[MAIN] instanceof Session) {
