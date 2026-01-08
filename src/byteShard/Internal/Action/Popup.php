@@ -25,7 +25,7 @@ abstract class Popup extends Action
 
     protected function runAction(): ActionResultInterface
     {
-        $container = $this->getLegacyContainer();
+        $container = $this->getActionInitDTO()->cell;
         if ($this->message !== '') {
             return new ActionResultMigrationHelper(Message::getClientResponse($this->message, $this->type, false));
         }
