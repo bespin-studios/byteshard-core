@@ -7,14 +7,16 @@
 namespace byteShard\Internal;
 
 use byteShard\Action\ConfirmAction;
-use byteShard\Action\GetCellData;
 use byteShard\Cell;
 use byteShard\Enum\HttpResponseState;
+use byteShard\Internal\Action\ActionInitDTO;
 use byteShard\Internal\Action\ActionResultInterface;
+use byteShard\Internal\Action\ControlIdInterface;
+use byteShard\Internal\Action\ExportInterface;
+use byteShard\Internal\ClientData\EventContainerInterface;
 use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\GetData;
 use byteShard\Session;
-use byteShard\Tab;
 use byteShard\ID;
 use Closure;
 use DateTimeZone;
@@ -26,27 +28,68 @@ use UnitEnum;
  */
 abstract class Action
 {
+    protected string                 $localeBaseToken  = '';
+    private array                    $conditionArgs    = [];
+    private array                    $nested           = [];
+    private array                    $permissions      = [];
+    private array                    $staticCallback;
+    private bool                     $runNested        = true;
+    private mixed                    $conditionCallback;
+    private string                   $eventType        = '';
+    private ?ClientData              $clientData       = null;
+    private ?GetData                 $getData          = null;
+    private ?ContainerInterface      $container        = null;
+    private ?DateTimeZone            $clientTimeZone;
+    private array                    $objectProperties = [];
+    private ?EventContainerInterface $eventContainer   = null;
+    private ?ActionInitDTO           $actionInitDTO    = null;
 
-    protected string            $localeBaseToken  = '';
-    private array               $conditionArgs    = [];
-    private array               $nested           = [];
-    private array               $permissions      = [];
-    private array               $staticCallback;
-    private bool                $runNested        = true;
-    private mixed               $conditionCallback;
-    private string              $eventType        = '';
-    private string              $uniqueId         = '';
-    private ?ClientData         $clientData       = null;
-    private ?GetData            $getData          = null;
-    private ?ContainerInterface $container        = null;
-    private ?DateTimeZone       $clientTimeZone;
-    private array               $objectProperties = [];
-
-    /**
-     * Action constructor.
-     */
-    public function __construct()
+    protected static function getUniqueCellNameArray(...$cells): array
     {
+        return array_map(function ($cell) {
+            return Cell::getContentCellName($cell);
+        }, array_unique($cells));
+    }
+
+    public function initializeAction(ActionInitDTO $actionInitDTO): self
+    {
+        $this->actionInitDTO = $actionInitDTO;
+        $this->setClientTimeZone($actionInitDTO->clientTimeZone);
+        $this->setClientData($actionInitDTO->clientData);
+        $this->setGetData($actionInitDTO->getData);
+        if ($actionInitDTO->objectProperties !== null) {
+            $this->setObjectProperties($actionInitDTO->objectProperties);
+        }
+        if ($this instanceof ControlIdInterface) {
+            $this->setControlId($actionInitDTO->eventId);
+        }
+        if ($actionInitDTO->cell !== null) {
+            //TODO: also for tabs
+            $this->initLocaleBaseToken($actionInitDTO->cell);
+        }
+        if ($this instanceof ConfirmAction && $actionInitDTO->eventType !== '') {
+            $this->setEventType($actionInitDTO->eventType);
+            $this->setObjectValue($actionInitDTO->objectValue);
+        }
+        if ($this instanceof ExportInterface && $actionInitDTO->id !== null) {
+            $exportAction = clone $this;
+            $exportAction->setEventId($actionInitDTO->id, $actionInitDTO->eventId);
+            return $exportAction;
+        }
+        foreach ($this->nested as $nestedAction) {
+            $nestedAction->initializeAction($actionInitDTO);
+        }
+        return $this;
+    }
+
+    public function getActionInitDTO(): ?ActionInitDTO
+    {
+        return $this->actionInitDTO;
+    }
+
+    public function getEventContainer(): ?EventContainerInterface
+    {
+        return $this->eventContainer;
     }
 
     public function setObjectProperties(array $objectProperties): void
@@ -79,29 +122,6 @@ abstract class Action
     }
 
     /**
-     * @param mixed ...$idPart
-     */
-    protected function addUniqueID(...$idPart): void
-    {
-        $string = '';
-        foreach ($idPart as $part) {
-            if ($part !== null) {
-                $string .= json_encode($part);
-            }
-        }
-        $this->uniqueId = md5($string);
-    }
-
-    /**
-     * @return string
-     * @internal
-     */
-    public function getUniqueID(): string
-    {
-        return md5(get_class($this).$this->eventType.$this->uniqueId);
-    }
-
-    /**
      * @param Action ...$actions
      * @return $this
      */
@@ -118,21 +138,17 @@ abstract class Action
     abstract protected function runAction(): ActionResultInterface;
 
     /**
-     * @param ContainerInterface $container
-     * @param $id
      * @return array
      */
-    public function getResult(ContainerInterface $container, $id): array
+    public function getResult(): array
     {
         if ($this->checkRunConditions() === true) {
-            $this->legacyId  = &$id;
-            $this->container = $container;
-            $result          = $this->runAction()->getResultArray($container->getNewId());
+            $result = $this->runAction()->getResultArray($this->actionInitDTO?->cell?->getNewId() ?? null);
             if ($this->runNested === true) {
                 $mergeArray = [];
                 foreach ($this->nested as $action) {
                     if ($action instanceof Action) {
-                        $mergeArray[] = $action->getResult($container, $id);
+                        $mergeArray[] = $action->getResult();
                     }
                 }
                 $result = array_merge_recursive($result, ...$mergeArray);
@@ -149,11 +165,9 @@ abstract class Action
         return [];
     }
 
-    private mixed $legacyId = null;
-
-    protected function &getLegacyId()
+    protected function getLegacyId()
     {
-        return $this->legacyId;
+        return $this->actionInitDTO->legacyId;
     }
 
     protected function getLegacyContainer(): ?ContainerInterface
@@ -171,49 +185,14 @@ abstract class Action
         return $this;
     }
 
-    public function setClientData(ClientData $clientData): void
+    public function setClientData(?ClientData $clientData): void
     {
         $this->clientData = $clientData;
-        if (!empty($this->nested)) {
-            foreach ($this->nested as $action) {
-                if ($action instanceof Action) {
-                    $action->setClientData($clientData);
-                }
-            }
-        }
     }
 
-    public function setGetData(GetData $getData): void
+    public function setGetData(?GetData $getData): void
     {
-        if ($this instanceof GetCellData || $this instanceof ConfirmAction) {
-            $this->getData = $getData;
-        }
-        if (!empty($this->nested)) {
-            foreach ($this->nested as $action) {
-                if ($action instanceof Action) {
-                    $action->setGetData($getData);
-                }
-            }
-        }
-    }
-
-    /**
-     * @param string $instanceName
-     * @param string $confirmationPopupId
-     * @return void
-     */
-    public function setConfirmed(string $instanceName, string $confirmationPopupId): void
-    {
-        if ($this instanceof ConfirmAction) {
-            $this->setConfirmedInstance($instanceName, $confirmationPopupId);
-        }
-        if (!empty($this->nested)) {
-            foreach ($this->nested as $action) {
-                if ($action instanceof Action) {
-                    $action->setConfirmed($instanceName, $confirmationPopupId);
-                }
-            }
-        }
+        $this->getData = $getData;
     }
 
     protected function getGetData(): ?GetData
@@ -226,49 +205,9 @@ abstract class Action
         return $this->clientData;
     }
 
-    /**
-     * @param Cell $cell
-     */
-    public function initActionInCell(Cell $cell): void
+    public function initLocaleBaseToken(Cell $cell): void
     {
         $this->localeBaseToken = $cell->createLocaleBaseToken('Cell');
-        // currently only used on popups to register them in the session
-        $this->initThisActionInCell($cell);
-        foreach ($this->nested as $nestedAction) {
-            if ($nestedAction instanceof Action) {
-                $nestedAction->initActionInCell($cell);
-            }
-        }
-    }
-
-    /**
-     * override this function in specific action if needed
-     * @param Cell $cell
-     */
-    protected function initThisActionInCell(Cell $cell): void
-    {
-    }
-
-    /**
-     * @param Tab $tab
-     */
-    public function initActionInTab(Tab $tab): void
-    {
-        //TODO: setup locale base token
-        $this->initThisActionInTab($tab);
-        foreach ($this->nested as $nestedAction) {
-            if ($nestedAction instanceof Action) {
-                $nestedAction->initActionInTab($tab);
-            }
-        }
-    }
-
-    /**
-     * override this function in specific action if needed
-     * @param Tab $tab
-     */
-    protected function initThisActionInTab(Tab $tab): void
-    {
     }
 
     /**

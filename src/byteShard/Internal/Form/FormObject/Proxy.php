@@ -699,8 +699,9 @@ final class Proxy
                 $this->clientName = $tmpName['name'];
                 $this->setName($tmpName['name']);
                 foreach ($this->events as $event) {
+                    //TODO: reimplement client execution. somehow...
                     /* @var $event Event */
-                    $actions = $event->getActionArray();
+                    /*$actions = $event->getActionArray();
                     foreach ($actions as $action) {
                         $action->initActionInCell($cell);
                         if ($action instanceof Action\ClientExecutionInterface && $action->getClientExecution() === true) {
@@ -709,7 +710,7 @@ final class Proxy
                                 $formAlterations->addClientExecution($event->getEventType(), $this->clientName, $method, $action->getClientExecutionItems($cell->getNewId()));
                             }
                         }
-                    }
+                    }*/
                     if ($event instanceof Form\Event\OnInputChange) {
                         $formAlterations->addEvent('event_on_input_change');
                         $this->userdata['getAllDataOnChange'] = $event->getGetAllFormObjects();
@@ -728,17 +729,6 @@ final class Proxy
                     }
                     if ($event instanceof Form\Event\OnBlur) {
                         $formAlterations->addEvent('event_on_blur');
-                    }
-
-                    if (!empty($event->getActionArray())) {
-                        // deprecated
-                        // TODO: clear cell events on unloading the cell
-                        // that way events won't be registered multiple times
-                        if ($this->formObjectType === Control\Radio::class) {
-                            $cell->setEventForInteractiveObject($this->internalName, $event, $this->unencryptedValue);
-                        } else {
-                            $cell->setEventForInteractiveObject($this->internalName, $event);
-                        }
                     }
                 }
             } else {

@@ -25,7 +25,6 @@ class SetCellHeader extends Action
      */
     public function __construct(string $cell, ?string $label = null)
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
         if ($label !== null) {
             $this->label = $label;
@@ -45,7 +44,7 @@ class SetCellHeader extends Action
     protected function runAction(): ActionResultInterface
     {
         $label  = mb_convert_encoding($this->label ?? '', 'UTF-8', 'auto');
-        $result = new CellActionResult('layout');
+        $result = new CellActionResult(Action\ActionTargetEnum::Layout);
         return $result->addCellCommand([$this->cell], 'setCellHeaderText', $label);
     }
 }

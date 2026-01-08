@@ -19,7 +19,6 @@ abstract class Popup extends Action
 
     public function __construct(string $id, string $message = '')
     {
-        parent::__construct();
         $this->id      = $id;
         $this->message = $message;
     }

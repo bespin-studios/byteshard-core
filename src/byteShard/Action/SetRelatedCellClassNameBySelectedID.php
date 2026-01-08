@@ -28,7 +28,6 @@ class SetRelatedCellClassNameBySelectedID extends Action
      */
     public function __construct(string $cell, ClassMapDTO|stdClass ...$idClassMap)
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
         if (count($idClassMap) === 1 && !($idClassMap[0] instanceof ClassMapDTO)) {
             // deprecated
@@ -54,7 +53,6 @@ class SetRelatedCellClassNameBySelectedID extends Action
                 }
             }
         }
-        $this->addUniqueID($this->cell, $this->map);
     }
 
     protected function runAction(): ActionResultInterface

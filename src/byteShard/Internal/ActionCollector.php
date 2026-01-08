@@ -6,9 +6,10 @@
 
 namespace byteShard\Internal;
 
-use byteShard\Action\ConfirmAction;
+use byteShard\Action\ClosePopup;
 use byteShard\Cell;
 use byteShard\Event\OnClickInterface;
+use byteShard\Event\OnConfirmInterface;
 use byteShard\Event\OnDoubleClickInterface;
 use byteShard\Event\OnDropInterface;
 use byteShard\Event\OnEmptyClickInterface;
@@ -21,181 +22,103 @@ use byteShard\Event\OnScrollBackwardInterface;
 use byteShard\Event\OnScrollForwardInterface;
 use byteShard\Event\OnSelectInterface;
 use byteShard\Event\OnStateChangeInterface;
+use byteShard\Event\OnTabCloseInterface;
 use byteShard\Event\OnUploadInterface;
 use byteShard\ID\ID;
-use byteShard\Event\EventResult;
 use byteShard\Event\OnChangeInterface;
 use byteShard\Event\OnCheckInterface;
 use byteShard\Event\OnUncheckInterface;
 use byteShard\Form\Control\Checkbox;
-use byteShard\ID\TabIDElement;
-use byteShard\Internal\Action\ControlIdInterface;
-use byteShard\Internal\Action\ExportInterface;
+use byteShard\Internal\Action\ActionInitDTO;
+use byteShard\Internal\ClientData\EventContainerInterface;
 use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\GetData;
-use byteShard\Popup;
-use byteShard\Session;
-use byteShard\Tab;
 use DateTimeZone;
-use Closure;
 
 class ActionCollector
 {
     public static function getEventActions(
-        ?Cell         $cell,
-        ID            $id,
-        string        $eventInterface,
-        string        $eventId,
-        string        $objectValue,
-        string        $confirmationId,
-        ?ClientData   $clientData,
-        ?GetData      $getData,
-        ?DateTimeZone $clientTimeZone,
-        ?array        $objectProperties,
-        string        $eventType,
-        ?Closure      $getCellContentCallback = null,
-        string        $className = ''): array
+        ?Cell                   $cell,
+        ID                      $id,
+        string                  $eventInterface,
+        string                  $eventId,
+        string                  $objectValue,
+        string                  $confirmationId,
+        ?ClientData             $clientData,
+        ?GetData                $getData,
+        ?DateTimeZone           $clientTimeZone,
+        ?array                  $objectProperties,
+        string                  $eventType,
+        EventContainerInterface $eventContainer,
+        mixed                   $legacyId = null): array
     {
-        if ($eventInterface === OnChangeInterface::class) {
-            $row = $clientData?->getRows() ?? [];
-            if (isset($row[0], $row[0]->{$eventId}) && $row[0]->{$eventId}->type === Checkbox::class) {
-                if ($row[0]->{$eventId}->value === true) {
-                    $eventInterface = OnCheckInterface::class;
-                } else {
-                    $eventInterface = OnUncheckInterface::class;
-                }
+        $actions = [];
+        if ($eventInterface !== '') {
+            $eventContainer->setProcessedClientData($clientData);
+            $eventInterface = self::transformEventInterface($eventInterface, $eventId, $clientData, $confirmationId);
+            $actions        = self::getEventResultActions($eventContainer, $eventInterface, $confirmationId !== '' ? $confirmationId : $eventId, $objectValue);
+            if ($actions === null) {
+                Debug::debug('Event interface undefined: '.$eventInterface);
+                $actions = [];
+            } elseif ($eventInterface === OnConfirmInterface::class && $confirmationId !== '') {
+                $actions[] = (new ClosePopup())->setPopupId($id->getEncryptedId());
             }
         }
-        if ($className === '') {
-            $className = $cell?->getContentClass() ?? '';
-        }
-        $actions = $cell !== null ? self::getDeprecatedSessionActions($cell, $eventInterface, $eventId, $objectValue) : [];
-        if (empty($actions) && $eventInterface !== '') {
-            if (isset(class_implements($className)[$eventInterface])) {
-                $eventMethod = self::getInterfaceMethod($eventInterface);
-                if ($eventMethod !== '') {
-                    if ($getCellContentCallback !== null) {
-                        $class = $getCellContentCallback();
-                    } else {
-                        // Popup
-                        $class = new $className();
-                        if ($class instanceof Popup) {
-                            $class->addTabIdElement(new TabIDElement($id->getTabId()));
-                        }
-                    }
-                    if ($clientData !== null) {
-                        $class->setProcessedClientData($clientData);
-                    }
-                    $eventResult = $class->{$eventMethod}();
-                    /** @var EventResult $eventResult */
-                    if ($eventResult !== null) {
-                        $actions = $eventResult->getResultActions($eventId, $objectValue);
-                    }
-                } else {
-                    Debug::debug('Event interface undefined: '.$eventInterface);
-                }
-            }
-        }
-        return self::initializeActions($actions, $id, $cell, $eventId, $confirmationId, $clientData, $getData, $clientTimeZone, $objectProperties, $eventType, $objectValue);
+        return self::initializeActions($actions, $id, $cell, $eventId, $confirmationId, $clientData, $getData, $clientTimeZone, $objectProperties, $eventType, $objectValue, $eventContainer, $legacyId);
     }
 
-    /**
-     * @return Action[]
-     */
-    private static function getDeprecatedSessionActions(Cell $cell, string $eventInterface, string $eventId, string $objectValue): array
-    {
-        $actions = match ($eventInterface) {
-            OnSelectInterface::class => $cell->getContentActions('onSelect'),
-            default                  => $cell->getActionsForEvent($eventId),
-        };
-        if ($objectValue !== '') {
-            $actions = self::filterObjectValueActions($actions, $objectValue);
-        }
-        return $actions;
-    }
-
-    private static function filterObjectValueActions(array $actions, string $objectValue): array
-    {
-        $filteredActions = [];
-        foreach ($actions as $objectId => $radioActions) {
-            if ($objectId === $objectValue) {
-                $filteredActions = array_merge($filteredActions, $radioActions);
-            }
-        }
-        return $filteredActions;
-    }
-
-    private static function getInterfaceMethod(string $eventInterface): string
+    private static function getEventResultActions(object $eventTarget, string $eventInterface, string $objectId, string $objectValue): ?array
     {
         return match ($eventInterface) {
-            OnChangeInterface::class         => 'onChange',
-            OnCheckInterface::class          => 'onCheck',
-            OnClickInterface::class          => 'onClick',
-            OnDoubleClickInterface::class    => 'onDoubleClick',
-            OnDropInterface::class           => 'onDrop',
-            OnEmptyClickInterface::class     => 'onEmptyClick',
-            OnEnterInterface::class          => 'onEnter',
-            OnInputChangeInterface::class    => 'onInputChange',
-            OnLinkClickInterface::class      => 'onLinkClick',
-            OnPollInterface::class           => 'onPoll',
-            OnPopupCloseInterface::class     => 'onPopupClose',
-            OnScrollBackwardInterface::class => 'onScrollBackward',
-            OnScrollForwardInterface::class  => 'onScrollForward',
-            OnSelectInterface::class         => 'onSelect',
-            OnStateChangeInterface::class    => 'onStateChange',
-            OnUncheckInterface::class        => 'onUncheck',
-            OnUploadInterface::class         => 'onUpload',
-            default                          => '',
+            OnChangeInterface::class         => $eventTarget instanceof OnChangeInterface ? $eventTarget->onChange()->getResultActions($objectId, $objectValue) : [],
+            OnCheckInterface::class          => $eventTarget instanceof OnCheckInterface ? $eventTarget->onCheck()->getResultActions($objectId, $objectValue) : [],
+            OnClickInterface::class          => $eventTarget instanceof OnClickInterface ? $eventTarget->onClick()->getResultActions($objectId, $objectValue) : [],
+            OnConfirmInterface::class        => $eventTarget instanceof OnConfirmInterface ? $eventTarget->onConfirm()->getResultActions($objectId, $objectValue) : [],
+            OnDoubleClickInterface::class    => $eventTarget instanceof OnDoubleClickInterface ? $eventTarget->onDoubleClick()->getResultActions($objectId, $objectValue) : [],
+            OnDropInterface::class           => $eventTarget instanceof OnDropInterface ? $eventTarget->onDrop()->getResultActions($objectId, $objectValue) : [],
+            OnEmptyClickInterface::class     => $eventTarget instanceof OnEmptyClickInterface ? $eventTarget->onEmptyClick()->getResultActions($objectId, $objectValue) : [],
+            OnEnterInterface::class          => $eventTarget instanceof OnEnterInterface ? $eventTarget->onEnter()->getResultActions($objectId, $objectValue) : [],
+            OnInputChangeInterface::class    => $eventTarget instanceof OnInputChangeInterface ? $eventTarget->onInputChange()->getResultActions($objectId, $objectValue) : [],
+            OnLinkClickInterface::class      => $eventTarget instanceof OnLinkClickInterface ? $eventTarget->onLinkClick()->getResultActions($objectId, $objectValue) : [],
+            OnPollInterface::class           => $eventTarget instanceof OnPollInterface ? $eventTarget->onPoll()->getResultActions($objectId, $objectValue) : [],
+            OnPopupCloseInterface::class     => $eventTarget instanceof OnPopupCloseInterface ? $eventTarget->onPopupClose()->getResultActions($objectId, $objectValue) : [],
+            OnScrollBackwardInterface::class => $eventTarget instanceof OnScrollBackwardInterface ? $eventTarget->onScrollBackward()->getResultActions($objectId, $objectValue) : [],
+            OnScrollForwardInterface::class  => $eventTarget instanceof OnScrollForwardInterface ? $eventTarget->onScrollForward()->getResultActions($objectId, $objectValue) : [],
+            OnSelectInterface::class         => $eventTarget instanceof OnSelectInterface ? $eventTarget->onSelect()->getResultActions($objectId, $objectValue) : [],
+            OnStateChangeInterface::class    => $eventTarget instanceof OnStateChangeInterface ? $eventTarget->onStateChange()->getResultActions($objectId, $objectValue) : [],
+            OnTabCloseInterface::class       => $eventTarget instanceof OnTabCloseInterface ? $eventTarget->onTabClose()->getResultActions($objectId, $objectValue) : [],
+            OnUncheckInterface::class        => $eventTarget instanceof OnUncheckInterface ? $eventTarget->onUncheck()->getResultActions($objectId, $objectValue) : [],
+            OnUploadInterface::class         => $eventTarget instanceof OnUploadInterface ? $eventTarget->onUpload()->getResultActions($objectId, $objectValue) : [],
+            default                          => null
         };
+    }
+
+    private static function transformEventInterface(string $eventInterface, string $eventId, ?ClientData $clientData, string $confirmationId): string
+    {
+        if (!empty($confirmationId)) {
+            return OnConfirmInterface::class;
+        }
+        if ($eventInterface === OnChangeInterface::class) {
+            $row = $clientData?->getRows() ?? [];
+            if (isset($row[0]->{$eventId}) && $row[0]->{$eventId}->type === Checkbox::class) {
+                if ($row[0]->{$eventId}->value === true) {
+                    return OnCheckInterface::class;
+                }
+                return OnUncheckInterface::class;
+            }
+        }
+        return $eventInterface;
     }
 
     /**
      * @param Action[] $actions
      */
-    public static function initializeActions(array $actions, ID $id, ?Cell $cell, string $eventId, string $confirmationId, ?ClientData $clientData, ?GetData $getData, ?DateTimeZone $clientTimeZone, ?array $objectProperties, string $eventType, string $objectValue): array
+    private static function initializeActions(array $actions, ID $id, ?Cell $cell, string $eventId, string $confirmationId, ?ClientData $clientData, ?GetData $getData, ?DateTimeZone $clientTimeZone, ?array $objectProperties, string $eventType, string $objectValue, ?EventContainerInterface $eventContainer = null, mixed $legacyId = null): array
     {
-        $tab = null;
-        if ($cell === null) {
-            $tab = Session::getTab($id);
-        }
-        foreach ($actions as $key => $action) {
-            $actions[$key] = self::initializeAction($action, $id, $cell, $tab, $eventId, $confirmationId, $clientData, $getData, $clientTimeZone, $objectProperties, $eventType, $objectValue);
+        $actionInitDTO = new ActionInitDTO($id, $cell, $eventId, $confirmationId, $clientData, $getData, $clientTimeZone, $objectProperties, $eventType, $objectValue, $eventContainer, $legacyId);
+        foreach ($actions as $action) {
+            $action->initializeAction($actionInitDTO);
         }
         return $actions;
-    }
-
-    public static function initializeAction(Action $action, ?ID $id, ?Cell $cell, ?LayoutContainer $tab, string $eventId, string $confirmationId, ?ClientData $clientData, ?GetData $getData, ?DateTimeZone $clientTimeZone, ?array $objectProperties, string $eventType = '', string $objectValue = ''): Action
-    {
-        $action->setClientTimeZone($clientTimeZone);
-        if ($confirmationId !== '' && $id !== null) {
-            $action->setConfirmed($confirmationId, $id->getEncryptedId());
-        }
-        if ($clientData !== null) {
-            $action->setClientData($clientData);
-        }
-        if ($getData !== null) {
-            $action->setGetData($getData);
-        }
-        if ($objectProperties !== null) {
-            $action->setObjectProperties($objectProperties);
-        }
-        if ($action instanceof ExportInterface && $id !== null) {
-            $exportAction = clone $action;
-            $exportAction->setEventID($id, $eventId);
-            unset($action);
-            $action = $exportAction;
-        } elseif ($action instanceof ControlIdInterface) {
-            $action->setControlID($eventId);
-        }
-        if ($cell !== null) {
-            $action->initActionInCell($cell);
-        } elseif ($tab instanceof Tab) {
-            $action->initActionInTab($tab);
-        }
-        if ($eventType !== '' && $action instanceof ConfirmAction) {
-            $action->setEventType($eventType);
-            $action->setObjectValue($objectValue);
-        }
-        return $action;
     }
 }

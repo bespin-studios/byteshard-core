@@ -27,15 +27,20 @@ class OpenTab extends Action
      */
     public function __construct(string $className, ?string $parentName = null)
     {
-        parent::__construct();
         $this->className  = $className;
         $this->parentName = $parentName;
     }
 
     protected function runAction(): ActionResultInterface
     {
-        $id              = $this->getLegacyId();
+        //$id              = $this->getLegacyId();
         $action['state'] = HttpResponseState::SUCCESS->value;
+        //TODO: use getItemConfig of TabNew to get tab properties.
+        //if parent name is empty, top level tabbar is the target, otherwise check if parentName instanceof SideBarCell or TabNew and generate parentId from there
+        $action[Action\ActionTargetEnum::TabBar->value]['addTab'][] = [
+            'selected' => true,
+            'parentID' => ''
+        ];
         /*if (class_exists($this->className) && is_subclass_of($this->className, Tab\Open::class)) {
             $tab = new $this->className($id);
             if (($_SESSION[MAIN] instanceof Session) && ($tab instanceof Tab\Open) && $tab->isValid()) {

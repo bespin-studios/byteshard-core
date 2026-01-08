@@ -46,7 +46,6 @@ class OpenWindow extends Action
      */
     public function __construct(string $action, string|LinkTarget $target = LinkTarget::BLANK, string $method = 'post')
     {
-        parent::__construct();
         if (is_string($target)) {
             trigger_error('Using a string target in OpenWindow Action is deprecated. Use '.LinkTarget::class.' instead');
             $target = LinkTarget::tryFrom($target);
@@ -57,7 +56,6 @@ class OpenWindow extends Action
         $this->action = $action;
         $this->target = $target;
         $this->method = $method;
-        $this->addUniqueID($this->action, $this->target->value, $this->method);
     }
 
     /**
@@ -72,20 +70,15 @@ class OpenWindow extends Action
 
     protected function runAction(): ActionResultInterface
     {
-        $action['state'] = HttpResponseState::WARNING->value;
-        $container       = $this->getLegacyContainer();
-        if ($container instanceof Cell) {
-            $action['state']      = HttpResponseState::SUCCESS->value;
-            $id                   = $this->getLegacyId();
-            $parameters           = $id;
-            $parameters['target'] = $this->target->value;
-            $parameters['action'] = $this->action;
-            $parameters['method'] = $this->method;
-            foreach ($this->data as $key => $val) {
-                $parameters[$key] = $val;
-            }
-            $action['window'][$container->containerId()][$container->cellId()]['openWindow'] = $parameters;
+        $action               = new Action\CellActionResult(Action\ActionTargetEnum::Window);
+        $cells                = parent::getUniqueCellNameArray($this->getActionInitDTO()->cell);
+        $parameters['target'] = $this->target->value;
+        $parameters['action'] = $this->action;
+        $parameters['method'] = $this->method;
+        foreach ($this->data as $key => $val) {
+            $parameters[$key] = $val;
         }
-        return new Action\ActionResultMigrationHelper($action);
+        $action->addCellCommand($cells, 'openWindow', $parameters);
+        return $action;
     }
 }

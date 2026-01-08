@@ -37,20 +37,18 @@ class ShowMessage extends Action
      */
     public function __construct(string $message, int $duration = 1000, string $type = self::POPIN, bool $token = false)
     {
-        parent::__construct();
         $this->message  = $message;
         $this->duration = $duration;
         $this->type     = $type;
         if ($token === true) {
             $this->message = Locale::get($message);
         }
-        $this->addUniqueID($message, $duration);
     }
 
     protected function runAction(): ActionResultInterface
     {
         if ($this->type === self::POPIN) {
-            return new Action\ActionResultMigrationHelper(['message' => [
+            return new Action\ActionResultMigrationHelper([Action\ActionTargetEnum::Message->value => [
                 'duration' => $this->duration,
                 'text'     => $this->message
             ]]);

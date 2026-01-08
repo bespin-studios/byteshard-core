@@ -27,7 +27,6 @@ class AddToQueue extends Action
      */
     public function __construct(Queueable $queueable, string $queueId = 'default')
     {
-        parent::__construct();
         $this->className = get_class($queueable);
         $this->data      = serialize($queueable->getData());
         if (preg_match('/^[a-z]{2,10}$/', $queueId) !== 1) {
@@ -41,6 +40,7 @@ class AddToQueue extends Action
      */
     protected function runAction(): ActionResultInterface
     {
+        // TODO: this action doesn't work anymore. Maybe useless and rather use a real queue
         $parameters = ['class' => $this->className, 'data' => $this->data, 'queue' => $this->queueId, 'tries' => 1, 'createdOn' => (new DateTime())->format('Y-m-d H:i:s')];
         Database::insert('INSERT INTO bs_queue (class, data, queue, tries, createdOn) VALUES (:class, :data, :queue, :tries, :createdOn)', $parameters);
 

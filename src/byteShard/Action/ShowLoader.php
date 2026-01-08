@@ -50,7 +50,6 @@ class ShowLoader extends Action
 
     public function __construct(int $timeInSeconds = 1)
     {
-        parent::__construct();
         $this->time = $timeInSeconds;
     }
 
@@ -137,7 +136,7 @@ class ShowLoader extends Action
                 ]
             ];
             $this->setRunNested(false);
-            return new Action\ActionResultMigrationHelper(['global' => ['showLoader' => $this->time]]);
+            return new Action\ActionResultMigrationHelper([Action\ActionTargetEnum::Global->value => ['showLoader' => $this->time]]);
         }
         return new Action\ActionResult();
     }

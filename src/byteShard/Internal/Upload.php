@@ -82,7 +82,7 @@ class Upload
             if (is_a($action, '\\byteShard\\Action\\Form\\ClearUpload')) {
                 $clearUpload = true;
             }
-            $mergeArray[] = $action->getResult($cell, $actionData);
+            $mergeArray[] = $action->getResult();
         }
         $resultArray          = array_merge_recursive([], ...$mergeArray);
         $resultArray['clear'] = $clearUpload;

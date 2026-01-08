@@ -47,10 +47,8 @@ class CallMethod extends Action
      */
     public function __construct(string $methodName, mixed $methodParameter = null)
     {
-        parent::__construct();
         $this->method    = $methodName;
         $this->parameter = $methodParameter;
-        $this->addUniqueID($methodName, $methodParameter);
     }
 
     /**
@@ -58,72 +56,33 @@ class CallMethod extends Action
      */
     protected function runAction(): ActionResultInterface
     {
-        $container = $this->getLegacyContainer();
-        $id        = $this->getLegacyId();
+        $container = $this->getActionInitDTO()->eventContainer;
         $result    = ['state' => HttpResponseState::SUCCESS->value];
-        $className = null;
-        if ($container instanceof Cell) {
-            $className = $container->getContentClass();
-        } elseif ($container instanceof Tab) {
-            $className = $container->getToolbarClass();
-        }
-        if ($className !== null && $className !== '' && class_exists($className) && method_exists($className, $this->method)) {
-            $argumentTest       = new ReflectionClass($className);
-            $numberOfParameters = $argumentTest->getMethod($this->method)->getNumberOfParameters();
-            if ($numberOfParameters >= 0 && $numberOfParameters <= 2) {
-                $clientData     = $this->getClientData();
-                $getData        = $this->getGetData();
-                $clientTimeZone = $this->getClientTimeZone();
-                $call           = new $className($container);
-                if ($call instanceof CellContent) {
-                    $call->setProcessedClientData($clientData);
-                    $call->setClientTimeZone($clientTimeZone);
-                    $cell = $call->getCell();
-                }
-                $methodReturns = null;
-                switch ($numberOfParameters) {
-                    case 0:
-                        $methodReturns = $call->{$this->method}();
-                        break;
-                    case 1:
-                        $methodReturns = $call->{$this->method}($id);
-                        break;
-                    case 2:
-                        $methodReturns = $call->{$this->method}($id, $this->parameter);
-                        break;
-                }
-                if ($methodReturns instanceof Action) {
-                    $methodReturns = [$methodReturns];
-                }
-                if (is_array($methodReturns)) {
-                    $mergeArray       = [];
-                    $objectProperties = $this->getObjectProperties();
-                    foreach ($methodReturns as $returnIndex => $methodReturn) {
-                        if ($methodReturn instanceof Action) {
-                            if (!isset($cell)) {
-                                if ($call instanceof CellContent) {
-                                    $cell = $call->getCell();
-                                } else {
-                                    $cell = new Cell();
-                                }
-                            }
-                            $mergeArray[] = ActionCollector::initializeAction($methodReturn, null, $cell, null, '', '', $clientData, $getData, $clientTimeZone, $objectProperties)->getResult($cell, $id);
-                        } else {
-                            $result[$returnIndex] = $methodReturn;
-                        }
+        if (method_exists($container, $this->method)) {
+            $params        = is_iterable($this->parameter) ? $this->parameter : [$this->parameter];
+            $methodReturns = $container->{$this->method}(...$params);
+            if ($methodReturns instanceof Action) {
+                $methodReturns = [$methodReturns];
+            }
+            if (is_array($methodReturns)) {
+                $mergeArray = [];
+                foreach ($methodReturns as $returnIndex => $methodReturn) {
+                    if ($methodReturn instanceof Action) {
+                        $methodReturn->initializeAction($this->getActionInitDTO());
+                        $mergeArray[] = $methodReturn->getResult();
+                    } else {
+                        $result[$returnIndex] = $methodReturn;
                     }
-                    if (!empty($mergeArray)) {
-                        $result = array_merge_recursive($result, ...$mergeArray);
-                    }
-                } else {
-                    $result = $methodReturns;
                 }
-                if (isset($result['run_nested']) && is_bool($result['run_nested'])) {
-                    $this->setRunNested($result['run_nested']);
-                    unset($result['run_nested']);
+                if (!empty($mergeArray)) {
+                    $result = array_merge_recursive($result, ...$mergeArray);
                 }
             } else {
-                throw new Exception(__METHOD__.': Any method that will be called by '.self::class.' needs to have no more than two parameters');
+                $result = $methodReturns;
+            }
+            if (isset($result['run_nested']) && is_bool($result['run_nested'])) {
+                $this->setRunNested($result['run_nested']);
+                unset($result['run_nested']);
             }
         }
         return $result === null ? new Action\ActionResult() : new Action\ActionResultMigrationHelper($result);

@@ -26,7 +26,7 @@ class CustomExport extends Action\ExportAction implements Action\ExportInterface
     {
         $xid = $this->getXID();
         if ($xid !== null) {
-            $action['global']['export'] = [
+            $action[Action\ActionTargetEnum::Global->value]['export'] = [
                 'xid'  => $xid,
                 'id'   => $this->getEventId(),
                 'type' => $this->getType()->value,

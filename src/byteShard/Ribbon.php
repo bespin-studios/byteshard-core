@@ -35,7 +35,7 @@ class Ribbon implements RibbonClassInterface
         $this->setParentAccessType($cell->getAccessType());
     }
 
-    public function addRibbonObject(RibbonObjectInterface ...$ribbonObjects): RibbonClassInterface
+    public function addRibbonObject(RibbonObjectInterface ...$ribbonObjects): static
     {
         foreach ($ribbonObjects as $ribbonObject) {
             $this->ribbonObjects[] = $ribbonObject;
@@ -87,6 +87,9 @@ class Ribbon implements RibbonClassInterface
                 switch ($event) {
                     case Event::OnClick:
                         $this->events['onClick'][] = 'doOnClick';
+                        break;
+                    case Event::OnEnter:
+                        $this->events['onEnter'][] = 'doOnEnter';
                         break;
                 }
             }

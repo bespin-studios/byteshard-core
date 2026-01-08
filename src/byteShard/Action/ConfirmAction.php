@@ -8,6 +8,7 @@ namespace byteShard\Action;
 
 use byteShard\Cell;
 use byteShard\Enum\HttpResponseState;
+use byteShard\Event\OnConfirmInterface;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 use byteShard\Internal\CellContent;
@@ -18,6 +19,7 @@ use byteShard\Popup\Confirmation;
 use byteShard\Popup\Enum\Message\Type;
 use byteShard\Popup\Message;
 use byteShard\Utils\Strings;
+use Closure;
 
 /**
  * Class ConfirmAction
@@ -53,16 +55,14 @@ class ConfirmAction extends Action
      * if $cancel_button_text is null, the locale for 'byteShard.popup.confirmation.button.cancel' will be used
      *
      * @param string $instanceName
-     * @param Action|null $action
+     * @param Closure $settingsCallback
      * @param string $title
      * @param string $message // if $message is not empty the defineConfirmationDialogue callback will be skipped and the confirmation will be displayed every single time
      * @param string $proceedButtonText
      * @param string $cancelButtonText
      */
-    public function __construct(string $instanceName, ?Action $action = null, string $title = '', string $message = '', string $proceedButtonText = '', string $cancelButtonText = '')
+    public function __construct(string $instanceName, private Closure $settingsCallback, string $title = '', string $message = '', string $proceedButtonText = '', string $cancelButtonText = '')
     {
-        parent::__construct();
-        $this->addUniqueID($instanceName);
         $this->instanceName      = $instanceName;
         $this->fixedMessage      = $message;
         $this->title             = $title;
@@ -70,9 +70,6 @@ class ConfirmAction extends Action
         $this->cancelButtonText  = $cancelButtonText;
         $this->height            = Confirmation::DEFAULT_HEIGHT;
         $this->width             = Confirmation::DEFAULT_WIDTH;
-        if ($action !== null) {
-            $this->addAction($action);
-        }
     }
 
     /**
@@ -197,41 +194,19 @@ class ConfirmAction extends Action
         return $this;
     }
 
-    /**
-     * @param string $instanceName
-     * @param string $confirmationPopupId
-     * @return void
-     * @internal
-     * TODO: create method at parent Action level and inject/pass-through every action. Make method protected
-     */
-    public function setConfirmedInstance(string $instanceName, string $confirmationPopupId): void
-    {
-        if ($instanceName === $this->instanceName) {
-            $this->confirmed           = true;
-            $this->confirmationPopupId = $confirmationPopupId;
-        }
-    }
-
     protected function runAction(): ActionResultInterface
     {
-        $container = $this->getLegacyContainer();
-        $id        = $this->getLegacyId();
-        if (($id instanceof Struct\GetData) && ($container instanceof Cell)) {
-            $container->setGetDataActionClientData($id);
-        }
-
-        // exit because user confirmed the dialogue, this is defined in the EventHandler
-        if ($this->confirmed === true) {
-            return $this->userClickedConfirmProceedWithNestedActions();
+        $getData      = $this->getGetData();
+        if ($getData instanceof Struct\GetData) {
+            $this->getActionInitDTO()->cell->setGetDataActionClientData($getData);
         }
 
         // initialize ConfirmAction and callback the method defineConfirmationDialogue in the user defined CellContent
-        $this->init($container);
+        $this->init();
 
         // exit because this action skips the confirmation
         if ($this->continueWithoutConfirmationDialogue === true) {
-            $this->setRunNested();
-            return new Action\ActionResult();
+            return new Action\ActionResultMigrationHelper($this->runOnConfirm());
         }
 
         [$message, $messageToken] = $this->getMessage();
@@ -242,6 +217,7 @@ class ConfirmAction extends Action
         }
 
         if ($this->showConfirmationDialogue === true) {
+            $container = $this->getActionInitDTO()->cell;
             $confirmationPopup = new Confirmation($container, $this->getClientData(), $this->instanceName, $message, $title, $this->getProceedButtonLabel(), $this->getCancelButtonLabel(), $this->getGetData(), $this->getEventType(), $this->getObjectValue());
 
             if ($this->verificationValue !== '') {
@@ -256,6 +232,26 @@ class ConfirmAction extends Action
         $message = new Message($message, Type::NOTICE);
         $message->setLabel($title);
         return new Action\ActionResultMigrationHelper($message->getNavigationArray());
+    }
+
+    private function runOnConfirm(): array
+    {
+        $container = $this->getActionInitDTO()->eventContainer;
+        $result = [];
+        if ($container instanceof OnConfirmInterface) {
+            $eventResult = $container->onConfirm();
+            $actions = $eventResult->getResultActions($this->instanceName, $this->getObjectValue());
+            foreach ($actions as $returnIndex => $action) {
+                if ($action instanceof Action) {
+                    $action->initializeAction($this->getActionInitDTO());
+                    $mergeArray[] = $action->getResult();
+                }
+            }
+            if (!empty($mergeArray)) {
+                $result = array_merge_recursive($result, ...$mergeArray);
+            }
+        }
+        return $result;
     }
 
     private function getProceedButtonLabel(): ?string
@@ -285,32 +281,14 @@ class ConfirmAction extends Action
         return $verificationLocale['found'] === true ? $verificationLocale['locale'] : '';
     }
 
-    private function userClickedConfirmProceedWithNestedActions(): ActionResultInterface
-    {
-        $this->setRunNested();
-        $result['state']                                      = HttpResponseState::SUCCESS->value;
-        $result['popup'][$this->confirmationPopupId]['close'] = true;
-        $this->confirmed                                      = false;
-        $this->confirmationPopupId                            = '';
-        return new Action\ActionResultMigrationHelper($result);
-    }
-
-    private function init(ContainerInterface $container): void
+    private function init(): void
     {
         // reset show confirmation dialogue every time
         $this->showConfirmationDialogue = false;
         $this->setRunNested(false);
         $this->message = '';
 
-        $class       = $container->getContentClass();
-        if (class_exists($class)) {
-            $cellContent = new $class($container);
-            if ($cellContent instanceof CellContent) {
-                $cellContent->setProcessedClientData($this->getClientData());
-                // callback to cell content class
-                $cellContent->getConfirmationDialogue($this);
-            }
-        }
+        ($this->settingsCallback)($this);
     }
 
     private function getMessage(): array

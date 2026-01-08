@@ -15,7 +15,6 @@ class GetFormData extends GetCellData
 {
     public function __construct(string $cell, Action ...$actions)
     {
-        parent::__construct();
         $this->fromForm($cell);
         $this->addAction(...$actions);
     }

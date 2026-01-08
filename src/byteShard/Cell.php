@@ -11,18 +11,14 @@ use byteShard\Enum\HttpResponseState;
 use byteShard\Form\Control\Upload;
 use byteShard\Form\FormInterface;
 use byteShard\ID\IDElement;
-use byteShard\Internal\Action;
 use byteShard\Internal\Cell\Storage;
 use byteShard\Internal\CellDeprecation;
 use byteShard\Internal\CellInterface;
 use byteShard\Internal\ContainerInterface;
 use byteShard\Internal\ContentClassFactory;
-use byteShard\Internal\Event\Event;
 use byteShard\Internal\Event\EventStorage;
-use byteShard\Internal\Event\EventStorageInterface;
 use byteShard\Internal\Permission\PermissionImplementation;
 use byteShard\Internal\Struct;
-use byteShard\Internal\Toolbar\ToolbarContainer;
 use byteShard\Tree\TreeInterface;
 use byteShard\Utils\Strings;
 use UnitEnum;
@@ -30,7 +26,7 @@ use UnitEnum;
 /**
  * Class Cell
  */
-class Cell extends CellDeprecation implements CellInterface, EventStorageInterface, ContainerInterface, ToolbarContainer
+class Cell extends CellDeprecation implements CellInterface, ContainerInterface
 {
     use PermissionImplementation {
         setPermission as PermissionTrait_setPermission;
@@ -51,8 +47,6 @@ class Cell extends CellDeprecation implements CellInterface, EventStorageInterfa
     private ?Struct\GetData $getData = null;
     /** @var array */
     private array $event = [];
-    /** @var array<string, Event> */
-    private array $contentEvents = [];
     /** @var array */
     private array $confirmations = [];
     /** @var string */
@@ -63,13 +57,13 @@ class Cell extends CellDeprecation implements CellInterface, EventStorageInterfa
     private ?ID\ID        $id            = null;
     private string        $actionId;
 
-    private string        $contentFormat = 'XML';
-    private string        $clickedLinkId;
+    private string $contentFormat = 'XML';
+    private string $clickedLinkId;
 
-    private ?string $refactorCellId                   = null;
-    private ?string $refactorCellNamespace            = null;
+    private ?string $refactorCellId        = null;
+    private ?string $refactorCellNamespace = null;
 
-    private bool    $refactorCellRegistered           = false;
+    private bool $refactorCellRegistered = false;
 
 
     private ?string $refactorCellOriginalContentClass = null;
@@ -102,7 +96,6 @@ class Cell extends CellDeprecation implements CellInterface, EventStorageInterfa
     }
 
 
-
     /**
      * @param $id
      * @return array
@@ -121,7 +114,6 @@ class Cell extends CellDeprecation implements CellInterface, EventStorageInterfa
     //###############################################################
     // Setter
     //###############################################################
-
 
 
     /**
@@ -154,7 +146,6 @@ class Cell extends CellDeprecation implements CellInterface, EventStorageInterfa
         trigger_error(__METHOD__.' is deprecated. There is no substitute method. You can probably achieve a similar behaviour with getId()');
         return $this;
     }
-
 
 
     public function setNonce(string $nonce = ''): string
@@ -318,36 +309,6 @@ class Cell extends CellDeprecation implements CellInterface, EventStorageInterfa
     //###############################################################
     // Deprecated
     //###############################################################
-
-    /**
-     * @param Event $event
-     * @return $this
-     */
-    public function registerContentEvent(Event $event): self
-    {
-        $name = $event->getContentEventName();
-        if (array_key_exists($name, $this->contentEvents)) {
-            $this->contentEvents[$name]->addActions(...$event->getActionArray());
-        } else {
-            $this->contentEvents[$name] = $event;
-        }
-        return $this;
-    }
-
-    /**
-     * @param string $eventName
-     * @return Action[]
-     */
-    public function getContentActions(string $eventName): array
-    {
-        if (array_key_exists($eventName, $this->contentEvents)) {
-            $event = $this->contentEvents[$eventName];
-            if ($event instanceof Event) {
-                return $event->getActionArray();
-            }
-        }
-        return [];
-    }
 
     /**
      * @param string $objectName
@@ -896,10 +857,6 @@ class Cell extends CellDeprecation implements CellInterface, EventStorageInterfa
     }
 
 
-
-
-
-
     /**
      * @param string $value
      * @return $this
@@ -1049,7 +1006,6 @@ class Cell extends CellDeprecation implements CellInterface, EventStorageInterfa
     {
         return $this->selectedId;
     }
-
 
 
     /**

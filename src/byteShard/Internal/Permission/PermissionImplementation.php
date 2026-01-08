@@ -95,7 +95,7 @@ trait PermissionImplementation
      * @session write (Cell, LayoutContainer, Toolbar)
      * @session none (Node, CellContent, SharedParent, Column, ToolbarObject)
      */
-    public function setAccessType(int|Access $accessType): self
+    public function setAccessType(int|Access $accessType): static
     {
         if ($accessType instanceof Access) {
             $this->accessType = $accessType->value;
@@ -114,7 +114,7 @@ trait PermissionImplementation
      * @throws Exception
      * @internal
      */
-    public function setParentAccessType(int|Access $accessType): self
+    public function setParentAccessType(int|Access $accessType): static
     {
         if ($accessType instanceof Access) {
             $this->accessType = $accessType->value;

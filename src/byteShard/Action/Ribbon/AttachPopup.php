@@ -20,16 +20,19 @@ class AttachPopup extends Action
     /**
      * SetCellHeader constructor.
      */
-    public function __construct(string $cell, private readonly string $contentClass, private readonly int $width = 400, private readonly int $height = 300)
+    public function __construct(
+        string                  $cell,
+        private readonly string $contentClass,
+        private readonly int    $width = 400,
+        private readonly int    $height = 300)
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
     }
 
     protected function runAction(): ActionResultInterface
     {
         $content = [];
-        $cells        = $this->getCells([$this->cell]);
+        $cells   = $this->getCells([$this->cell]);
         foreach ($cells as $cell) {
             $contentClass = ContentClassFactory::cellContent($this->contentClass, null, $cell);
             $id           = $cell->getNewId();
@@ -65,7 +68,7 @@ class AttachPopup extends Action
                 ]
             ];
         }
-        $result = new CellActionResult('rb');
+        $result = new CellActionResult(Action\ActionTargetEnum::Ribbon);
         return $result->addCellCommand([$this->cell], 'attachPopup', $content);
     }
 }

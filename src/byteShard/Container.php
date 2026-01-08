@@ -12,23 +12,25 @@ use byteShard\Internal\Struct\ClientCell;
 abstract class Container
 {
     private Cell $cell;
-    public function __construct(?Cell $cell = null) {
+
+    public function __construct(?Cell $cell = null, private readonly string $context = '')
+    {
         if ($cell !== null) {
             $this->cell = $cell;
         }
     }
-    
-    abstract public function defineContainerContent(Cell $cell): CellContent;
+
+    abstract public function defineContainerContent(Cell $cell, string $context): CellContent;
 
     public function getCellContent(): ?ClientCell
     {
         if (isset($this->cell)) {
-            $content = $this->defineContainerContent($this->cell);
+            $content = $this->defineContainerContent($this->cell, $this->context);
             return $content->getCellContent();
         }
         return null;
     }
-    
+
     public function getCell(): ?Cell
     {
         return $this->cell;

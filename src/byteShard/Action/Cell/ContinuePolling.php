@@ -32,12 +32,8 @@ class ContinuePolling extends Action
      */
     public function __construct(int $time, string ...$cells)
     {
-        parent::__construct();
-        $this->cells = array_map(function ($cell) {
-            return Cell::getContentCellName($cell);
-        }, array_unique($cells));
+        $this->cells = parent::getUniqueCellNameArray(...$cells);
         $this->time  = $time;
-        $this->addUniqueID($this->cells);
     }
 
     protected function runAction(): ActionResultInterface
@@ -45,7 +41,7 @@ class ContinuePolling extends Action
         $action = [];
         $cells  = $this->getCells($this->cells);
         foreach ($cells as $cell) {
-            $action['layout'][$cell->containerId()][$cell->cellId()]['poll'] = ['interval' => $this->time, 'id' => self::getPollId($cell->getNonce())];
+            $action[Action\ActionTargetEnum::Layout->value][$cell->containerId()][$cell->cellId()]['poll'] = ['interval' => $this->time, 'id' => self::getPollId($cell->getNonce())];
         }
         $action['state'] = HttpResponseState::SUCCESS->value;
         return new Action\ActionResultMigrationHelper($action);
