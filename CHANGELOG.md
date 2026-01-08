@@ -1,3 +1,10 @@
+## [2.24.1](https://github.com/bespin-studios/byteshard-core/compare/v2.24.0...v2.24.1) (2026-01-08)
+
+
+### Bug Fixes
+
+* replace container in getLegacyContainer method to cell ([482ef2c](https://github.com/bespin-studios/byteshard-core/commit/482ef2cdf93fa1431b5a31b21f43b57b5395dcac))
+
 # [2.24.0](https://github.com/bespin-studios/byteshard-core/compare/v2.23.0...v2.24.0) (2026-01-08)
 
 
