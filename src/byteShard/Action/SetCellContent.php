@@ -62,7 +62,7 @@ class SetCellContent extends Action
 
     protected function runAction(): ActionResultInterface
     {
-        $container       = $this->getLegacyContainer();
+        $container       = $this->getActionInitDTO()->cell;
         $result['state'] = HttpResponseState::WARNING->value;
         $cells           = $this->getCells([$this->cell]);
         foreach ($cells as $cell) {
@@ -107,6 +107,7 @@ class SetCellContent extends Action
                 }
             } elseif (!empty($this->className)) {
                 $contentClass = ContentClassFactory::cellContent($this->className, null, $cell);
+
                 $result[Action\ActionTargetEnum::Layout->value][$cell->containerId()][$cell->cellId()]['setCellContent'] = $contentClass->getCellContent();
             }
             $result['state'] = HttpResponseState::SUCCESS->value;

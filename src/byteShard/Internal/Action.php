@@ -38,7 +38,6 @@ abstract class Action
     private string                   $eventType        = '';
     private ?ClientData              $clientData       = null;
     private ?GetData                 $getData          = null;
-    private ?ContainerInterface      $container        = null;
     private ?DateTimeZone            $clientTimeZone;
     private array                    $objectProperties = [];
     private ?EventContainerInterface $eventContainer   = null;
@@ -170,11 +169,6 @@ abstract class Action
         return $this->actionInitDTO->legacyId;
     }
 
-    protected function getLegacyContainer(): ?ContainerInterface
-    {
-        return $this->container;
-    }
-
     /**
      * @param bool $bool
      * @return $this
@@ -237,7 +231,7 @@ abstract class Action
     {
         $cells = [];
         if ($containerId === null) {
-            $containerId = $this->container?->getNewId();
+            $containerId = $this->actionInitDTO->cell?->getNewId();
         }
         if ($containerId?->isTabId() === true) {
             foreach ($cellNames as $cellName) {

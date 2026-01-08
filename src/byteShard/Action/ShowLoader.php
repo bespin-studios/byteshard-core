@@ -113,7 +113,7 @@ class ShowLoader extends Action
 
     protected function runAction(): ActionResultInterface
     {
-        $container = $this->getLegacyContainer();
+        $container = $this->getActionInitDTO()->cell;
         $id        = $this->getLegacyId();
         //TODO: implement this like ConfirmAction, pack the current clientData and so on into a field, send it to the client, have the client show the loader and re-call the same bs_event stack but this time with the specially prepped client data
         // in the event handler unpack the loader-client data and overwrite the regular client data, skip this action and execute all nested
