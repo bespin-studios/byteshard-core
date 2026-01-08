@@ -20,12 +20,7 @@ class SetBubble extends Action
 
     public function __construct(string ...$cells)
     {
-        parent::__construct();
-        foreach ($cells as $cell) {
-            $cellName               = Cell::getContentCellName($cell);
-            $this->cells[$cellName] = $cellName;
-        }
-        $this->addUniqueID($this->cells);
+        $this->cells = parent::getUniqueCellNameArray(...$cells);
     }
 
     protected function runAction(): ActionResultInterface
@@ -36,7 +31,7 @@ class SetBubble extends Action
             if ($tab instanceof Tab) {
                 $bubbles = $tab->bubbles() ?? [];
                 foreach ($bubbles as $encryptedTabId => $bubble) {
-                    $action['tab'][$encryptedTabId]['setBubble'] = $bubble;
+                    $action[Action\ActionTargetEnum::Tab->value][$encryptedTabId]['setBubble'] = $bubble;
                 }
             }
         }

@@ -25,19 +25,18 @@ class CellExport extends Action\ExportAction implements Action\ExportInterface
     {
         parent::__construct($type, 180);
         $this->cell = Cell::getContentCellName($cell);
-        $this->addUniqueID($this->cell);
     }
 
     protected function runAction(): ActionResultInterface
     {
+        $action = new Action\CellActionResult(Action\ActionTargetEnum::Cell);
         $cells = $this->getCells([$this->cell]);
         foreach ($cells as $cell) {
             if (is_subclass_of($cell->getContentClass(), GridInterface::class)) {
-                $action['LCell'][$cell->containerId()][$cell->cellId()]['exportGrid'] = 'xls';
+                $action->addCellCommand([$this->cell], 'exportGrid', 'xls');
             }
         }
-        $action['state'] = HttpResponseState::SUCCESS->value;
-        return new Action\ActionResultMigrationHelper($action);
+        return $action;
     }
     //TODO: - check if class_name of cell to be exported instanceof Grid
     //TODO: - if cell instanceof Tree, new Cell, but not getContents, getExcel (needs to be implemented in Tree class)

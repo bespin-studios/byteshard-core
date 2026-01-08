@@ -3,11 +3,13 @@
 namespace byteShard\Internal;
 
 use byteShard\Cell;
+use byteShard\Container;
 use byteShard\Exception;
 use byteShard\Form\FormInterface;
 use byteShard\Grid\GridInterface;
 use byteShard\Internal\Ribbon\RibbonClassInterface;
 use byteShard\Internal\Toolbar\ToolbarClassInterface;
+use byteShard\Internal\Toolbar\ToolbarContainer;
 use byteShard\Popup;
 use byteShard\TabNew;
 
@@ -17,11 +19,11 @@ class ContentClassFactory
     /**
      * @throws Exception
      */
-    public static function getToolbar(Cell $cell): ToolbarClassInterface
+    public static function getToolbar(ToolbarContainer $toolbarContainer): ToolbarClassInterface
     {
         $toolbarClass = '\\byteShard\\Toolbar';
         if (class_exists($toolbarClass) && is_subclass_of($toolbarClass, ToolbarClassInterface::class)) {
-            return new $toolbarClass($cell);
+            return new $toolbarClass($toolbarContainer);
         } else {
             throw new Exception('Toolbar class not found or not a subclass of '.ToolbarClassInterface::class);
         }
@@ -82,10 +84,10 @@ class ContentClassFactory
         }
     }
 
-    public static function cellContent(string $contentClass, string $context, Cell $cell): CellContent
+    public static function cellContent(string $contentClass, string $context, Cell $cell): CellContent|Container
     {
         $cellContent = new $contentClass($cell, $context);
-        if ($cellContent instanceof CellContent) {
+        if ($cellContent instanceof CellContent || $cellContent instanceof Container) {
             return $cellContent;
         }
         throw new Exception('('.$contentClass.') Cell content class not found or not a subclass of '.CellContent::class);

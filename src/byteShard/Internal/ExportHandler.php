@@ -74,9 +74,7 @@ class ExportHandler
             //TODO: evaluate $eventName and chose the correct eventInterface
             //TODO: add timezone
             //TODO: pass object properties from Request
-            $actions = ActionCollector::getEventActions($this->cell, $id, OnClickInterface::class, $this->eventId, '', '', $clientData, $getData, null, [], $eventName, function () {
-                return $this->getCellContent();
-            });
+            $actions = ActionCollector::getEventActions($this->cell, $id, OnClickInterface::class, $this->eventId, '', '', $clientData, $getData, null, [], $eventName, $this->getCellContent());
         } else {
             //TODO: implement getEventActions to be compatible with tabs, change getCellContentCallback to expect return type of some common interface and so on
             /*$this->tab          = \byteShard\Session::getTab($id);
@@ -104,7 +102,7 @@ class ExportHandler
     {
         if (!isset($this->cellContent)) {
             $className         = $this->cell->getContentClass();
-            $this->cellContent = new $className($this->cell);
+            $this->cellContent = ContentClassFactory::cellContent($className, '', $this->cell);
             if ($this->clientData !== null) {
                 $this->cellContent->setProcessedClientData($this->clientData);
             }

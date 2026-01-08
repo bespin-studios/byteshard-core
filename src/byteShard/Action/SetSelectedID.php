@@ -22,7 +22,7 @@ use Exception;
  */
 class SetSelectedID extends Action
 {
-    private array $cells = [];
+    private array $cells;
     private ?ID   $id;
 
     /**
@@ -31,12 +31,7 @@ class SetSelectedID extends Action
      */
     public function __construct(string ...$cells)
     {
-        parent::__construct();
-        foreach ($cells as $cell) {
-            $cellName               = Cell::getContentCellName($cell);
-            $this->cells[$cellName] = $cellName;
-        }
-        $this->addUniqueID($this->cells);
+        $this->cells = parent::getUniqueCellNameArray(...$cells);
     }
 
     /**
@@ -52,89 +47,51 @@ class SetSelectedID extends Action
 
     protected function runAction(): ActionResultInterface
     {
-        $container = $this->getLegacyContainer();
-        $id        = $this->getLegacyId();
-        if ($container instanceof Cell) {
-            $appendId   = false;
-            $idElements = [];
-            if (isset($this->id)) {
-                $setId = $this->id;
-            } else {
-                $clientData = $this->getClientData();
-                if (array_key_exists('!#SelectedSchedulerDate', $id)) {
-                    $idElements[] = new DateIDElement($id['!#SelectedSchedulerDate']);
-                } elseif (count($id) === 1 && array_key_exists('colID', $id) && property_exists($clientData, 'ID')) {
-                    // this is the implementation for onSelect
-                    // onGridLink doesn't work the same way as onSelect since we need a column and a row for the links instead of only a row
-                    // refactor once there is a common implementation for all grid related events
-                    try {
-                        $decrypted = json_decode(Session::decrypt($clientData->ID), true);
-                    } catch (Exception) {
-                        $decrypted = [];
+        $actionInitDTO = $this->getActionInitDTO();
+        $appendId      = false;
+        $idElements    = [];
+        if (isset($this->id)) {
+            $setId = $this->id;
+        } else {
+            $clientData = $actionInitDTO->clientData;
+            $affectedId = [];
+            switch ($actionInitDTO->eventType) {
+                case 'onEmptyClick':
+                    // scheduler
+                    $idElements[] = new DateIDElement($affectedId['!#SelectedSchedulerDate']);
+                    break;
+                case 'onChange':
+                    $idElements[] = new IDElement($actionInitDTO->eventId, $actionInitDTO->clientData->{$actionInitDTO->eventId});
+                    $appendId     = true;
+                    break;
+                case 'onSelect':
+                case 'onRowSelect':
+                    $affectedId = json_decode(Session::decrypt($clientData->ID), true);
+                    foreach ($affectedId as $id => $value) {
+                        $idElements[] = new IDElement($id, $clientData->{$id});
                     }
-                    foreach ($decrypted as $clientObject => $clientValue) {
-                        if (property_exists($clientData, $clientObject)) {
-                            $idElements[] = new IDElement($clientObject, $clientData->{$clientObject});
-                        }
-                    }
-                } else {
-                    $actionId = $container->getActionId();
-                    $row      = $clientData->getRows()[0];
-                    if (property_exists($row, $actionId) && $row->{$actionId}->type === Combo::class) {
-                        $idElements[] = new IDElement($actionId, $row->{$actionId}->value);
-                        $appendId     = true;
-                    } elseif (is_array($id) && array_key_exists('colID', $id) && array_key_exists('objID', $id)) {
-                        // this is the implementation for onLinkClick in Image columns
-                        $col = json_decode(Session::decrypt($id['colID']));
-                        $obj = json_decode(Session::decrypt($id['objID']), true);
-                        $idElements[] = new IDElement($col->i, $obj);
-                    } else {
-                        foreach ($id as $clientObject => $clientValue) {
-                            if (property_exists($clientData, $clientObject)) {
-                                $idElements[] = new IDElement($clientObject, $clientData->{$clientObject});
-                            } else {
-                                $decrypted = null;
-                                try {
-                                    $decrypted = json_decode(Session::decrypt($clientObject));
-                                } catch (Exception) {
-                                }
-                                if ($decrypted !== null) {
-                                    if (property_exists($clientData, $decrypted->i) && $clientData->{$decrypted->i} !== null) {
-                                        $idElements[] = new IDElement($decrypted->i, $clientData->{$decrypted->i});
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                $setId = ID::factory(...$idElements);
+                    break;
+                case 'onGridLink':
+                    $idElements[] = new IDElement($actionInitDTO->eventId, $actionInitDTO->clientData->{$actionInitDTO->eventId});
+                    break;
             }
-
-            if (empty($this->cells)) {
-                if ($appendId === true) {
-                    $currentId = $container->getSelectedId();
-                    if ($currentId === null) {
-                        $container->setSelectedID($setId);
-                    } else {
-                        $currentId->addIdElement(...$idElements);
-                    }
+            $setId = ID::factory(...$idElements);
+        }
+        if (empty($this->cells)) {
+            $cells = [$actionInitDTO->eventContainer];
+        } else {
+            $cells = $this->getCells($this->cells);
+        }
+        foreach ($cells as $cell) {
+            if ($appendId === true) {
+                $currentId = $cell->getSelectedId();
+                if ($currentId === null) {
+                    $cell->setSelectedID($setId);
                 } else {
-                    $container->setSelectedID($setId);
+                    $currentId->addIdElement(...$idElements);
                 }
             } else {
-                $cells = $this->getCells($this->cells);
-                foreach ($cells as $cell) {
-                    if ($appendId === true) {
-                        $currentId = $cell->getSelectedId();
-                        if ($currentId === null) {
-                            $cell->setSelectedID($setId);
-                        } else {
-                            $currentId->addIdElement(...$idElements);
-                        }
-                    } else {
-                        $cell->setSelectedID($setId);
-                    }
-                }
+                $cell->setSelectedID($setId);
             }
         }
         return new Action\ActionResult();

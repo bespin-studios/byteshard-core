@@ -308,15 +308,15 @@ abstract class Data
         $mergeArray = [];
         if ($this->changes === true) {
             foreach ($this->changesActions as $action) {
-                $mergeArray[] = $action->getResult($this->cell, null);
+                $mergeArray[] = $action->getResult();
             }
         } else {
             foreach ($this->noChangesActions as $action) {
-                $mergeArray[] = $action->getResult($this->cell, null);
+                $mergeArray[] = $action->getResult();
             }
         }
         foreach ($this->successActions as $action) {
-            $mergeArray[] = $action->getResult($this->cell, null);
+            $mergeArray[] = $action->getResult();
         }
         $result            = array_merge_recursive($result, ...$mergeArray);
         $result['success'] = true;
@@ -333,7 +333,7 @@ abstract class Data
     {
         $mergeArray = [];
         foreach ($this->errorActions as $action) {
-            $mergeArray[] = $action->getResult($this->cell, null);
+            $mergeArray[] = $action->getResult();
         }
         $result            = array_merge_recursive($result, ...$mergeArray);
         $result['success'] = false;

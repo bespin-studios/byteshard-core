@@ -33,7 +33,6 @@ class GetCellData extends Action
 
             $this->sources[$className]['getCheckedRows'] = true;
         }
-        $this->addUniqueID($this->sources);
         return $this;
     }
 
@@ -50,7 +49,6 @@ class GetCellData extends Action
 
             $this->sources[$className]['getSelectedRow'] = true;
         }
-        $this->addUniqueID($this->sources);
         return $this;
     }
 
@@ -67,7 +65,6 @@ class GetCellData extends Action
 
             $this->sources[$className]['getHighlightedRow'] = true;
         }
-        $this->addUniqueID($this->sources);
         return $this;
     }
 
@@ -84,44 +81,25 @@ class GetCellData extends Action
 
             $this->sources[$className]['getFormData'] = true;
         }
-        $this->addUniqueID($this->sources);
         return $this;
     }
 
     protected function runAction(): ActionResultInterface
     {
-        $container       = $this->getLegacyContainer();
-        $action['state'] = HttpResponseState::SUCCESS->value;
-        $getData         = $this->getGetData();
-        if ($container instanceof Cell) {
-            if ($getData === null) {
-                // no callback executed yet, request cell data from clients
-                $action = array_merge_recursive($this->requestClientData());
-            } else {
-                // !!! TODO !!! this is probably the sole reason for id by reference, check if getData can be injected in subsequent actions and the respective cell in a meaningful way
-                // this is really bad and confusing design, fix asap
-                //$id = $getData;
-                $container->setGetDataActionClientData($getData);
-                $this->setRunNested();
-            }
-        }
-        return new Action\ActionResultMigrationHelper($action);
-    }
-
-    //TODO: error handling if $this->getNavigationID returns null -> class not defined
-
-    private function requestClientData(): array
-    {
-        $action = [];
-        $this->setRunNested(false);
-        foreach ($this->sources as $cellName => $types) {
-            $cells = $this->getCells([$cellName]);
-            foreach ($cells as $cell) {
+        $actionResult = new Action\CellActionResult(Action\ActionTargetEnum::Cell);
+        $getData      = $this->getGetData();
+        if ($getData === null) {
+            // no callback executed yet, request cell data from clients
+            $this->setRunNested(false);
+            foreach ($this->sources as $cellName => $types) {
                 foreach ($types as $type => $value) {
-                    $action['LCell'][$cell->containerId()][$cell->cellId()][$type] = $value;
+                    $actionResult->addCellCommand([$cellName], $type, $value);
                 }
             }
+        } else {
+            $this->getActionInitDTO()->cell->setGetDataActionClientData($getData);
+            $this->setRunNested();
         }
-        return $action;
+        return $actionResult;
     }
 }

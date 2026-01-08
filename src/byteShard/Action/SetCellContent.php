@@ -37,11 +37,9 @@ class SetCellContent extends Action
      */
     public function __construct(string $cell, string $methodName = '', mixed $methodParameter = null)
     {
-        parent::__construct();
         $this->cell            = Cell::getContentCellName($cell);
         $this->method          = $methodName;
         $this->methodParameter = $methodParameter;
-        $this->addUniqueID($this->cell, $this->method, $this->methodParameter);
     }
 
     /**
@@ -86,7 +84,7 @@ class SetCellContent extends Action
                             }
                             $methodResult = $call->{$this->method}($cell);
                             if ($methodResult instanceof CellContent) {
-                                $result['layout'][$cell->containerId()][$cell->cellId()]['setCellContent'] = $methodResult->getCellContent();
+                                $result[Action\ActionTargetEnum::Layout->value][$cell->containerId()][$cell->cellId()]['setCellContent'] = $methodResult->getCellContent();
                             } elseif ($methodResult !== null) {
                                 throw new Exception('Any method that will be called by byteShard\Action\SetCellContent needs to return an object of type CellContent', 100005003);
                             }
@@ -98,7 +96,7 @@ class SetCellContent extends Action
                             }
                             $methodResult = $call->{$this->method}($cell, $this->methodParameter);
                             if ($methodResult instanceof CellContent) {
-                                $result['layout'][$cell->containerId()][$cell->cellId()]['setCellContent'] = $methodResult->getCellContent();
+                                $result[Action\ActionTargetEnum::Layout->value][$cell->containerId()][$cell->cellId()]['setCellContent'] = $methodResult->getCellContent();
                             } elseif ($methodResult !== null) {
                                 throw new Exception('Any method that will be called by byteShard\Action\SetCellContent needs to return an object of type CellContent', 100005004);
                             }
@@ -109,7 +107,7 @@ class SetCellContent extends Action
                 }
             } elseif (!empty($this->className)) {
                 $contentClass = ContentClassFactory::cellContent($this->className, null, $cell);
-                $result['layout'][$cell->containerId()][$cell->cellId()]['setCellContent'] = $contentClass->getCellContent();
+                $result[Action\ActionTargetEnum::Layout->value][$cell->containerId()][$cell->cellId()]['setCellContent'] = $contentClass->getCellContent();
             }
             $result['state'] = HttpResponseState::SUCCESS->value;
         }

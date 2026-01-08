@@ -7,9 +7,7 @@
 namespace byteShard;
 
 use byteShard\Enum\ContentType;
-use byteShard\Internal\Action\ClientExecutionInterface;
 use byteShard\Internal\Event\EventStorage;
-use byteShard\Internal\Event\EventStorageInterface;
 use byteShard\Internal\LayoutContainer;
 use byteShard\Internal\NavigationItem;
 use byteShard\Internal\Struct;
@@ -17,14 +15,13 @@ use byteShard\Internal\Event\Event;
 use byteShard\Internal\Event\TabEvent;
 use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\TabLegacyInterface;
-use byteShard\Internal\Toolbar\ToolbarContainer;
 use byteShard\Utils\Strings;
 
 /**
  * Class Tab
  * @package byteShard
  */
-class Tab extends LayoutContainer implements EventStorageInterface, ToolbarContainer, TabLegacyInterface, NavigationItem
+class Tab extends LayoutContainer implements TabLegacyInterface, NavigationItem
 {
     use EventStorage;
 
@@ -475,21 +472,6 @@ class Tab extends LayoutContainer implements EventStorageInterface, ToolbarConta
             }
         }
         return $this;
-    }
-
-    /**
-     * @param string $eventName
-     * @return Action[]|ClientExecutionInterface[]
-     */
-    public function getContentActions(string $eventName): array
-    {
-        if (isset($this->event['content'], $this->event['content'][$eventName])) {
-            $event = $this->event['content'][$eventName];
-            if ($event instanceof Event) {
-                return $event->getActionArray();
-            }
-        }
-        return [];
     }
 
     /**

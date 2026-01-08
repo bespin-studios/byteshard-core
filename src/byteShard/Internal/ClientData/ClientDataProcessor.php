@@ -27,7 +27,8 @@ class ClientDataProcessor
         private readonly string        $nonceToCheck = '',
         private readonly ?DateTimeZone $clientTimeZone = null,
         private readonly array         $objectProperties = []
-    ) {
+    )
+    {
     }
 
     /**
@@ -235,6 +236,9 @@ class ClientDataProcessor
                             break;
                         case 'g':
                             $objectType = 'byteShard\\Grid\\Column\\'.substr($objectType, 2);
+                            break;
+                        case 'r':
+                            $objectType = 'byteShard\\Ribbon\\Control\\'.substr($objectType, 2);
                             break;
                     }
                 }

@@ -18,7 +18,7 @@ use byteShard\Tree\TreeInterface;
  */
 class UnsetSelectedID extends Action
 {
-    private array $cells = [];
+    private array $cells;
 
     /**
      * UnsetSelectedID constructor.
@@ -26,12 +26,7 @@ class UnsetSelectedID extends Action
      */
     public function __construct(string ...$cells)
     {
-        parent::__construct();
-        foreach ($cells as $cell) {
-            $this->cells[] = Cell::getContentCellName($cell);
-        }
-        $this->cells = array_unique($this->cells);
-        $this->addUniqueID($this->cells);
+        $this->cells = parent::getUniqueCellNameArray(...$cells);
     }
 
 
@@ -42,7 +37,7 @@ class UnsetSelectedID extends Action
             $cell->unsetSelectedID();
             $class = $cell->getContentClass();
             if (is_subclass_of($class, TreeInterface::class)) {
-                $action['LCell'][$cell->containerId()][$cell->cellId()]['clearSelection'] = true;
+                $action[Action\ActionTargetEnum::Cell->value][$cell->containerId()][$cell->cellId()]['clearSelection'] = true;
             }
         }
         $action['state'] = HttpResponseState::SUCCESS->value;

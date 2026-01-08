@@ -30,12 +30,7 @@ class SetSchedulerDate extends Action
      */
     public function __construct(string ...$cells)
     {
-        parent::__construct();
-        foreach ($cells as $cell) {
-            $cell_name               = Cell::getContentCellName($cell);
-            $this->cells[$cell_name] = $cell_name;
-        }
-        $this->addUniqueID($this->cells);
+        $this->cells = parent::getUniqueCellNameArray(...$cells);
     }
 
     protected function runAction(): ActionResultInterface
@@ -44,7 +39,7 @@ class SetSchedulerDate extends Action
         foreach ($cells as $cell) {
             $selectedDate = $cell->getSelectedId()?->getSelectedDate();
             if ($selectedDate !== null) {
-                $action['LCell'][$cell->containerId()][$cell->cellId()]['updateView'] = $selectedDate->format(DateTimeInterface::ATOM);
+                $action[Action\ActionTargetEnum::Cell->value][$cell->containerId()][$cell->cellId()]['updateView'] = $selectedDate->format(DateTimeInterface::ATOM);
             }
         }
         $action['state'] = HttpResponseState::SUCCESS->value;

@@ -19,25 +19,26 @@ use byteShard\ID;
 use byteShard\ID\CellIDElement;
 use byteShard\ID\TabIDElement;
 use byteShard\Internal\Cell\Storage;
+use byteShard\Internal\ClientData\EventContainerInterface;
 use byteShard\Internal\Event\Event;
 use byteShard\Internal\Event\EventMigrationInterface;
 use byteShard\Internal\Export\ExportInterface;
 use byteShard\Internal\Export\HandlerInterface;
 use byteShard\Internal\Permission\PermissionImplementation;
-use byteShard\Internal\Ribbon\RibbonClassInterface;
-use byteShard\Internal\Ribbon\RibbonObjectInterface;
 use byteShard\Internal\Struct\ClientCell;
 use byteShard\Internal\Struct\ClientCellComponent;
 use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Internal\Struct\Navigation_ID;
+use byteShard\Internal\Toolbar\ToolbarContainer;
+use byteShard\Internal\Traits\Ribbon;
+use byteShard\Internal\Traits\Toolbar;
 use byteShard\Locale;
 use byteShard\Popup\Message;
 use byteShard\Ribbon\RibbonInterface;
 use byteShard\Scheduler;
 use byteShard\Session;
-use byteShard\Internal\Toolbar\ToolbarClassInterface;
-use byteShard\Toolbar\ToolbarObjectInterface;
+use byteShard\Toolbar\ToolbarInterface;
 use DateTimeZone;
 use stdClass;
 
@@ -45,32 +46,32 @@ use stdClass;
  * Class CellContent
  * @package byteShard\Internal
  */
-abstract class CellContent implements ContainerInterface, ExportInterface
+abstract class CellContent implements ContainerInterface, ExportInterface, EventContainerInterface, ToolbarContainer
 {
     use PermissionImplementation {
         setPermission as PermissionTrait_setPermission;
         setAccessType as PermissionTrait_setAccessType;
     }
+    use Ribbon;
+    use Toolbar;
 
     // overwrite in child:
-    protected string                $cellContentType;
-    protected Cell                  $cell;
-    protected ?string               $filterValue   = null;
-    protected stdClass              $user;
-    protected ?int                  $user_id;
-    protected ?string               $username;
-    protected ToolbarClassInterface $toolbar;
-    protected RibbonClassInterface  $ribbon;
-    private string                  $outputCharset = 'UTF-8';
-    protected string                $locale;
-    private ?string                 $cellHeader    = null;
-    private array                   $idCache       = [];
-    private array                   $events        = [];
-    protected ?ClientData           $clientData;
-    protected ?ID\ID                $selectedID;
-    protected ?Struct\GetData       $getDataID;
-    private DateTimeZone            $clientTimeZone;
-    private CellContent             $fallbackContent;
+    protected string          $cellContentType;
+    protected Cell            $cell;
+    protected ?string         $filterValue   = null;
+    protected stdClass        $user;
+    protected ?int            $user_id;
+    protected ?string         $username;
+    private string            $outputCharset = 'UTF-8';
+    protected string          $locale;
+    private ?string           $cellHeader    = null;
+    private array             $idCache       = [];
+    private array             $events        = [];
+    protected ?ClientData     $clientData;
+    protected ?ID\ID          $selectedID;
+    protected ?Struct\GetData $getDataID;
+    private DateTimeZone      $clientTimeZone;
+    private CellContent       $fallbackContent;
 
     /**
      * TODO: OPTIMIZE: constructor too long... several actions create an instance of cell content and need only very few of it
@@ -135,6 +136,19 @@ abstract class CellContent implements ContainerInterface, ExportInterface
             'relatedID', 'relatedTabID', 'relatedLayoutID' => [],
             default                                        => null,
         };
+    }
+
+    private ?CellContent $parent = null;
+
+    /** @api */
+    public function setParent(CellContent $parent): void
+    {
+        $this->parent = $parent;
+    }
+
+    public function getParent(): ?CellContent
+    {
+        return $this->parent;
     }
 
     /**
@@ -273,11 +287,11 @@ abstract class CellContent implements ContainerInterface, ExportInterface
         return $this->cell->createLocaleBaseToken('Cell');
     }
 
-    protected function getScopeLocaleTokenBasedOnNamespace(string $type = 'Cell'): string
+    public function getScopeLocaleTokenBasedOnNamespace(string $type = 'Cell'): string
     {
         $namespace = str_replace('App\\Cell\\', '', get_class($this));
-        $parts = explode('\\', $namespace);
-        $cell = array_pop($parts);
+        $parts     = explode('\\', $namespace);
+        $cell      = array_pop($parts);
         return implode('_', $parts).'::'.$type.'.'.$cell;
     }
 
@@ -430,22 +444,17 @@ abstract class CellContent implements ContainerInterface, ExportInterface
 
     /**
      * @return array<ClientCellComponent|ContentComponent>
-     * @throws Exception
      */
     protected function getComponents(string $nonce = ''): array
     {
         $result = [];
-        if (method_exists($this, 'defineToolbarContent')) {
-            $this->toolbar = ContentClassFactory::getToolbar($this->cell);
-            $this->defineToolbarContent();
-            $toolbar = $this->toolbar->getComponent();
+        if ($this instanceof ToolbarInterface) {
+            $toolbar = $this->getToolbarComponent();
             if ($toolbar !== null) {
                 $result[] = $toolbar;
             }
         } elseif ($this instanceof RibbonInterface) {
-            $this->ribbon = ContentClassFactory::getRibbon($this->cell);
-            $this->defineRibbonContent();
-            $ribbon = $this->ribbon->getComponent();
+            $ribbon = $this->getRibbonComponent($this->cell);
             if ($ribbon !== null) {
                 $result[] = $ribbon;
             }
@@ -496,19 +505,16 @@ abstract class CellContent implements ContainerInterface, ExportInterface
      * cell content specific contents like column types or field permissions must be checked in their respective classes
      * here cell access type and defineUpdate method existence are verified
      *
-     * @param ClientData $clientData
      * @return array|null
      */
-    public function runClientUpdate(ClientData $clientData): ?array
+    public function runClientUpdate(): ?array
     {
         if (method_exists($this, 'defineUpdate')) {
-            // validation ok, set validated data as clientData and run method defineUpdate which needs to be defined in the respective cell
-            $this->clientData = $clientData;
-            $result           = $this->defineUpdate();
+            $result = $this->defineUpdate();
             if (is_array($result)) {
                 return $result;
             }
-            if ($result instanceof \byteShard\Internal\Action) {
+            if ($result instanceof Action) {
                 return [$result];
             }
             if ($result !== null) {
@@ -540,48 +546,6 @@ abstract class CellContent implements ContainerInterface, ExportInterface
             return $msg->getNavigationArray();
         }
         return true;
-    }
-
-    /**
-     * @param ToolbarObjectInterface ...$toolbar_objects
-     * @return void
-     * @API
-     */
-    protected function addToolbarObject(ToolbarObjectInterface ...$toolbar_objects): void
-    {
-        if (isset($this->toolbar)) {
-            $this->toolbar->addToolbarObject(...$toolbar_objects);
-        }
-    }
-
-    /**
-     * @param int $accessType
-     * @return $this
-     * @API
-     */
-    protected function setToolbarAccessType(int $accessType): self
-    {
-        if (isset($this->toolbar)) {
-            if (method_exists($this->toolbar, 'setAccessType')) {
-                $this->toolbar->setAccessType($accessType);
-            }
-        }
-        return $this;
-    }
-
-    protected function addRibbonObject(RibbonObjectInterface ...$ribbonObject): void
-    {
-        if (isset($this->ribbon)) {
-            $this->ribbon->addRibbonObject(...$ribbonObject);
-        }
-    }
-
-    protected function setRibbonAccessType(int $accessType): self
-    {
-        if (isset($this->ribbon)) {
-            $this->ribbon->setAccessType($accessType);
-        }
-        return $this;
     }
 
     /**

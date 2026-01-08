@@ -32,7 +32,6 @@ use byteShard\Internal\Permission\PermissionImplementation;
 use byteShard\Internal\Request\ElementType;
 use byteShard\Internal\Request\EventType;
 use byteShard\Locale;
-use byteShard\Popup;
 use byteShard\Popup\Confirmation;
 use byteShard\Popup\Message;
 use byteShard\Scheduler\Event\OnScrollForward;
@@ -182,9 +181,7 @@ class EventHandler
     private function getActions(string $eventId, string $objectValue, string $confirmationId, string $eventInterface = '', ?Struct\ClientData $clientData = null, ?Struct\GetData $getData = null): array
     {
         if ($this->cell !== null) {
-            return ActionCollector::getEventActions($this->cell, $this->id, $eventInterface, $eventId, $objectValue, $confirmationId, $clientData, $getData, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, function () {
-                return $this->getCellContent();
-            });
+            return ActionCollector::getEventActions($this->cell, $this->id, $eventInterface, $eventId, $objectValue, $confirmationId, $clientData, $getData, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $this->getCellContent(), $this->request->getData());
         }
         return [];
     }
@@ -211,7 +208,7 @@ class EventHandler
         $result['state'] = HttpResponseState::SUCCESS->value;
         $mergeArray      = [];
         foreach ($actions as $action) {
-            $mergeArray[] = $action->getResult($this->cell ?? $this->container, $data);
+            $mergeArray[] = $action->getResult();
         }
         $result          = array_merge_recursive($result, ...$mergeArray);
         $result['state'] = $this->getState($result['state']);
@@ -329,18 +326,8 @@ class EventHandler
      */
     private function onCollapse(string $cellName): array
     {
-        $tab = Session::getTab($this->id);
-        if ($tab instanceof TabNew) {
-            $tabName = $tab->getId();
-            $this->environment->storeUserSetting($tabName, $cellName, Cell::COLLAPSED, 'Cell', 1);
-        } else if ($tab instanceof Tab) {
-            $tabName = $tab->getNewId()->getTabId();
-            $cellId  = clone $tab->getNewId();
-            $cellId->addIdElement(new ID\CellIDElement($tabName.'\\'.$cellName));
-            $cell = $tab->getCell($cellId);
-            $cell->setCollapsed();
-            $this->environment->storeUserSetting($tabName, $cellName, Cell::COLLAPSED, 'Cell', 1);
-        }
+        $tabName = $this->id->getTabId();
+        $this->environment->storeUserSetting($tabName, $cellName, Cell::COLLAPSED, 'Cell', 1);
         return ['state' => HttpResponseState::SUCCESS->value];
     }
 
@@ -350,18 +337,8 @@ class EventHandler
      */
     private function onExpand(string $cellName): array
     {
-        $tab = Session::getTab($this->id);
-        if ($tab instanceof TabNew) {
-            $tabName = $tab->getId();
-            $this->environment->deleteUserSetting($tabName, $cellName, Cell::COLLAPSED, 'Cell');
-        } else if ($tab instanceof Tab) {
-            $tabName = $tab->getNewId()->getTabId();
-            $cellId  = clone $tab->getNewId();
-            $cellId->addIdElement(new ID\CellIDElement($tabName.'\\'.$cellName));
-            $cell = $tab->getCell($cellId);
-            $cell->setCollapsed(false);
-            $this->environment->deleteUserSetting($tabName, $cellName, Cell::COLLAPSED, 'Cell');
-        }
+        $tabName = $this->id->getTabId();
+        $this->environment->deleteUserSetting($tabName, $cellName, Cell::COLLAPSED, 'Cell');
         return ['state' => HttpResponseState::SUCCESS->value];
     }
 
@@ -395,7 +372,7 @@ class EventHandler
         $tabClass    = '\\App\\Tab\\'.$closedTabId->getTabId();
         if (class_exists($tabClass)) {
             $tab     = ContentClassFactory::tab($tabClass);
-            $actions = ActionCollector::getEventActions(null, $this->id, OnTabCloseInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $tab);
+            $actions = ActionCollector::getEventActions(null, $this->id, OnTabCloseInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $tab, $this->request->getData());
             return $this->runActions([], ...$actions);
         }
         $result['state'] = HttpResponseState::ERROR->value;
@@ -503,14 +480,13 @@ class EventHandler
         if (array_key_exists(ID\ID::POPUPID, $decodedId)) {
             $className = str_starts_with(strtolower($decodedId[ID\ID::POPUPID]), 'app\\popup') ? $decodedId[ID\ID::POPUPID] : 'App\\Popup\\'.$decodedId[ID\ID::POPUPID];
             if (class_exists($className)) {
-                $popup = new $className();
-                if ($popup instanceof Popup) {
-                    if (array_key_exists(ID\ID::TABID, $decodedId)) {
-                        $popup->addTabIdElement(new ID\TabIDElement($decodedId[ID\ID::TABID]));
-                    }
-                    $this->container = $popup;
+                //TODO: NOW!
+                $popup = ContentClassFactory::popup($className);
+                if (array_key_exists(ID\ID::TABID, $decodedId)) {
+                    $popup->addTabIdElement(new ID\TabIDElement($decodedId[ID\ID::TABID]));
                 }
-                $actions = ActionCollector::getEventActions(null, $this->id, OnPopupCloseInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, null, $className);
+                $this->container = $popup;
+                $actions         = ActionCollector::getEventActions(null, $this->id, OnPopupCloseInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $popup, $this->request->getData());
             }
         }
         return $this->runActions([], ...$actions);

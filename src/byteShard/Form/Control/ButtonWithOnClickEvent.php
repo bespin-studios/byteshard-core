@@ -15,10 +15,8 @@ use byteShard\Internal\Form\ButtonInterface;
  */
 class ButtonWithOnClickEvent extends Button implements ButtonInterface
 {
-    public function __construct($id, Action ...$arrayOfActionObjects) {
+    public function __construct($id) {
         parent::__construct($id);
-        $click = new Event\OnButtonClick();
-        $click->addActions(...$arrayOfActionObjects);
-        $this->addEvents($click);
+        $this->addEvents(new Event\OnButtonClick());
     }
 }

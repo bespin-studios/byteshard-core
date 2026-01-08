@@ -15,7 +15,6 @@ class GetSelectedRow extends GetCellData
 {
     public function __construct(string $cell, Action ...$actions)
     {
-        parent::__construct();
         $this->fromSelectedRow($cell);
         $this->addAction(...$actions);
     }

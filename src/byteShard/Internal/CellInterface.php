@@ -15,7 +15,7 @@ interface CellInterface
      * @return $this
      * @internal
      */
-    public function setParentAccessType(int $accessType): self;
+    public function setParentAccessType(int $accessType): static;
 
     public function getHorizontalAutoSize(): bool;
 

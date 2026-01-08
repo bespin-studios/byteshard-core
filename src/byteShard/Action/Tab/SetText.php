@@ -9,6 +9,7 @@ namespace byteShard\Action\Tab;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
+use byteShard\TabNew;
 
 class SetText extends Action
 {
@@ -23,11 +24,16 @@ class SetText extends Action
 
     protected function runAction(): ActionResultInterface
     {
-        $ids = $_SESSION[MAIN]->getIDByFQCN($this->tabName);
-        foreach ($ids as $tabId) {
-            $action['tab'][$tabId]['setText'] = $this->text;
+        $action['state'] = HttpResponseState::ERROR->value;
+        if (class_exists($this->tabName)) {
+            $tab = new $this->tabName();
+            if ($tab instanceof TabNew) {
+                $action = [
+                    Action\ActionTargetEnum::Tab->value => [$tab->getEncryptedId() => ['setText' => $this->text]],
+                    'state'                             => HttpResponseState::SUCCESS->value
+                ];
+            }
         }
-        $action['state'] = HttpResponseState::SUCCESS->value;
         return new Action\ActionResultMigrationHelper($action);
     }
 }

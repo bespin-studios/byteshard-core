@@ -293,9 +293,11 @@ class DataHarmonizer
     {
         $result = [];
         foreach ($rowIds as $rowId) {
-            $decrypted     = json_decode(Session::decrypt($rowId));
-            $decrypted->ID = $rowId;
-            $result[]      = $decrypted;
+            if (is_string($rowId)) {
+                $decrypted     = json_decode(Session::decrypt($rowId));
+                $decrypted->ID = $rowId;
+                $result[]      = $decrypted;
+            }
         }
         return $result;
     }

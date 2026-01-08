@@ -167,7 +167,6 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
         $events = [];
         foreach ($this->getEvents() as $event) {
             $events[] = new ClientCellEvent($event->getEventType(), $event->getFunctionName());
-            $this->cell->registerContentEvent($event);
         }
         return $events;
     }

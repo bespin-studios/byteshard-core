@@ -8,25 +8,28 @@ namespace byteShard;
 
 use byteShard\Enum\Access;
 use byteShard\Event\OnPopupCloseInterface;
+use byteShard\Internal\ClientData\EventContainerInterface;
 use byteShard\Internal\Event\Event;
 use byteShard\Internal\Layout;
 use byteShard\Internal\LayoutContainer;
 use byteShard\Internal\PopupInterface;
+use byteShard\Internal\Struct\ClientData;
 use Closure;
 
 /**
  * Class Popup
  * @package byteShard
  */
-class Popup extends LayoutContainer implements PopupInterface
+class Popup extends LayoutContainer implements PopupInterface, EventContainerInterface
 {
-    private bool    $eventOnPopupClose      = false;
-    private array   $popup                  = [];
-    private array   $conditionArgs          = [];
-    private string  $conditionFailedMessage = '';
-    private int     $conditionFailedHeight;
-    private int     $conditionFailedWidth;
-    private Closure $conditionCallback;
+    private bool          $eventOnPopupClose      = false;
+    private array         $popup                  = [];
+    private array         $conditionArgs          = [];
+    private string        $conditionFailedMessage = '';
+    private int           $conditionFailedHeight;
+    private int           $conditionFailedWidth;
+    private Closure       $conditionCallback;
+    protected ?ClientData $clientData;
 
     private ?\byteShard\Layout $content = null;
 
@@ -50,6 +53,18 @@ class Popup extends LayoutContainer implements PopupInterface
             $id = substr($id, 9);
         }
         parent::__construct($id);
+    }
+
+    public function setProcessedClientData(?ClientData $clientData): void
+    {
+        if ($clientData !== null) {
+            $this->clientData = $clientData;
+        }
+    }
+
+    public function getClientData(): ?ClientData
+    {
+        return $this->clientData ?? null;
     }
 
     public function setContent(\byteShard\Layout $content): self
@@ -127,21 +142,6 @@ class Popup extends LayoutContainer implements PopupInterface
             }
         }
         return $this;
-    }
-
-    /**
-     * @param string $eventName
-     * @return array
-     */
-    public function getContentActions(string $eventName): array
-    {
-        if (isset($this->event['content'], $this->event['content'][$eventName])) {
-            $event = $this->event['content'][$eventName];
-            if ($event instanceof Event) {
-                return $event->getActionArray();
-            }
-        }
-        return [];
     }
 
     public function getActionId(): string

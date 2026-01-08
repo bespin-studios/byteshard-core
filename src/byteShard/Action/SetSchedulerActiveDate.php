@@ -31,11 +31,7 @@ class SetSchedulerActiveDate extends Action
      */
     public function __construct(string ...$cells)
     {
-        parent::__construct();
-        $this->cells = array_map(function ($cell) {
-            return Cell::getContentCellName($cell);
-        }, array_unique($cells));
-        $this->addUniqueID($this->cells);
+        $this->cells = parent::getUniqueCellNameArray(...$cells);
     }
 
     /**

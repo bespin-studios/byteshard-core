@@ -14,16 +14,12 @@ use byteShard\Session;
 
 class DownloadFile extends Action\ExportAction implements Action\ExportInterface
 {
-    private string $id;
-
     /**
      * DownloadFile constructor.
-     * @param string $id
      */
-    public function __construct(string $id)
+    public function __construct()
     {
         parent::__construct(ExportType::DOWNLOAD, 180);
-        $this->id = $id;
     }
 
     protected function runAction(): ActionResultInterface
@@ -32,7 +28,7 @@ class DownloadFile extends Action\ExportAction implements Action\ExportInterface
         if ($xid !== null) {
             //TODO: check string length since _GET is restricted.
             //if certain length is exceeded, dump serialized clientData in a datastore (aka db/ redis etc)
-            $action['global']['export'] = [
+            $action[Action\ActionTargetEnum::Global->value]['export'] = [
                 'xid'  => $xid,
                 'id'   => $this->getEventId(),
                 'cd'   => Session::encrypt(serialize($this->getClientData())),

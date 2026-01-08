@@ -15,7 +15,6 @@ class GetCheckedRows extends GetCellData
 {
     public function __construct(string $cell, Action ...$actions)
     {
-        parent::__construct();
         $this->fromMasterCheckboxInCell($cell);
         $this->addAction(...$actions);
     }

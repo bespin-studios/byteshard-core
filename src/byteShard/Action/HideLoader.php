@@ -28,11 +28,7 @@ class HideLoader extends Action
      */
     public function __construct(string ...$cells)
     {
-        parent::__construct();
-        $this->cells = array_map(function ($cell) {
-            return Cell::getContentCellName($cell);
-        }, array_unique($cells));
-        $this->addUniqueID($this->id, $this->name);
+        $this->cells = parent::getUniqueCellNameArray(...$cells);
     }
 
     public function hide(): array
@@ -45,7 +41,7 @@ class HideLoader extends Action
 
     protected function runAction(): ActionResultInterface
     {
-        $result = new CellActionResult('layout');
+        $result = new CellActionResult(Action\ActionTargetEnum::Layout);
         return $result->addCellCommand($this->cells, 'hideLoader', true);
     }
 }

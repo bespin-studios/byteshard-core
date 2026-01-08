@@ -25,7 +25,6 @@ abstract class ExportAction extends Action implements ExportInterface
 
     public function __construct(ExportType $type, int $timeout)
     {
-        parent::__construct();
         $this->type    = $type;
         $this->timeout = $timeout;
     }

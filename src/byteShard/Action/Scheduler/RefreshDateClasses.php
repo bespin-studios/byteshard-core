@@ -19,7 +19,7 @@ class RefreshDateClasses extends Action
      * part of action uid
      * @var array
      */
-    private array $cells = [];
+    private array $cells;
 
     /**
      * ReloadCell constructor.
@@ -27,12 +27,7 @@ class RefreshDateClasses extends Action
      */
     public function __construct(string ...$cells)
     {
-        parent::__construct();
-        foreach ($cells as $cell) {
-            $cellName               = Cell::getContentCellName($cell);
-            $this->cells[$cellName] = $cellName;
-        }
-        $this->addUniqueID($this->cells);
+        $this->cells = parent::getUniqueCellNameArray(...$cells);
     }
 
     protected function runAction(): ActionResultInterface
@@ -50,7 +45,7 @@ class RefreshDateClasses extends Action
                     if ($scheduler instanceof Scheduler\DateTemplate) {
                         $definedClasses = $scheduler->defineDateTemplate($range['from'], $range['to'], $this->getClientTimeZone(), Scheduler::getDatePeriod($range['from'], $range['to']));
                         // store current visible date range in session
-                        $result['LCell'][$cell->containerId()][$cell->cellId()]['classes'] = $scheduler->getClassTemplateArray(...array_values($definedClasses));
+                        $result[Action\ActionTargetEnum::Cell->value][$cell->containerId()][$cell->cellId()]['classes'] = $scheduler->getClassTemplateArray(...array_values($definedClasses));
                     }
                 }
             }

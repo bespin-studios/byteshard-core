@@ -8,8 +8,13 @@ namespace byteShard\Action;
 
 use byteShard\Cell;
 use byteShard\Enum\HttpResponseState;
+use byteShard\ID\ID;
+use byteShard\ID\PopupIDElement;
+use byteShard\ID\TabIDElement;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
+use byteShard\Internal\CellContent;
+use byteShard\TabNew;
 
 /**
  * Class ClosePopup
@@ -17,7 +22,7 @@ use byteShard\Internal\Action\ActionResultInterface;
  */
 class ClosePopup extends Action
 {
-    private array $popups = [];
+    private array $popups;
 
     /**
      * ClosePopup constructor.
@@ -25,27 +30,26 @@ class ClosePopup extends Action
      */
     public function __construct(string ...$cells)
     {
-        parent::__construct();
-        foreach ($cells as $cell) {
-            $cellName                = Cell::getContentCellName($cell);
-            $this->popups[$cellName] = $cellName;
-        }
-        $this->addUniqueID($this->popups);
+        $this->popups = parent::getUniqueCellNameArray(...$cells);
     }
 
     protected function runAction(): ActionResultInterface
     {
-        if (!empty($this->popups)) {
-            $cells = $this->getCells($this->popups);
-        } else {
-            $cells = [$this->getLegacyContainer()];
+        if ($this->getActionInitDTO()->eventContainer instanceof CellContent) {
+            $containerId = $this->getActionInitDTO()->eventContainer->getNewId();
+        } elseif ($this->getActionInitDTO()->eventContainer instanceof TabNew) {
+            $containerId = $this->getActionInitDTO()->eventContainer->getId();
         }
-        foreach ($cells as $cell) {
-            if ($cell instanceof Cell) {
-                $action['popup'][$cell->containerId()]['close'] = true;
+        if (isset($containerId) && $containerId instanceof ID) {
+            $tabIdElement = new TabIDElement($containerId->getTabId());
+            foreach ($this->popups as $popup) {
+                $encryptedPopupId = ID::factory($tabIdElement, new PopupIDElement($popup))->getEncryptedContainerId();
+                
+                $action[Action\ActionTargetEnum::Popup->value][$encryptedPopupId]['close'] = true;
             }
+            $action['state'] = HttpResponseState::SUCCESS->value;
+            return new Action\ActionResultMigrationHelper($action);
         }
-        $action['state'] = HttpResponseState::SUCCESS->value;
-        return new Action\ActionResultMigrationHelper($action);
+        return new Action\ActionResult();
     }
 }

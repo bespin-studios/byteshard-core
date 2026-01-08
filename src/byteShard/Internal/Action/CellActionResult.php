@@ -15,7 +15,7 @@ class CellActionResult implements ActionResultInterface
     private array $commands = [];
     private bool  $error    = false;
 
-    public function __construct(private readonly string $type = 'cell')
+    public function __construct(private readonly ActionTargetEnum $type = ActionTargetEnum::Cell)
     {
 
     }
@@ -36,7 +36,7 @@ class CellActionResult implements ActionResultInterface
         foreach ($this->commands as $command) {
             $cells = $this->getCells($command['cells'], $containerId);
             foreach ($cells as $cell) {
-                $result[$this->type][$cell->containerId()][$cell->cellId()][$command['command']] = $command['parameters'];
+                $result[$this->type->value][$cell->containerId()][$cell->cellId()][$command['command']] = $command['parameters'];
             }
         }
         $result['state'] = $this->error === false ? HttpResponseState::SUCCESS->value : HttpResponseState::ERROR->value;

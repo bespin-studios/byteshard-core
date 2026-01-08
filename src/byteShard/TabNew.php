@@ -9,20 +9,24 @@ namespace byteShard;
 use byteShard\Enum\Access;
 use byteShard\Enum\ContentType;
 use byteShard\ID\TabIDElement;
+use byteShard\Internal\ClientData\EventContainerInterface;
 use byteShard\Internal\NavigationItem;
 use byteShard\Internal\Permission\PermissionImplementation;
-use byteShard\Internal\Struct\ClientCellEvent;
+use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Internal\TabLegacyInterface;
 use byteShard\Internal\TabNewDeprecation;
 use byteShard\Internal\Toolbar\ToolbarContainer;
+use byteShard\Internal\Traits\Toolbar;
+use byteShard\Toolbar\ToolbarInterface;
 use byteShard\Utils\Strings;
 use UnitEnum;
 
-abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarContainer
+abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarContainer, EventContainerInterface
 {
     use PermissionImplementation;
     use TabNewDeprecation;
+    use Toolbar;
 
     private ID\ID  $id;
     private array  $tabs     = [];
@@ -30,17 +34,30 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
     private bool   $selected = false;
     private bool   $closable = false;
     //Todo: private Toolbar $toolbar;
-    //Todo: private string  $label;
+    private string                     $label;
     private bool                       $initialized = false;
     private Layout|TabBar|SideBar|null $content     = null;
-    private bool                       $toolbar     = false;
     private array                      $cellConfig  = [];
+    protected ?ClientData              $clientData;
 
     public function __construct(string|UnitEnum ...$permissions)
     {
         $this->id = \byteShard\ID\ID::factory(new TabIDElement(get_called_class()));
         foreach ($permissions as $permission) {
             $this->setPermission($permission);
+        }
+    }
+
+    public function setLabel(string $label): TabNew
+    {
+        $this->label = $label;
+        return $this;
+    }
+
+    public function setProcessedClientData(?ClientData $clientData): void
+    {
+        if ($clientData !== null) {
+            $this->clientData = $clientData;
         }
     }
 
@@ -67,14 +84,15 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
         return $this->selected;
     }
 
-    public function setToolbar(): void
-    {
-        $this->toolbar = true;
-    }
-
     public function isClosable(): bool
     {
         return $this->closable;
+    }
+
+    public function setClosable(bool $closable = true): TabNew
+    {
+        $this->closable = $closable;
+        return $this;
     }
 
     public function selectFirstTabIfNoneSelected(): void
@@ -153,6 +171,17 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
         return Strings::purify(Locale::get(str_replace('\\', '_', $this->id->getTabId()).'::Tab.Label'));
     }
 
+    public function getScopeLocaleTokenBasedOnNamespace(string $type = 'Tab'): string
+    {
+        $namespace = str_replace('App\\Tab\\', '', get_class($this));
+        return str_replace('\\', '_', $namespace).'::'.$type;
+    }
+
+    public function getNonce(): string
+    {
+        return Session::getTopLevelNonce();
+    }
+
     public function isInitialized(): bool
     {
         return $this->initialized;
@@ -189,18 +218,11 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
         if ($this->closable === true) {
             $setup['closable'] = true;
         }
-        if (isset($this->toolbar) && $this->toolbar === true) {
-            //TODO: implement toolbar. events have to be routed to the tab class where the toolbar is defined.
-            //TODO: some work has to be done in the toolbar repo
-            $content[] = new ContentComponent(
-                type   : ContentType::DhtmlxToolbar,
-                content: '<?xml version="1.0" encoding="utf-8"?>
-                    <toolbar>
-                        <item type="button" id="id0" img="add.svg" text="Position hinzufügen"/>
-                        <item type="button" id="id1" enabled="" imgdis="add.svg" img="add.svg" text="Personen zuweisen"/>
-                        <item type="button" id="id2" enabled="" imgdis="tick.svg" img="tick.svg" text="Position schließen"/>
-                    </toolbar>',
-                events : [new ClientCellEvent('onClick', 'doOnClick')]);
+        if ($this instanceof ToolbarInterface) {
+            $toolbar = $this->getToolbarComponent();
+            if ($toolbar !== null) {
+                $content[] = $toolbar;
+            }
         }
         return new ContentComponent(
             type   : ContentType::DhtmlxTab,
