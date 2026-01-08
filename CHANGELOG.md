@@ -1,3 +1,16 @@
+# [2.24.0](https://github.com/bespin-studios/byteshard-core/compare/v2.23.0...v2.24.0) (2026-01-08)
+
+
+### Bug Fixes
+
+* confirm action poup would not close ([f445524](https://github.com/bespin-studios/byteshard-core/commit/f445524e529f6b8be1214df4772715e65c8f042b))
+* remove invald method calls ([128d0a6](https://github.com/bespin-studios/byteshard-core/commit/128d0a60cd69703de3db23860b9685d39715a317))
+
+
+### Features
+
+* reworked all actions to be able to inject context ([5d87139](https://github.com/bespin-studios/byteshard-core/commit/5d871399cccc8d8db6d4d8866c1b55dfdbba07ac))
+
 # [2.23.0](https://github.com/bespin-studios/byteshard-core/compare/v2.22.0...v2.23.0) (2026-01-03)
 
 
