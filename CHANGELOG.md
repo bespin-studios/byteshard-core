@@ -1,3 +1,10 @@
+## [2.24.2](https://github.com/bespin-studios/byteshard-core/compare/v2.24.1...v2.24.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* ClosePopup now works with cells and no cell at all ([33a640c](https://github.com/bespin-studios/byteshard-core/commit/33a640c2b740a118dfbc54bdd939f81f7742acfe))
+
 ## [2.24.1](https://github.com/bespin-studios/byteshard-core/compare/v2.24.0...v2.24.1) (2026-01-08)
 
 
