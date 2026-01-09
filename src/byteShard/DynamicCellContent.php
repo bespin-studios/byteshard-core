@@ -3,7 +3,6 @@
 namespace byteShard;
 
 use byteShard\Internal\CellContent;
-use byteShard\Internal\Struct\ClientCell;
 
 abstract class DynamicCellContent extends CellContent
 {
