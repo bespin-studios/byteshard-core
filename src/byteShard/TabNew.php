@@ -14,6 +14,7 @@ use byteShard\Internal\NavigationItem;
 use byteShard\Internal\Permission\PermissionImplementation;
 use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\ContentComponent;
+use byteShard\Internal\Struct\GetData;
 use byteShard\Internal\TabLegacyInterface;
 use byteShard\Internal\TabNewDeprecation;
 use byteShard\Internal\Toolbar\ToolbarContainer;
@@ -39,6 +40,7 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
     private Layout|TabBar|SideBar|null $content     = null;
     private array                      $cellConfig  = [];
     protected ?ClientData              $clientData;
+    protected ?GetData                 $getData;
 
     public function __construct(string|UnitEnum ...$permissions)
     {
@@ -58,6 +60,13 @@ abstract class TabNew implements TabLegacyInterface, NavigationItem, ToolbarCont
     {
         if ($clientData !== null) {
             $this->clientData = $clientData;
+        }
+    }
+
+    public function setProcessedGetCellDataResponse(?GetData $getData): void
+    {
+        if ($getData !== null) {
+            $this->getData = $getData;
         }
     }
 

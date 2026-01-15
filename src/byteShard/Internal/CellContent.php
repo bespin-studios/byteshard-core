@@ -29,6 +29,7 @@ use byteShard\Internal\Struct\ClientCell;
 use byteShard\Internal\Struct\ClientCellComponent;
 use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\ContentComponent;
+use byteShard\Internal\Struct\GetData;
 use byteShard\Internal\Struct\Navigation_ID;
 use byteShard\Internal\Toolbar\ToolbarContainer;
 use byteShard\Internal\Traits\Ribbon;
@@ -56,22 +57,22 @@ abstract class CellContent implements ContainerInterface, ExportInterface, Event
     use Toolbar;
 
     // overwrite in child:
-    protected string          $cellContentType;
-    protected Cell            $cell;
-    protected ?string         $filterValue   = null;
-    protected stdClass        $user;
-    protected ?int            $user_id;
-    protected ?string         $username;
-    private string            $outputCharset = 'UTF-8';
-    protected string          $locale;
-    private ?string           $cellHeader    = null;
-    private array             $idCache       = [];
-    private array             $events        = [];
-    protected ?ClientData     $clientData;
-    protected ?ID\ID          $selectedID;
-    protected ?Struct\GetData $getDataID;
-    private DateTimeZone      $clientTimeZone;
-    private CellContent       $fallbackContent;
+    protected string      $cellContentType;
+    protected Cell        $cell;
+    protected ?string     $filterValue   = null;
+    protected stdClass    $user;
+    protected ?int        $user_id;
+    protected ?string     $username;
+    private string        $outputCharset = 'UTF-8';
+    protected string      $locale;
+    private ?string       $cellHeader    = null;
+    private array         $idCache       = [];
+    private array         $events        = [];
+    protected ?ClientData $clientData;
+    protected ?ID\ID      $selectedID;
+    protected ?GetData    $getDataID;
+    private DateTimeZone  $clientTimeZone;
+    private CellContent   $fallbackContent;
 
     /**
      * TODO: OPTIMIZE: constructor too long... several actions create an instance of cell content and need only very few of it
@@ -498,6 +499,13 @@ abstract class CellContent implements ContainerInterface, ExportInterface, Event
     {
         if ($clientData !== null) {
             $this->clientData = $clientData;
+        }
+    }
+
+    public function setProcessedGetCellDataResponse(?GetData $getData): void
+    {
+        if ($getData !== null) {
+            $this->getDataID = $getData;
         }
     }
 
