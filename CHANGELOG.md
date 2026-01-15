@@ -1,3 +1,11 @@
+## [2.24.3](https://github.com/bespin-studios/byteshard-core/compare/v2.24.2...v2.24.3) (2026-01-15)
+
+
+### Bug Fixes
+
+* add onCellEdit interface to handle grid updates like other elements ([5fe04df](https://github.com/bespin-studios/byteshard-core/commit/5fe04dfd9e59ad0c360736725b4fb0ef2940a3ce))
+* getCellData not consistent ([0c0d48f](https://github.com/bespin-studios/byteshard-core/commit/0c0d48fcad5cb45df368b3ceb7764620ca47c108))
+
 ## [2.24.2](https://github.com/bespin-studios/byteshard-core/compare/v2.24.1...v2.24.2) (2026-01-09)
 
 
