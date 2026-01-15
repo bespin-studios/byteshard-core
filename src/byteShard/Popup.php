@@ -14,6 +14,7 @@ use byteShard\Internal\Layout;
 use byteShard\Internal\LayoutContainer;
 use byteShard\Internal\PopupInterface;
 use byteShard\Internal\Struct\ClientData;
+use byteShard\Internal\Struct\GetData;
 use Closure;
 
 /**
@@ -30,6 +31,7 @@ class Popup extends LayoutContainer implements PopupInterface, EventContainerInt
     private int           $conditionFailedWidth;
     private Closure       $conditionCallback;
     protected ?ClientData $clientData;
+    private ?GetData      $getData;
 
     private ?\byteShard\Layout $content = null;
 
@@ -59,6 +61,13 @@ class Popup extends LayoutContainer implements PopupInterface, EventContainerInt
     {
         if ($clientData !== null) {
             $this->clientData = $clientData;
+        }
+    }
+
+    public function setProcessedGetCellDataResponse(?GetData $getData): void
+    {
+        if ($getData !== null) {
+            $this->getData = $getData;
         }
     }
 

@@ -97,6 +97,7 @@ class GetCellData extends Action
                 }
             }
         } else {
+            $this->getActionInitDTO()->eventContainer->setProcessedGetCellDataResponse($getData);
             $this->getActionInitDTO()->cell->setGetDataActionClientData($getData);
             $this->setRunNested();
         }
