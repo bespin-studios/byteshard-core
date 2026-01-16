@@ -8,6 +8,7 @@ namespace byteShard\Internal;
 
 use byteShard\Action\ClosePopup;
 use byteShard\Cell;
+use byteShard\Event\OnCellEditInterface;
 use byteShard\Event\OnClickInterface;
 use byteShard\Event\OnConfirmInterface;
 use byteShard\Event\OnDoubleClickInterface;
@@ -70,6 +71,7 @@ class ActionCollector
     private static function getEventResultActions(object $eventTarget, string $eventInterface, string $objectId, string $objectValue): ?array
     {
         return match ($eventInterface) {
+            OnCellEditInterface::class       => $eventTarget instanceof OnCellEditInterface ? $eventTarget->onCellEdit()->getResultActions($objectId, $objectValue) : [],
             OnChangeInterface::class         => $eventTarget instanceof OnChangeInterface ? $eventTarget->onChange()->getResultActions($objectId, $objectValue) : [],
             OnCheckInterface::class          => $eventTarget instanceof OnCheckInterface ? $eventTarget->onCheck()->getResultActions($objectId, $objectValue) : [],
             OnClickInterface::class          => $eventTarget instanceof OnClickInterface ? $eventTarget->onClick()->getResultActions($objectId, $objectValue) : [],

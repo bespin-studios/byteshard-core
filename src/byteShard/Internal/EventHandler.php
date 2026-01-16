@@ -7,9 +7,9 @@
 namespace byteShard\Internal;
 
 use byteShard\Cell;
-use byteShard\Enum\AccessType;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Environment;
+use byteShard\Event\OnCellEditInterface;
 use byteShard\Event\OnChangeInterface;
 use byteShard\Event\OnClickInterface;
 use byteShard\Event\OnDoubleClickInterface;
@@ -24,14 +24,11 @@ use byteShard\Event\OnSelectInterface;
 use byteShard\Event\OnStateChangeInterface;
 use byteShard\Event\OnTabCloseInterface;
 use byteShard\Exception;
-use byteShard\Grid;
 use byteShard\ID;
 use byteShard\Internal\Action\Layout\ImplicitLayoutActions;
 use byteShard\Internal\ClientData\DataHarmonizer;
-use byteShard\Internal\Permission\PermissionImplementation;
 use byteShard\Internal\Request\ElementType;
 use byteShard\Internal\Request\EventType;
-use byteShard\Locale;
 use byteShard\Popup\Confirmation;
 use byteShard\Popup\Message;
 use byteShard\Scheduler\Event\OnScrollForward;
@@ -121,7 +118,7 @@ class EventHandler
                 case EventType::OnInputChange:
                     return $this->defaultEvent($eventId, $objectValue, $confirmationId, $clientData, $getData, OnChangeInterface::class, $this->request->getData(), $this->onFormInputChangeCallback(...));
                 case EventType::OnCellEdit:
-                    return $this->onGridCellEdit($eventId, $objectValue, $confirmationId, $clientData, $getData, '', $this->request->getData());
+                    return $this->defaultEvent($eventId, $objectValue, $confirmationId, $clientData, $getData, OnCellEditInterface::class, $this->request->getData());
                 case EventType::OnGridLink:
                     return $this->defaultEvent($eventId, $objectValue, $confirmationId, $clientData, $getData, OnLinkClickInterface::class, $this->request->getData());
                 case EventType::OnRowSelect:
@@ -242,21 +239,6 @@ class EventHandler
             return $callback($result);
         }
         return $result;
-    }
-
-    private function onGridCellEdit(string $eventId, string $objectValue, string $confirmationId, ?Struct\ClientData $clientData, ?Struct\GetData $getData, string $interface, array $data, ?Closure $callback = null)
-    {
-        $update = $this->getCellContent();
-        $traits = class_uses(CellContent::class);
-        if ($traits !== false && in_array(PermissionImplementation::class, $traits)) {
-            if ($update->getAccessType() < AccessType::RW) {
-                return (new Message(Locale::get('byteShard.grid.update.noPermission')))->getNavigationArray();
-            }
-        }
-        if ($update instanceof Grid\GridInterface) {
-            return $update->newRunClientGridUpdate($clientData);
-        }
-        return (new Message(Locale::get('byteShard.eventHandler.gridEdit.class.wrongParent')))->getNavigationArray();
     }
 
     /**
