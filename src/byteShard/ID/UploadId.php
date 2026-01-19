@@ -12,7 +12,6 @@ class UploadId
      * @param Cell $cell
      * @param string $encryptedClientName the encrypted upload_control_name
      * @param array $fileTypeArray
-     * @param string $method
      * @param string $targetFilename
      * @param string $targetPath
      * @param bool $clearAfterUpload
