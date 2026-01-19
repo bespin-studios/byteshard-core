@@ -18,13 +18,12 @@ class UploadId
      * @param bool $clearAfterUpload
      * @return null|string
      */
-    public static function getUploadId(Cell $cell, string $encryptedClientName, array $fileTypeArray = [], string $method = '', string $targetFilename = '', string $targetPath = '', bool $clearAfterUpload = false): ?string
+    public static function getUploadId(Cell $cell, string $encryptedClientName, array $fileTypeArray = [], string $targetFilename = '', string $targetPath = '', bool $clearAfterUpload = false): ?string
     {
         $message = [
             '!#c' => $cell->getContentClass(),
             '!#o' => $encryptedClientName,
             '!#u' => $clearAfterUpload,
-            '!#m' => $method,
             '!#n' => $targetFilename,
             '!#p' => $targetPath,
             '!#i' => $cell->getNewId()->getEncodedCellId()

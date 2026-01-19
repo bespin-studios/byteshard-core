@@ -193,6 +193,7 @@ class EventHandler
                 $this->className = '\\App\\Cell\\'.$this->id->getCellId();
             }
             $this->cellContent = ContentClassFactory::cellContent($this->className, $this->context, $this->cell);
+            $this->cell        = $this->cellContent->getCell();
         }
         if ($this->clientTimeZone !== null) {
             $this->cellContent->setClientTimeZone($this->clientTimeZone);

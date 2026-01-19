@@ -35,6 +35,7 @@ class AttachPopup extends Action
         $cells   = $this->getCells([$this->cell]);
         foreach ($cells as $cell) {
             $contentClass = ContentClassFactory::cellContent($this->contentClass, null, $cell);
+            $cell         = $contentClass->getCell();
             $id           = $cell->getNewId();
             $patternId    = 'a';
             if ($this->contentClass === '' || !str_starts_with(strtolower($this->contentClass), 'app\\cell')) {

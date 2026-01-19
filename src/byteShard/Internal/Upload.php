@@ -90,18 +90,6 @@ class Upload
     }
 
     /**
-     * @throws \Exception
-     */
-    private function legacyEventCallback(CellContent $class, string $method, array $fileInfo): ?array
-    {
-        $result = $class->{$method}($fileInfo);
-        if ($result !== null && !is_array($result)) {
-            throw new \Exception('invalid return type');
-        }
-        return $result;
-    }
-
-    /**
      * @param string $type
      * @param array $file
      * @return array
@@ -139,21 +127,14 @@ class Upload
         if (!empty($fileTypes)) {
             $sanitizer = new File($file, $fileTypes, $targetPath, $targetFileName);
             if ($sanitizer->hasErrors() === false) {
-                $fileInfo = [
-                    'path' => $sanitizer->getServerFilepath(),
-                    'name' => $sanitizer->getServerFilename(),
-                    'fqfn' => $sanitizer->getServerFileFQFN(),
-                    'id'   => $objectName
-                ];
                 try {
                     $cell  = Session::getCell($cellId);
-                    $class = new $className($cell, null);
+                    $class = ContentClassFactory::cellContent($className, '', $cell);
+                    $cell  = $class->getCell();
                     $extra = null;
-                    if (isset(class_implements($className)[OnUploadInterface::class])) {
+                    if ($class instanceof OnUploadInterface && $class instanceof CellContent) {
+                        /** @var CellContent&OnUploadInterface $class */
                         $extra = $this->eventCallback($class, $cell, $objectName, $sanitizer->getServerFileFQFN(), $file['name']);
-                    } elseif ($method !== null && method_exists($class, $method)) {
-                        // old implementation
-                        $extra = $this->legacyEventCallback($class, $method, $fileInfo);
                     }
                     if (is_array($extra)) {
                         $result['extra'] = $extra;

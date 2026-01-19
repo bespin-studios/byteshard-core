@@ -96,16 +96,6 @@ class Upload extends Form\FormObject implements Form\InputWidthInterface
     /**
      * @API
      */
-    public function setMethod(string $method): self
-    {
-        trigger_error('Using setMethod on Form\Upload is deprecated. Use byteShard\Event\OnUploadInterface instead', E_USER_DEPRECATED);
-        $this->method = $method;
-        return $this;
-    }
-
-    /**
-     * @API
-     */
     public function setClearUploadImmediately(): self
     {
         $this->clearAfterUpload = true;
@@ -135,11 +125,6 @@ class Upload extends Form\FormObject implements Form\InputWidthInterface
     public function getTargetPath(): string
     {
         return $this->targetPath;
-    }
-
-    public function getMethod(): string
-    {
-        return $this->method;
     }
 
     public function getFileTypes(): array

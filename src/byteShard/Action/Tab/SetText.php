@@ -9,7 +9,7 @@ namespace byteShard\Action\Tab;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
-use byteShard\TabNew;
+use byteShard\Internal\ContentClassFactory;
 
 class SetText extends Action
 {
@@ -26,13 +26,11 @@ class SetText extends Action
     {
         $action['state'] = HttpResponseState::ERROR->value;
         if (class_exists($this->tabName)) {
-            $tab = new $this->tabName();
-            if ($tab instanceof TabNew) {
-                $action = [
-                    Action\ActionTargetEnum::Tab->value => [$tab->getEncryptedId() => ['setText' => $this->text]],
-                    'state'                             => HttpResponseState::SUCCESS->value
-                ];
-            }
+            $tab = ContentClassFactory::tab($this->tabName);
+            $action = [
+                Action\ActionTargetEnum::Tab->value => [$tab->getEncryptedId() => ['setText' => $this->text]],
+                'state'                             => HttpResponseState::SUCCESS->value
+            ];
         }
         return new Action\ActionResultMigrationHelper($action);
     }
