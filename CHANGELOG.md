@@ -1,3 +1,11 @@
+## [2.24.5](https://github.com/bespin-studios/byteshard-core/compare/v2.24.4...v2.24.5) (2026-01-19)
+
+
+### Bug Fixes
+
+* incorrect phpdoc ([45b2f31](https://github.com/bespin-studios/byteshard-core/commit/45b2f31ef78cd8856ddb539867fa09f6fb9ace7a))
+* return dynamic cell content ([bf46058](https://github.com/bespin-studios/byteshard-core/commit/bf46058fa55b09c7d616160b9339dfac4d53f335))
+
 ## [2.24.4](https://github.com/bespin-studios/byteshard-core/compare/v2.24.3...v2.24.4) (2026-01-16)
 
 
