@@ -396,7 +396,6 @@ final class Proxy
             $this->comboAllowsNewEntries = $formObject->getAllowNewEntries();
         } elseif ($formObject instanceof Control\Upload) {
             $this->attributes['url']      = $formObject->getUrl();
-            $this->uploadMethod           = $formObject->getMethod();
             $this->uploadFileTypes        = $formObject->getFileTypes();
             $this->uploadTargetFilename   = $formObject->getTargetFilename();
             $this->uploadTargetPath       = $formObject->getTargetPath();
@@ -736,7 +735,7 @@ final class Proxy
             }
             if ($this->formObjectType === Control\Upload::class) {
                 $formAlterations->addEvent('event_on_upload_file');
-                $uploadId = UploadId::getUploadId($cell, $this->clientName, $this->uploadFileTypes, $this->uploadMethod, $this->uploadTargetFilename, $this->uploadTargetPath, $this->uploadClearAfterUpload);
+                $uploadId = UploadId::getUploadId($cell, $this->clientName, $this->uploadFileTypes, $this->uploadTargetFilename, $this->uploadTargetPath, $this->uploadClearAfterUpload);
                 $this->setUploadUrlType($uploadId);
             }
             if (empty($this->options) && $this->formObjectType === Control\Combo::class) {

@@ -4,6 +4,7 @@ namespace byteShard\Internal;
 
 use byteShard\Cell;
 use byteShard\Container;
+use byteShard\DynamicCellContent;
 use byteShard\Exception;
 use byteShard\Form\FormInterface;
 use byteShard\Grid\GridInterface;
@@ -87,6 +88,11 @@ class ContentClassFactory
     public static function cellContent(string $contentClass, string $context, Cell $cell): CellContent|Container
     {
         $cellContent = new $contentClass($cell, $context);
+        if ($cellContent instanceof DynamicCellContent) {
+            $dynamicContentClass = $cellContent->getDynamicContentClassName();
+            $dynamicCell         = $cellContent->getDynamicCell($dynamicContentClass);
+            return self::cellContent($dynamicContentClass, $context, $dynamicCell);
+        }
         if ($cellContent instanceof CellContent || $cellContent instanceof Container) {
             return $cellContent;
         }

@@ -79,6 +79,7 @@ class SetCellContent extends Action
                     switch ($numberOfParameters) {
                         case 1:
                             $call = ContentClassFactory::cellContent($methodClassName, null, $cell);
+                            $cell = $call->getCell();
                             if ($call instanceof ExportInterface) {
                                 $call->setProcessedClientData($this->getClientData());
                             }
@@ -91,6 +92,7 @@ class SetCellContent extends Action
                             break;
                         case 2:
                             $call = ContentClassFactory::cellContent($methodClassName, null, $cell);
+                            $cell = $call->getCell();
                             if ($call instanceof ExportInterface) {
                                 $call->setProcessedClientData($this->getClientData());
                             }
@@ -107,7 +109,7 @@ class SetCellContent extends Action
                 }
             } elseif (!empty($this->className)) {
                 $contentClass = ContentClassFactory::cellContent($this->className, null, $cell);
-
+                $cell = $contentClass->getCell();
                 $result[Action\ActionTargetEnum::Layout->value][$cell->containerId()][$cell->cellId()]['setCellContent'] = $contentClass->getCellContent();
             }
             $result['state'] = HttpResponseState::SUCCESS->value;

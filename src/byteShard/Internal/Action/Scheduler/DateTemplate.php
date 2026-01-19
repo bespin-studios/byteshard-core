@@ -46,6 +46,7 @@ class DateTemplate extends Action
                     // if the new visible date range differs from the one in the session, call the defineDateTemplate method and return an array with classes per date
                     if ($cell->getVisibleDateRange() !== $rangeString) {
                         $scheduler = ContentClassFactory::cellContent($className, null, $cell);
+                        $cell      = $scheduler->getCell();
                         if ($scheduler instanceof Scheduler && $scheduler instanceof Scheduler\DateTemplate) {
                             $definedClasses = $scheduler->defineDateTemplate($range['from'], $range['to'], $clientTimeZone, Scheduler::getDatePeriod($range['from'], $range['to']));
                             $classes        = $scheduler->getClassTemplateArray(...array_values($definedClasses));

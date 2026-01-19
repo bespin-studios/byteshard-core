@@ -103,6 +103,7 @@ class ExportHandler
         if (!isset($this->cellContent)) {
             $className         = $this->cell->getContentClass();
             $this->cellContent = ContentClassFactory::cellContent($className, '', $this->cell);
+            $this->cell        = $this->cellContent->getCell();
             if ($this->clientData !== null) {
                 $this->cellContent->setProcessedClientData($this->clientData);
             }

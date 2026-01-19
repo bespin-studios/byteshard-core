@@ -42,6 +42,7 @@ class RefreshDateClasses extends Action
                     $range = Scheduler::getVisibleDateRange($date, $this->getClientTimeZone());
                     // if the new visible date range differs from the one in the session, call the defineDateTemplate method and return an array with classes per date
                     $scheduler = ContentClassFactory::cellContent($className, null, $cell);
+                    $cell      = $scheduler->getCell();
                     if ($scheduler instanceof Scheduler\DateTemplate) {
                         $definedClasses = $scheduler->defineDateTemplate($range['from'], $range['to'], $this->getClientTimeZone(), Scheduler::getDatePeriod($range['from'], $range['to']));
                         // store current visible date range in session
