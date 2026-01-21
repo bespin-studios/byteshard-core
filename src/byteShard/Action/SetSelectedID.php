@@ -80,7 +80,7 @@ class SetSelectedID extends Action
             $setId = ID::factory(...$idElements);
         }
         if (empty($this->cells)) {
-            $cells = [$actionInitDTO->eventContainer];
+            $cells = [$actionInitDTO->cell];
         } else {
             $cells = $this->getCells($this->cells);
         }
