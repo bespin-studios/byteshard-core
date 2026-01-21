@@ -1,3 +1,10 @@
+## [2.24.6](https://github.com/bespin-studios/byteshard-core/compare/v2.24.5...v2.24.6) (2026-01-21)
+
+
+### Bug Fixes
+
+* SetSelecteId was trying to access cellcontent instead of cell ([2ab6d63](https://github.com/bespin-studios/byteshard-core/commit/2ab6d63145c08fcdfd65f6f4f8b7233622cdf450))
+
 ## [2.24.5](https://github.com/bespin-studios/byteshard-core/compare/v2.24.4...v2.24.5) (2026-01-19)
 
 
