@@ -47,12 +47,13 @@ class Connection extends BaseConnection
      */
     public function connect(): void
     {
-        $dsn = 'pgsql:host = '.$this->server.';'.($this->port !== null ? 'port = '.$this->port : '').';dbname = '.$this->db.";options = '-c client_encoding=utf8'";
+        $dsn = 'pgsql:host = '.$this->server.';'.($this->port !== null ? 'port = '.$this->port : '').';dbname = '.$this->db;
         try {
             $this->connection = new PDO($dsn, $this->user, $this->pass, $this->options);
         } catch (PDOException $e) {
             throw new Exception('Connection failed : '.$e->getMessage(), 110500001);
         }
+        $this->connection->exec('SET client_encoding TO \''.$this->charset.'\'');
         $this->connection->exec('SET search_path TO '.$this->schema);
         parent::connect();
     }
