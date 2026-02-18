@@ -1,3 +1,10 @@
+## [2.24.7](https://github.com/bespin-studios/byteshard-core/compare/v2.24.6...v2.24.7) (2026-02-18)
+
+
+### Bug Fixes
+
+* set client_encoding in PDO connection and remove the cli option (e.g. aws rds proxy doesn't support it) ([ada7674](https://github.com/bespin-studios/byteshard-core/commit/ada767496d31360ed471ef3d28a3651ff663e6d3))
+
 ## [2.24.6](https://github.com/bespin-studios/byteshard-core/compare/v2.24.5...v2.24.6) (2026-01-21)
 
 
