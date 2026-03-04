@@ -347,7 +347,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
      * @return int
      * @throws Exception
      */
-    public static function update(string $query, array $parameters = [], ?Baseconnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): int
+    public static function update(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): int
     {
         $connectionObject = self::checkConnection($connection);
         try {
