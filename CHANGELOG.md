@@ -1,3 +1,10 @@
+## [2.24.8](https://github.com/bespin-studios/byteshard-core/compare/v2.24.7...v2.24.8) (2026-03-10)
+
+
+### Bug Fixes
+
+* keep session open needed for tabbar in cell ([9a96a3b](https://github.com/bespin-studios/byteshard-core/commit/9a96a3b07b11db15b28cd4aad33a11ab7e7d173d))
+
 ## [2.24.7](https://github.com/bespin-studios/byteshard-core/compare/v2.24.6...v2.24.7) (2026-02-18)
 
 
