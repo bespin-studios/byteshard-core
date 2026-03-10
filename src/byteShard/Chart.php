@@ -28,7 +28,7 @@ class Chart extends CellContent
     private int    $origin;
     private string $label;
 
-    public function getCellContent(bool $resetNonce = true): ?ClientCell
+    public function getCellContent(bool $resetNonce = true, bool $keepSessionOpen = false): ?ClientCell
     {
         parent::getCellContent($resetNonce);
         switch ($this->getAccessType()) {

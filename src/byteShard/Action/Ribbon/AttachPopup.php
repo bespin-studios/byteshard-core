@@ -12,6 +12,7 @@ use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
 use byteShard\Internal\Action\CellActionResult;
 use byteShard\Internal\ContentClassFactory;
+use byteShard\Session;
 
 class AttachPopup extends Action
 {
@@ -34,7 +35,7 @@ class AttachPopup extends Action
         $content = [];
         $cells   = $this->getCells([$this->cell]);
         foreach ($cells as $cell) {
-            $contentClass = ContentClassFactory::cellContent($this->contentClass, null, $cell);
+            $contentClass = ContentClassFactory::cellContent($this->contentClass, '', $cell);
             $cell         = $contentClass->getCell();
             $id           = $cell->getNewId();
             $patternId    = 'a';
@@ -48,6 +49,12 @@ class AttachPopup extends Action
                 $nonce = base64_encode($nonce);
             } else {
                 $nonce = '';
+            }
+            $newCell = Session::getCell($newId);
+            if ($newCell === null) {
+                $newCell = clone $cell;
+                $newCell->init($patternId, $newId);
+                Session::addCells($newCell);
             }
             $content = [
                 'content' => [$contentClass->getCellContent(false)->content[0]],

@@ -402,7 +402,7 @@ abstract class CellContent implements ContainerInterface, ExportInterface, Event
         return $this->cell->getContentClass();
     }
 
-    public function getCellContent(bool $resetNonce = true): ?ClientCell
+    public function getCellContent(bool $resetNonce = true, bool $keepSessionOpen = false): ?ClientCell
     {
         if ($resetNonce === true) {
             $this->cell->setNonce();

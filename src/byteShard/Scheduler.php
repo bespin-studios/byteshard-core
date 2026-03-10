@@ -82,7 +82,7 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
         }
     }
 
-    public function getCellContent(bool $resetNonce = true): ?ClientCell
+    public function getCellContent(bool $resetNonce = true, bool $keepSessionOpen = false): ?ClientCell
     {
         parent::getCellContent($resetNonce);
         $this->defineCellContent();
