@@ -22,7 +22,7 @@ abstract class Accordion extends CellContent
      * @session read
      * @internal
      */
-    public function getCellContent(bool $resetNonce = true): ?ClientCell
+    public function getCellContent(bool $resetNonce = true, bool $keepSessionOpen = false): ?ClientCell
     {
         parent::getCellContent($resetNonce);
         $parent_content = parent::getComponents();
