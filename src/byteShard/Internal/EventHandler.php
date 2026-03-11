@@ -143,7 +143,7 @@ class EventHandler
             EventType::OnJSLinkClicked                              => $this->onJsLinkClick($affectedId, $data),
             EventType::OnDrop                                       => $this->onGridRowDrop($affectedId, $data),
             EventType::OnInfo                                       => $this->onInfo($affectedId),
-            EventType::OnEmptyClick                                 => $this->onEmptyClick($affectedId, $data),
+            EventType::OnEmptyClick                                 => $this->onEmptyClick($affectedId),
             EventType::OnScrollForward, EventType::OnScrollBackward => $this->doOnViewChance(OnScrollForward::getEventNameForEventHandler(), $affectedId, $data),
             EventType::OnPopupClose                                 => $this->onPopupClose($affectedId),
             default                                                 => [],
@@ -411,7 +411,7 @@ class EventHandler
         return $result;
     }
 
-    public function onEmptyClick(string $objectId, array $data): array
+    public function onEmptyClick(string $objectId): array
     {
         $result['state'] = HttpResponseState::ERROR->value;
         try {
@@ -421,7 +421,12 @@ class EventHandler
             return $result;
         }
         $data    = ['!#SelectedSchedulerDate' => $selectedDate];
-        $actions = $this->getActions('', '', '', OnEmptyClickInterface::class);
+
+        $actions = [];
+        if ($this->cell !== null) {
+            $actions = ActionCollector::getEventActions($this->cell, $this->id, OnEmptyClickInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $this->getCellContent(), $data);
+        }
+
         return $this->runActions($data, ...$actions);
     }
 
