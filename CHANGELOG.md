@@ -1,3 +1,10 @@
+## [2.24.10](https://github.com/bespin-studios/byteshard-core/compare/v2.24.9...v2.24.10) (2026-03-12)
+
+
+### Bug Fixes
+
+* syntax error in ContentClassFactory usage ([bc37f10](https://github.com/bespin-studios/byteshard-core/commit/bc37f108177b604088a6b42174c4d11056e79cc4))
+
 ## [2.24.9](https://github.com/bespin-studios/byteshard-core/compare/v2.24.8...v2.24.9) (2026-03-12)
 
 
