@@ -1,3 +1,10 @@
+## [2.24.9](https://github.com/bespin-studios/byteshard-core/compare/v2.24.8...v2.24.9) (2026-03-12)
+
+
+### Bug Fixes
+
+*  setSelectedId not working correctly for Scheduler ([41298f0](https://github.com/bespin-studios/byteshard-core/commit/41298f0660990e409f3a4806adbba2539b4b0b51))
+
 ## [2.24.8](https://github.com/bespin-studios/byteshard-core/compare/v2.24.7...v2.24.8) (2026-03-10)
 
 
