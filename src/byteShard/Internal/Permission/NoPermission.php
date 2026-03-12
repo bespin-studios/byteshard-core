@@ -25,7 +25,7 @@ class NoPermission
             if (count($parts) < 4) {
                 throw new Exception('You can\'t declare cell '.$contentClass.' directly in the App\\Cell\\ namespace, it must be in a directory');
             }
-            $form = ContentClassFactory::cellContent($contentClass, null, new Cell());
+            $form = ContentClassFactory::cellContent($contentClass, '', new Cell());
             $formContent = $form->getCellContent();
             if ($formContent instanceof ClientCell) {
                 $content = $formContent->content;
