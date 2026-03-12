@@ -1,3 +1,10 @@
+# [2.25.0](https://github.com/bespin-studios/byteshard-core/compare/v2.24.10...v2.25.0) (2026-03-12)
+
+
+### Features
+
+* setContext action ([cf9f291](https://github.com/bespin-studios/byteshard-core/commit/cf9f2918ada43f787234495eb91989621668f8e4))
+
 ## [2.24.10](https://github.com/bespin-studios/byteshard-core/compare/v2.24.9...v2.24.10) (2026-03-12)
 
 
