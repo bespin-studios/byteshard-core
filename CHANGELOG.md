@@ -1,3 +1,12 @@
+## [2.25.1](https://github.com/bespin-studios/byteshard-core/compare/v2.25.0...v2.25.1) (2026-03-12)
+
+
+### Bug Fixes
+
+* downgrade packages for php 8.3 compatibility ([be50bd2](https://github.com/bespin-studios/byteshard-core/commit/be50bd268b3e4f7e939fc75d65df82e1be474577))
+* phpstan findings ([50f4de9](https://github.com/bespin-studios/byteshard-core/commit/50f4de905bb645788ccc1fe9a39116f9bd06e5e1))
+* upgrade dependencies ([b512f49](https://github.com/bespin-studios/byteshard-core/commit/b512f493f3286fb076959d6d62ca070350bd9f97))
+
 # [2.25.0](https://github.com/bespin-studios/byteshard-core/compare/v2.24.10...v2.25.0) (2026-03-12)
 
 
