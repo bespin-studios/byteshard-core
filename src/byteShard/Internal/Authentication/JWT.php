@@ -5,6 +5,7 @@ namespace byteShard\Internal\Authentication;
 use byteShard\Exception;
 use byteShard\Password;
 use Firebase\JWT\ExpiredException;
+use Firebase\JWT\JWK;
 use Firebase\JWT\JWT as FirebaseJWT;
 use Firebase\JWT\Key;
 
@@ -25,23 +26,16 @@ class JWT
         } else {
             // RSA (RS256, RS384, RS512) uses JWKS
             $jwks = json_decode(file_get_contents($this->certPath), true);
-            $key  = null;
 
-            foreach ($jwks['keys'] as $k) {
-                if (isset($k['kid']) && $k['kid'] === $kid) {
-                    if (isset($k['x5c']) && count($k['x5c']) === 1) {
-                        $key = $this->x5cToPem($k['x5c'][0]);
-                    }
-                    break;
-                }
-            }
+            $keySet = JWK::parseKeySet($jwks);
 
-            if (!$key) {
+            if (!isset($keySet[$kid])) {
                 throw new Exception("No matching key found in JWKS.");
             }
+            $key = $keySet[$kid];
         }
         try {
-            $this->jwt = FirebaseJWT::decode($token, new Key($key, $algorithm));
+            $this->jwt = FirebaseJWT::decode($token, $key instanceof Key ? $key : new Key($key, $algorithm));
         } catch (ExpiredException $e) {
             $this->jwt = $e->getPayload();
         }
@@ -49,7 +43,7 @@ class JWT
 
     public function getPreferredUsername(): string
     {
-        return $this->jwt->preferred_username;
+        return $this->jwt->preferred_username ?? $this->jwt->username;
     }
 
     public function getRealmAccessRoles(): array
