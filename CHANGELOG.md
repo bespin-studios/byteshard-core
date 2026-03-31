@@ -1,3 +1,10 @@
+## [2.25.2](https://github.com/bespin-studios/byteshard-core/compare/v2.25.1...v2.25.2) (2026-03-31)
+
+
+### Bug Fixes
+
+* make JWT decoding more robust and fallback to username if preferred_username is not set ([ed3bee4](https://github.com/bespin-studios/byteshard-core/commit/ed3bee428eb2095f17adcde5929d38474f3ec52e))
+
 ## [2.25.1](https://github.com/bespin-studios/byteshard-core/compare/v2.25.0...v2.25.1) (2026-03-12)
 
 
