@@ -79,6 +79,7 @@ abstract class Config implements JsonSerializable
     protected int             $jwtAlgorithm                 = OPENSSL_ALGO_SHA256;
     private array             $dbOptions                    = [];
     private string            $realUrl;
+    private bool              $forceRedirectAfterLogin = true;
 
     public function __construct()
     {
@@ -589,5 +590,9 @@ abstract class Config implements JsonSerializable
     public function getCharset(): string
     {
         return $this->db_charset;
+    }
+
+    public function forceRedirectAfterLogin(): bool {
+        return $this->forceRedirectAfterLogin;
     }
 }
