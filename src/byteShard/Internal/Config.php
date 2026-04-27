@@ -79,7 +79,7 @@ abstract class Config implements JsonSerializable
     protected int             $jwtAlgorithm                 = OPENSSL_ALGO_SHA256;
     private array             $dbOptions                    = [];
     private string            $realUrl;
-    private bool              $forceRedirectAfterLogin = true;
+    protected bool            $forceRedirectAfterLogin      = true;
 
     public function __construct()
     {
