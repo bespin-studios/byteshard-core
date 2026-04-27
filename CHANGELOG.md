@@ -1,3 +1,10 @@
+## [2.25.4](https://github.com/bespin-studios/byteshard-core/compare/v2.25.3...v2.25.4) (2026-04-27)
+
+
+### Bug Fixes
+
+* make the property protected ([f358a34](https://github.com/bespin-studios/byteshard-core/commit/f358a34eb8b14c6af57bd9456257b9f7a9b90627))
+
 ## [2.25.3](https://github.com/bespin-studios/byteshard-core/compare/v2.25.2...v2.25.3) (2026-04-27)
 
 
