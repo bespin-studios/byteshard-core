@@ -1,3 +1,10 @@
+## [2.25.3](https://github.com/bespin-studios/byteshard-core/compare/v2.25.2...v2.25.3) (2026-04-27)
+
+
+### Bug Fixes
+
+* don't redirect when we don't have a "real" login ([f05241d](https://github.com/bespin-studios/byteshard-core/commit/f05241d07bfc9b6274221af3c511b3c56c18a1a0))
+
 ## [2.25.2](https://github.com/bespin-studios/byteshard-core/compare/v2.25.1...v2.25.2) (2026-03-31)
 
 
