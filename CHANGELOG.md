@@ -1,3 +1,10 @@
+## [2.25.5](https://github.com/bespin-studios/byteshard-core/compare/v2.25.4...v2.25.5) (2026-04-28)
+
+
+### Bug Fixes
+
+* add fallback alg in case a key does not have an alg set ([cc5a69e](https://github.com/bespin-studios/byteshard-core/commit/cc5a69e36575519449a5f80ec00303fcb9e224aa))
+
 ## [2.25.4](https://github.com/bespin-studios/byteshard-core/compare/v2.25.3...v2.25.4) (2026-04-27)
 
 
