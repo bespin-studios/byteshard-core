@@ -27,7 +27,7 @@ class JWT
             // RSA (RS256, RS384, RS512) uses JWKS
             $jwks = json_decode(file_get_contents($this->certPath), true);
 
-            $keySet = JWK::parseKeySet($jwks);
+            $keySet = JWK::parseKeySet($jwks, $algorithm);
 
             if (!isset($keySet[$kid])) {
                 throw new Exception("No matching key found in JWKS.");
