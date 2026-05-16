@@ -729,6 +729,9 @@ final class Proxy
                     if ($event instanceof Form\Event\OnBlur) {
                         $formAlterations->addEvent('event_on_blur');
                     }
+                    if ($event instanceof Form\Event\OnEnter) {
+                        $formAlterations->addEvent('event_on_enter');
+                    }
                 }
             } else {
                 $this->setName($this->clientName);

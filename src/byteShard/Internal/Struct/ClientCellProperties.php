@@ -11,8 +11,9 @@ class ClientCellProperties implements \JsonSerializable
     public readonly ?string $cellHeader;
     public readonly ?string $pollId;
     public readonly bool    $ae;
+    public readonly string  $context;
 
-    public function __construct(?string $nonce = null, ?string $encryptedId = null, ?string $label = null, ?string $id = null, ?string $cellHeader = null, ?string $pollId = null, bool $hasAsynchronousElements = false)
+    public function __construct(?string $nonce = null, ?string $encryptedId = null, ?string $label = null, ?string $id = null, ?string $cellHeader = null, ?string $pollId = null, bool $hasAsynchronousElements = false, string $context = '')
     {
         $this->cn         = $nonce !== null ? base64_encode($nonce) : null;
         $this->EID        = $encryptedId;
@@ -21,6 +22,7 @@ class ClientCellProperties implements \JsonSerializable
         $this->cellHeader = $cellHeader;
         $this->pollId     = $pollId;
         $this->ae         = $hasAsynchronousElements;
+        $this->context    = $context;
     }
 
     public function jsonSerialize(): array

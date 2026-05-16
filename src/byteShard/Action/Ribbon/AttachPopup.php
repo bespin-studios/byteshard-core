@@ -25,7 +25,9 @@ class AttachPopup extends Action
         string                  $cell,
         private readonly string $contentClass,
         private readonly int    $width = 400,
-        private readonly int    $height = 300)
+        private readonly int    $height = 300,
+        private readonly string $context = '',
+        private readonly bool   $hideOnClick = true)
     {
         $this->cell = Cell::getContentCellName($cell);
     }
@@ -35,20 +37,12 @@ class AttachPopup extends Action
         $content = [];
         $cells   = $this->getCells([$this->cell]);
         foreach ($cells as $cell) {
-            $contentClass = ContentClassFactory::cellContent($this->contentClass, '', $cell);
-            $cell         = $contentClass->getCell();
-            $id           = $cell->getNewId();
-            $patternId    = 'a';
+            $id        = $cell->getNewId();
+            $patternId = 'a';
             if ($this->contentClass === '' || !str_starts_with(strtolower($this->contentClass), 'app\\cell')) {
                 $newId = ID::factory(new TabIDElement($id->getTabId()), new CellIDElement($this->contentClass), new PatternIDElement($patternId));
             } else {
                 $newId = ID::factory(new TabIDElement($id->getTabId()), new CellIDElement(substr($this->contentClass, 9)), new PatternIDElement($patternId));
-            }
-            $nonce = $cell->getNonce();
-            if (!empty($nonce)) {
-                $nonce = base64_encode($nonce);
-            } else {
-                $nonce = '';
             }
             $newCell = Session::getCell($newId);
             if ($newCell === null) {
@@ -56,6 +50,17 @@ class AttachPopup extends Action
                 $newCell->init($patternId, $newId);
                 Session::addCells($newCell);
             }
+
+            $contentClass = ContentClassFactory::cellContent($this->contentClass, $this->context, $newCell);
+            $cell         = $contentClass->getCell();
+
+            $nonce = $cell->getNonce();
+            if (!empty($nonce)) {
+                $nonce = base64_encode($nonce);
+            } else {
+                $nonce = '';
+            }
+
             $content = [
                 'content' => [$contentClass->getCellContent(false)->content[0]],
                 'type'    => 'DHTMLXPopup',
@@ -75,6 +80,9 @@ class AttachPopup extends Action
                     'onHide' => 'destroyOnHide'
                 ]
             ];
+        }
+        if ($this->hideOnClick === false) {
+            $content['events']['onBeforeHide'] = 'dontHideOnClick';
         }
         $result = new CellActionResult(Action\ActionTargetEnum::Ribbon);
         return $result->addCellCommand([$this->cell], 'attachPopup', $content);

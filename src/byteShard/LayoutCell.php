@@ -33,6 +33,11 @@ class LayoutCell
 
     }
 
+    public function getPatternId(): string
+    {
+        return $this->patternId;
+    }
+
     public function setContext(string $context): void
     {
         $this->context = $context;
