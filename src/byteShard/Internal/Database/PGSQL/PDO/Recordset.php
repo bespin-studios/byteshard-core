@@ -280,7 +280,7 @@ class Recordset implements GetArrayInterface, GetSingleInterface, InsertInterfac
      * @return int|array
      * @throws Exception
      */
-    public static function update(string $query, array $parameters = [], ?Baseconnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): int|array
+    public static function update(string $query, array $parameters = [], ?BaseConnection $connection = null, ?string $classMap = null, bool $fetchPropsLate = false): int|array
     {
         $response         = 0;
         $connectionObject = self::checkConnection($connection, ConnectionType::WRITE);
