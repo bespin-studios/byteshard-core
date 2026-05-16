@@ -258,7 +258,7 @@ abstract class FormObject
             if ($search_note && $note['found'] === true && method_exists($this, 'setNote')) {
                 $this->setNote(Strings::purify(!empty($this->localeReplacements) ? Strings::replace($note['locale'], $this->localeReplacements) : $note['locale']));
             }
-            if ($search_info && $info['found'] === true) {
+            if ($search_info && isset($info['found']) && $info['found'] === true) {
                 $this->userdata['bs_info'] = Strings::purify(!empty($this->localeReplacements) ? Strings::replace($info['locale'], $this->localeReplacements) : $info['locale']);
             }
             if ($this->help === true) {
