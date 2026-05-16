@@ -14,10 +14,11 @@ class Layout
     /** @var array<LayoutCell> */
     private array $cells = [];
     /** @var Separator[] */
-    private array $separators               = [];
-    private bool  $eventOnPanelResizeFinish = true;
-    private bool  $eventOnExpand            = true;
-    private bool  $eventOnCollapse          = true;
+    private array  $separators               = [];
+    private bool   $eventOnPanelResizeFinish = true;
+    private bool   $eventOnExpand            = true;
+    private bool   $eventOnCollapse          = true;
+    private string $focusCell;
 
     public function __construct(private readonly Pattern $pattern, string ...$cells)
     {
@@ -29,6 +30,12 @@ class Layout
             $char          = chr(($i % 26) + 97);
             $this->cells[] = new LayoutCell($char, $cells[$i]);
         }
+    }
+
+    public function setFocus(LayoutCell $focusCell): static
+    {
+        $this->focusCell = $focusCell->getPatternId();
+        return $this;
     }
 
     public function getPattern(): Pattern
@@ -105,6 +112,9 @@ class Layout
             }
             if (!empty($vertical)) {
                 $setup['autoSize']['vertical'] = implode(';', $vertical);
+            }
+            if (isset($this->focusCell)) {
+                $setup['focus'] = $this->focusCell;
             }
             if ($this->eventOnCollapse === true) {
                 $events[] = new ClientCellEvent('onCollapse', 'doOnCollapse');
