@@ -1,3 +1,16 @@
+# [2.26.0](https://github.com/bespin-studios/byteshard-core/compare/v2.25.5...v2.26.0) (2026-05-16)
+
+
+### Bug Fixes
+
+* add composer.lock ([252a9de](https://github.com/bespin-studios/byteshard-core/commit/252a9de86b58e6f0e95de1fd7501127d70cd212e))
+* class referenced with incorrect case ([15a323d](https://github.com/bespin-studios/byteshard-core/commit/15a323dc35f0d9da53b45647c59f32884aae207c))
+
+
+### Features
+
+* onEnter event in form input, modify ribbon controls, context on ClientCellProperties, focus on layoutcell ([3c84c6a](https://github.com/bespin-studios/byteshard-core/commit/3c84c6a81c5c89a107478cc1044462bd740da11e))
+
 ## [2.25.5](https://github.com/bespin-studios/byteshard-core/compare/v2.25.4...v2.25.5) (2026-04-28)
 
 
