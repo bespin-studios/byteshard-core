@@ -1,3 +1,10 @@
+# [2.27.0](https://github.com/bespin-studios/byteshard-core/compare/v2.26.0...v2.27.0) (2026-05-17)
+
+
+### Features
+
+* allow null for setNote and setTooltip ([9113992](https://github.com/bespin-studios/byteshard-core/commit/9113992a7fd6c5ec918ac1e2dfc4daa6f7486e2d))
+
 # [2.26.0](https://github.com/bespin-studios/byteshard-core/compare/v2.25.5...v2.26.0) (2026-05-16)
 
 
