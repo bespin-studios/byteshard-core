@@ -1,3 +1,112 @@
+## [2.25.5](https://github.com/bespin-studios/byteshard-core/compare/v2.25.4...v2.25.5) (2026-04-28)
+
+
+### Bug Fixes
+
+* add fallback alg in case a key does not have an alg set ([cc5a69e](https://github.com/bespin-studios/byteshard-core/commit/cc5a69e36575519449a5f80ec00303fcb9e224aa))
+
+## [2.25.4](https://github.com/bespin-studios/byteshard-core/compare/v2.25.3...v2.25.4) (2026-04-27)
+
+
+### Bug Fixes
+
+* make the property protected ([f358a34](https://github.com/bespin-studios/byteshard-core/commit/f358a34eb8b14c6af57bd9456257b9f7a9b90627))
+
+## [2.25.3](https://github.com/bespin-studios/byteshard-core/compare/v2.25.2...v2.25.3) (2026-04-27)
+
+
+### Bug Fixes
+
+* don't redirect when we don't have a "real" login ([f05241d](https://github.com/bespin-studios/byteshard-core/commit/f05241d07bfc9b6274221af3c511b3c56c18a1a0))
+
+## [2.25.2](https://github.com/bespin-studios/byteshard-core/compare/v2.25.1...v2.25.2) (2026-03-31)
+
+
+### Bug Fixes
+
+* make JWT decoding more robust and fallback to username if preferred_username is not set ([ed3bee4](https://github.com/bespin-studios/byteshard-core/commit/ed3bee428eb2095f17adcde5929d38474f3ec52e))
+
+## [2.25.1](https://github.com/bespin-studios/byteshard-core/compare/v2.25.0...v2.25.1) (2026-03-12)
+
+
+### Bug Fixes
+
+* downgrade packages for php 8.3 compatibility ([be50bd2](https://github.com/bespin-studios/byteshard-core/commit/be50bd268b3e4f7e939fc75d65df82e1be474577))
+* phpstan findings ([50f4de9](https://github.com/bespin-studios/byteshard-core/commit/50f4de905bb645788ccc1fe9a39116f9bd06e5e1))
+* upgrade dependencies ([b512f49](https://github.com/bespin-studios/byteshard-core/commit/b512f493f3286fb076959d6d62ca070350bd9f97))
+
+# [2.25.0](https://github.com/bespin-studios/byteshard-core/compare/v2.24.10...v2.25.0) (2026-03-12)
+
+
+### Features
+
+* setContext action ([cf9f291](https://github.com/bespin-studios/byteshard-core/commit/cf9f2918ada43f787234495eb91989621668f8e4))
+
+## [2.24.10](https://github.com/bespin-studios/byteshard-core/compare/v2.24.9...v2.24.10) (2026-03-12)
+
+
+### Bug Fixes
+
+* syntax error in ContentClassFactory usage ([bc37f10](https://github.com/bespin-studios/byteshard-core/commit/bc37f108177b604088a6b42174c4d11056e79cc4))
+
+## [2.24.9](https://github.com/bespin-studios/byteshard-core/compare/v2.24.8...v2.24.9) (2026-03-12)
+
+
+### Bug Fixes
+
+*  setSelectedId not working correctly for Scheduler ([41298f0](https://github.com/bespin-studios/byteshard-core/commit/41298f0660990e409f3a4806adbba2539b4b0b51))
+
+## [2.24.8](https://github.com/bespin-studios/byteshard-core/compare/v2.24.7...v2.24.8) (2026-03-10)
+
+
+### Bug Fixes
+
+* keep session open needed for tabbar in cell ([9a96a3b](https://github.com/bespin-studios/byteshard-core/commit/9a96a3b07b11db15b28cd4aad33a11ab7e7d173d))
+
+## [2.24.7](https://github.com/bespin-studios/byteshard-core/compare/v2.24.6...v2.24.7) (2026-02-18)
+
+
+### Bug Fixes
+
+* set client_encoding in PDO connection and remove the cli option (e.g. aws rds proxy doesn't support it) ([ada7674](https://github.com/bespin-studios/byteshard-core/commit/ada767496d31360ed471ef3d28a3651ff663e6d3))
+
+## [2.24.6](https://github.com/bespin-studios/byteshard-core/compare/v2.24.5...v2.24.6) (2026-01-21)
+
+
+### Bug Fixes
+
+* SetSelecteId was trying to access cellcontent instead of cell ([2ab6d63](https://github.com/bespin-studios/byteshard-core/commit/2ab6d63145c08fcdfd65f6f4f8b7233622cdf450))
+
+## [2.24.5](https://github.com/bespin-studios/byteshard-core/compare/v2.24.4...v2.24.5) (2026-01-19)
+
+
+### Bug Fixes
+
+* incorrect phpdoc ([45b2f31](https://github.com/bespin-studios/byteshard-core/commit/45b2f31ef78cd8856ddb539867fa09f6fb9ace7a))
+* return dynamic cell content ([bf46058](https://github.com/bespin-studios/byteshard-core/commit/bf46058fa55b09c7d616160b9339dfac4d53f335))
+
+## [2.24.4](https://github.com/bespin-studios/byteshard-core/compare/v2.24.3...v2.24.4) (2026-01-16)
+
+
+### Bug Fixes
+
+* add onCellEdit interface to handle grid updates like other elements ([55dd1fe](https://github.com/bespin-studios/byteshard-core/commit/55dd1fe1e9d1e33800fea0c6956a897d02885e05))
+
+## [2.24.3](https://github.com/bespin-studios/byteshard-core/compare/v2.24.2...v2.24.3) (2026-01-15)
+
+
+### Bug Fixes
+
+* add onCellEdit interface to handle grid updates like other elements ([5fe04df](https://github.com/bespin-studios/byteshard-core/commit/5fe04dfd9e59ad0c360736725b4fb0ef2940a3ce))
+* getCellData not consistent ([0c0d48f](https://github.com/bespin-studios/byteshard-core/commit/0c0d48fcad5cb45df368b3ceb7764620ca47c108))
+
+## [2.24.2](https://github.com/bespin-studios/byteshard-core/compare/v2.24.1...v2.24.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* ClosePopup now works with cells and no cell at all ([33a640c](https://github.com/bespin-studios/byteshard-core/commit/33a640c2b740a118dfbc54bdd939f81f7742acfe))
+
 ## [2.24.1](https://github.com/bespin-studios/byteshard-core/compare/v2.24.0...v2.24.1) (2026-01-08)
 
 

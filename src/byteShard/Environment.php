@@ -709,7 +709,9 @@ abstract class Environment implements ParametersInterface, JsonSerializable
         \byteShard\Session::setUserData($userId, $username, $this->getLastTab($userId));
         $this->successfulLoginCallback($userId, $username);
         Deeplink::checkReferrer();
-        header('Location: '.BS_WEB_ROOT_DIR.'/');
+        if ($this->config->forceRedirectAfterLogin()) {
+            header('Location: '.BS_WEB_ROOT_DIR.'/');
+        }
     }
 
     public function startSession(): Session
