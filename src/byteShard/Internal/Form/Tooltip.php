@@ -13,13 +13,13 @@ namespace byteShard\Internal\Form;
 trait Tooltip
 {
     /**
-     * creates the tooltip for the FormObject
-     * @param string $tooltip
+     * creates the tooltip for the FormObject. If null is passed, there will be a locale lookup
+     * @param ?string $tooltip
      * @return $this
      * @noinspection PhpDocSignatureInspection
      * @API
      */
-    public function setTooltip(string $tooltip): self
+    public function setTooltip(?string $tooltip = null): self
     {
         if (isset($this->attributes)) {
             $this->attributes['tooltip'] = $tooltip;

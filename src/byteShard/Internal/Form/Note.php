@@ -14,13 +14,13 @@ namespace byteShard\Internal\Form;
 trait Note
 {
     /**
-     * creates the details block which is placed under the FormObject
+     * creates the details block which is placed under the FormObject. If null is passed, there will be a locale lookup
      * @param string $string (the text of the block)
      * @return $this
      * @noinspection PhpDocSignatureInspection
      * @API
      */
-    public function setNote(string $string): self
+    public function setNote(?string $string = null): self
     {
         if (property_exists($this, 'note')) {
             $this->note['text'] = $string;
