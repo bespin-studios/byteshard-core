@@ -1,3 +1,10 @@
+## [2.27.1](https://github.com/bespin-studios/byteshard-core/compare/v2.27.0...v2.27.1) (2026-05-20)
+
+
+### Bug Fixes
+
+* noPermission cell caused hick-ups when it was displayed in nested tabs ([97cb731](https://github.com/bespin-studios/byteshard-core/commit/97cb731e19e7315f6ada404a46146df3f895bd85))
+
 # [2.27.0](https://github.com/bespin-studios/byteshard-core/compare/v2.26.0...v2.27.0) (2026-05-17)
 
 
