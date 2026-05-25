@@ -43,6 +43,7 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
     /** @var Entry[] */
     private array $entries             = [];
     private bool  $initWithCurrentDate = true;
+    private bool $serverUtc = false; //enables conversion to local time https://docs.dhtmlx.com/scheduler/api/config/server_utc/?_highlight=server_utc
 
     public function __construct(Cell $cell, ?string $context)
     {
@@ -207,11 +208,20 @@ abstract class Scheduler extends CellContent implements OnEmptyClickInterface, O
         return $result;
     }
 
+    public function enableConversionToLocalTime(): self
+    {
+        $this->serverUtc = true;
+        return $this;
+    }
+
     private function getCellParameters(): array
     {
         $parameters['currentDate']               = $this->currentDate->format('Y-m-d');
         $parameters['config']['dblclick_create'] = false;
         $parameters['config']['drag_create']     = false;
+        if ($this->serverUtc === true) {
+            $parameters['config']['server_utc'] = true;
+        }
         if ($this->activeDate !== null) {
             $parameters['activeDate'] = $this->activeDate->format('Y-m-d');
         }
