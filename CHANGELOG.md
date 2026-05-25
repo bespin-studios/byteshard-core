@@ -1,3 +1,10 @@
+## [2.27.2](https://github.com/bespin-studios/byteshard-core/compare/v2.27.1...v2.27.2) (2026-05-25)
+
+
+### Bug Fixes
+
+* don't convert timezones automatically ([5b51840](https://github.com/bespin-studios/byteshard-core/commit/5b518403fd244e946672d0b38fb2607b6c74a599))
+
 ## [2.27.1](https://github.com/bespin-studios/byteshard-core/compare/v2.27.0...v2.27.1) (2026-05-20)
 
 
