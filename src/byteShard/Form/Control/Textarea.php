@@ -41,6 +41,7 @@ class Textarea extends Form\FormObject implements Form\InputWidthInterface, Form
     use Form\OffsetLeft;
     use Form\OffsetTop;
     use Form\Position;
+    use Form\Placeholder;
     use Form\OnlyRead;
     use Form\Required;
     use Form\Rows;
