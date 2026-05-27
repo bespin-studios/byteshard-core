@@ -1,3 +1,10 @@
+# [2.28.0](https://github.com/bespin-studios/byteshard-core/compare/v2.27.2...v2.28.0) (2026-05-27)
+
+
+### Features
+
+* add placeholder to text area ([1c78c5c](https://github.com/bespin-studios/byteshard-core/commit/1c78c5c9f113b07bcecb537eadc7a977f464f326))
+
 ## [2.27.2](https://github.com/bespin-studios/byteshard-core/compare/v2.27.1...v2.27.2) (2026-05-25)
 
 
