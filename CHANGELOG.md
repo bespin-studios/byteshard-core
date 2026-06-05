@@ -1,3 +1,10 @@
+## [2.28.1](https://github.com/bespin-studios/byteshard-core/compare/v2.28.0...v2.28.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* certain actions might actually return a new action on init ([4c4804d](https://github.com/bespin-studios/byteshard-core/commit/4c4804db341047c07a70f3d9755255d04448a7e0))
+
 # [2.28.0](https://github.com/bespin-studios/byteshard-core/compare/v2.27.2...v2.28.0) (2026-05-27)
 
 
