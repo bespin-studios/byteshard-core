@@ -118,8 +118,8 @@ class ActionCollector
     private static function initializeActions(array $actions, ID $id, ?Cell $cell, string $eventId, string $confirmationId, ?ClientData $clientData, ?GetData $getData, ?DateTimeZone $clientTimeZone, ?array $objectProperties, string $eventType, string $objectValue, ?EventContainerInterface $eventContainer = null, mixed $legacyId = null): array
     {
         $actionInitDTO = new ActionInitDTO($id, $cell, $eventId, $confirmationId, $clientData, $getData, $clientTimeZone, $objectProperties, $eventType, $objectValue, $eventContainer, $legacyId);
-        foreach ($actions as $action) {
-            $action->initializeAction($actionInitDTO);
+        foreach ($actions as $index => $action) {
+            $actions[$index] = $action->initializeAction($actionInitDTO);
         }
         return $actions;
     }
