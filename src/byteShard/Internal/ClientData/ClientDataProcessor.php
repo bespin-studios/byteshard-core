@@ -206,7 +206,7 @@ class ClientDataProcessor
 
         //check if nonce matches current cell nonce, don't accept "old" request fields
         $objNonce = substr(md5($this->nonceToCheck.$object->i), 0, 24);
-        if (Session::checkNonce($encryptedObject, $objNonce) === false) {
+        if (Session::checkNonce($encryptedObject, $objNonce) === false && (array_key_exists($object->i, $this->objectProperties) && $this->objectProperties['!#ObjectPropertiesNonceCheck'] === false)) {
             return null;
         }
         try {

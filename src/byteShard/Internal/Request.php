@@ -9,6 +9,7 @@ namespace byteShard\Internal;
 use byteShard\ID\ID;
 use byteShard\Internal\Request\ElementType;
 use byteShard\Internal\Request\EventType;
+use byteShard\Session;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -66,6 +67,7 @@ class Request
                 $result[$object]    = $properties;
                 $result[$object]->i = $object;
             }
+            $result['!#ObjectPropertiesNonceCheck'] = Session::checkNonce($objectProperties, $this->cellNonce);
         } catch (Exception) {
 
         }
