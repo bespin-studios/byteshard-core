@@ -1,3 +1,10 @@
+## [2.28.2](https://github.com/bespin-studios/byteshard-core/compare/v2.28.1...v2.28.2) (2026-06-08)
+
+
+### Bug Fixes
+
+* alternative nonce check on cells with object properties ([d056b57](https://github.com/bespin-studios/byteshard-core/commit/d056b571e8026fec415faabbdf841ea6f22a258b))
+
 ## [2.28.1](https://github.com/bespin-studios/byteshard-core/compare/v2.28.0...v2.28.1) (2026-06-05)
 
 
