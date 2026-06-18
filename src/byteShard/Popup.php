@@ -34,6 +34,7 @@ class Popup extends LayoutContainer implements PopupInterface, EventContainerInt
     private ?GetData      $getData;
 
     private ?\byteShard\Layout $content = null;
+    private string             $context;
 
     /**
      * Popup constructor.
@@ -55,6 +56,20 @@ class Popup extends LayoutContainer implements PopupInterface, EventContainerInt
             $id = substr($id, 9);
         }
         parent::__construct($id);
+    }
+
+    public function setContext(string $context): static
+    {
+        $this->context = $context;
+        return $this;
+    }
+
+    public function getContext(): string
+    {
+        if (isset($this->context)) {
+            return $this->context;
+        }
+        return '';
     }
 
     public function setProcessedClientData(?ClientData $clientData): void

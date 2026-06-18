@@ -108,6 +108,7 @@ class EventHandler
             switch ($eventType) {
                 case EventType::OnClick:
                 case EventType::OnButtonClick:
+                case EventType::OnRowAction:
                     return $this->defaultEvent($eventId, $objectValue, $confirmationId, $clientData, $getData, OnClickInterface::class, $this->request->getData());
                 case EventType::OnEnter:
                     return $this->defaultEvent($eventId, $objectValue, $confirmationId, $clientData, $getData, OnEnterInterface::class, $this->request->getData());

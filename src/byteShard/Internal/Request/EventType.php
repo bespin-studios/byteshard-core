@@ -33,6 +33,7 @@ enum EventType: string
     case OnCellInit = 'onCellInit';
     case OnContainerInit = 'onContainerInit';
     case OnGridLink = 'onGridLink';
+    case OnRowAction = 'onRowAction';
 
     case OnJSLinkClicked = 'onJSLinkClicked';
 }
