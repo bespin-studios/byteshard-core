@@ -259,12 +259,18 @@ abstract class FormObject
                 $this->setNote(Strings::purify(!empty($this->localeReplacements) ? Strings::replace($note['locale'], $this->localeReplacements) : $note['locale']));
             }
             if ($search_info && isset($info['found']) && $info['found'] === true) {
-                $this->userdata['bs_info'] = Strings::purify(!empty($this->localeReplacements) ? Strings::replace($info['locale'], $this->localeReplacements) : $info['locale']);
+                if (isset($this->attributes['className'])) {
+                    $this->userdata['bs_info'] = json_encode([
+                        'content' => Strings::purify(!empty($this->localeReplacements) ? Strings::replace($info['locale'], $this->localeReplacements) : $info['locale']),
+                        'class'   => $this->attributes['className']]);
+                } else {
+                    $this->userdata['bs_info'] = Strings::purify(!empty($this->localeReplacements) ? Strings::replace($info['locale'], $this->localeReplacements) : $info['locale']);
+                }
             }
             if ($this->help === true) {
                 $help = Locale::getArray($token.$name.'.Help');
                 if ($help['found'] === true) {
-                    $this->userdata['bs_help'] = Strings::purify(!empty($this->localeReplacements) ? Strings::replace($help['locale'], $this->localeReplacements) : $help['locale']);
+                    $this->userdata['bs_help'] = '<div class="bs_help">'.Strings::purify(!empty($this->localeReplacements) ? Strings::replace($help['locale'], $this->localeReplacements) : $help['locale']).'</div>';
                 } elseif (defined('DEBUG') && DEBUG === true && defined('DEBUG_LOCALE_TOKEN') && DEBUG_LOCALE_TOKEN === true) {
                     $this->userdata['bs_help'] = Strings::purify($token.$name.'.Help');
                 }
