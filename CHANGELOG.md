@@ -1,3 +1,12 @@
+# [2.29.0](https://github.com/bespin-studios/byteshard-core/compare/v2.28.2...v2.29.0) (2026-06-18)
+
+
+### Features
+
+* get/set context on popups ([b1a7523](https://github.com/bespin-studios/byteshard-core/commit/b1a7523e903e81d675c20e48e3b3f015848e1e77))
+* support css class on bs_info and bs_help ([b3e46af](https://github.com/bespin-studios/byteshard-core/commit/b3e46af585b0101a2bad660c0e4280ef6fbe9a94))
+* support RowAction column ([e5c0531](https://github.com/bespin-studios/byteshard-core/commit/e5c0531ce39f8162f7c0698ff230bc95612197d4))
+
 ## [2.28.2](https://github.com/bespin-studios/byteshard-core/compare/v2.28.1...v2.28.2) (2026-06-08)
 
 
