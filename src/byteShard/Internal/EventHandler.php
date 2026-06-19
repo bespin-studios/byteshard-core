@@ -179,7 +179,21 @@ class EventHandler
     private function getActions(string $eventId, string $objectValue, string $confirmationId, string $eventInterface = '', ?Struct\ClientData $clientData = null, ?Struct\GetData $getData = null): array
     {
         if ($this->cell !== null) {
-            return ActionCollector::getEventActions($this->cell, $this->id, $eventInterface, $eventId, $objectValue, $confirmationId, $clientData, $getData, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $this->getCellContent(), $this->request->getData());
+            return ActionCollector::getEventActions(
+                $this->cell,
+                $this->id,
+                $eventInterface,
+                $eventId,
+                $objectValue,
+                $confirmationId,
+                $clientData,
+                $getData,
+                $this->clientTimeZone,
+                $this->request->getObjectProperties(),
+                $this->request->getEvent()->value,
+                $this->getCellContent(),
+                $this->request->getData(),
+                $this->context);
         }
         return [];
     }
@@ -356,7 +370,7 @@ class EventHandler
         $tabClass    = '\\App\\Tab\\'.$closedTabId->getTabId();
         if (class_exists($tabClass)) {
             $tab     = ContentClassFactory::tab($tabClass);
-            $actions = ActionCollector::getEventActions(null, $this->id, OnTabCloseInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $tab, $this->request->getData());
+            $actions = ActionCollector::getEventActions(null, $this->id, OnTabCloseInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $tab, $this->request->getData(), $this->context);
             return $this->runActions([], ...$actions);
         }
         $result['state'] = HttpResponseState::ERROR->value;
@@ -421,11 +435,11 @@ class EventHandler
         } catch (\Exception) {
             return $result;
         }
-        $data    = ['!#SelectedSchedulerDate' => $selectedDate];
+        $data = ['!#SelectedSchedulerDate' => $selectedDate];
 
         $actions = [];
         if ($this->cell !== null) {
-            $actions = ActionCollector::getEventActions($this->cell, $this->id, OnEmptyClickInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $this->getCellContent(), $data);
+            $actions = ActionCollector::getEventActions($this->cell, $this->id, OnEmptyClickInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $this->getCellContent(), $data, $this->context);
         }
 
         return $this->runActions($data, ...$actions);
@@ -475,7 +489,7 @@ class EventHandler
                     $popup->addTabIdElement(new ID\TabIDElement($decodedId[ID\ID::TABID]));
                 }
                 $this->container = $popup;
-                $actions         = ActionCollector::getEventActions(null, $this->id, OnPopupCloseInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $popup, $this->request->getData());
+                $actions         = ActionCollector::getEventActions(null, $this->id, OnPopupCloseInterface::class, '', '', '', null, null, $this->clientTimeZone, $this->request->getObjectProperties(), $this->request->getEvent()->value, $popup, $this->request->getData(), $this->context);
             }
         }
         return $this->runActions([], ...$actions);

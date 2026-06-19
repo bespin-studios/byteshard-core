@@ -145,7 +145,7 @@ class Confirmation implements PopupInterface
      * returns the data to create a generic confirmation popup
      * @return array
      */
-    public function createConfirmationPopup(): array
+    public function createConfirmationPopup(?string $context): array
     {
         $message              = Strings::purify($this->message, true);
         $confirmButtonEventId = $this->getObjectId(new Button(self::BUTTON_ID));
@@ -196,7 +196,8 @@ class Confirmation implements PopupInterface
                             'setup'   => [
                                 'patternId' => 'a',
                                 'label'     => $this->label,
-                                'ID'        => $this->confirmationPopupId
+                                'ID'        => $this->confirmationPopupId,
+                                'context'   => $context !== null ? Session::encrypt($context) : ''
                             ],
                             'content' => [
                                 new ContentComponent(
