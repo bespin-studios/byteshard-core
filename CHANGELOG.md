@@ -1,3 +1,16 @@
+# [2.30.0](https://github.com/bespin-studios/byteshard-core/compare/v2.29.0...v2.30.0) (2026-06-21)
+
+
+### Bug Fixes
+
+* confirmation didn't pass the original context through ([65172c6](https://github.com/bespin-studios/byteshard-core/commit/65172c631d8cddb6437caf792b5c1c5b91165b3e))
+* use object properties for grid columns ([26894f2](https://github.com/bespin-studios/byteshard-core/commit/26894f2521edb2ce7fc1f9bf252abb60118d13b6))
+
+
+### Features
+
+* new Callback action ([c03d585](https://github.com/bespin-studios/byteshard-core/commit/c03d58501103b2acf55396b3185c527a2b74019a))
+
 # [2.29.0](https://github.com/bespin-studios/byteshard-core/compare/v2.28.2...v2.29.0) (2026-06-18)
 
 
