@@ -20,6 +20,7 @@ use byteShard\Utils\Strings;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use Throwable;
 
 class ClientDataProcessor
 {
@@ -251,9 +252,13 @@ class ClientDataProcessor
                 if (property_exists($obj, 'c')) {
                     $cast = $obj->c;
                 } else {
-                    try {
-                        $cast = $objectType::getCast();
-                    } catch (Exception) {
+                    if (method_exists($objectType, 'getCast')) {
+                        try {
+                            $cast = $objectType::getCast();
+                        } catch (Throwable) {
+                            $cast = null;
+                        }
+                    } else {
                         $cast = null;
                     }
                 }

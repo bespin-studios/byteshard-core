@@ -51,7 +51,8 @@ class ActionCollector
         ?array                  $objectProperties,
         string                  $eventType,
         EventContainerInterface $eventContainer,
-        mixed                   $legacyId = null): array
+        mixed                   $legacyId = null,
+        string                  $context = ''): array
     {
         $actions = [];
         if ($eventInterface !== '') {
@@ -65,7 +66,7 @@ class ActionCollector
                 $actions[] = (new ClosePopup())->setPopupId($id->getEncryptedId());
             }
         }
-        return self::initializeActions($actions, $id, $cell, $eventId, $confirmationId, $clientData, $getData, $clientTimeZone, $objectProperties, $eventType, $objectValue, $eventContainer, $legacyId);
+        return self::initializeActions($actions, $id, $cell, $eventId, $confirmationId, $clientData, $getData, $clientTimeZone, $objectProperties, $eventType, $objectValue, $eventContainer, $legacyId, $context);
     }
 
     private static function getEventResultActions(object $eventTarget, string $eventInterface, string $objectId, string $objectValue): ?array
@@ -115,9 +116,9 @@ class ActionCollector
     /**
      * @param Action[] $actions
      */
-    private static function initializeActions(array $actions, ID $id, ?Cell $cell, string $eventId, string $confirmationId, ?ClientData $clientData, ?GetData $getData, ?DateTimeZone $clientTimeZone, ?array $objectProperties, string $eventType, string $objectValue, ?EventContainerInterface $eventContainer = null, mixed $legacyId = null): array
+    private static function initializeActions(array $actions, ID $id, ?Cell $cell, string $eventId, string $confirmationId, ?ClientData $clientData, ?GetData $getData, ?DateTimeZone $clientTimeZone, ?array $objectProperties, string $eventType, string $objectValue, ?EventContainerInterface $eventContainer = null, mixed $legacyId = null, string $context = ''): array
     {
-        $actionInitDTO = new ActionInitDTO($id, $cell, $eventId, $confirmationId, $clientData, $getData, $clientTimeZone, $objectProperties, $eventType, $objectValue, $eventContainer, $legacyId);
+        $actionInitDTO = new ActionInitDTO($id, $cell, $eventId, $confirmationId, $clientData, $getData, $clientTimeZone, $objectProperties, $eventType, $objectValue, $eventContainer, $legacyId, $context);
         foreach ($actions as $index => $action) {
             $actions[$index] = $action->initializeAction($actionInitDTO);
         }

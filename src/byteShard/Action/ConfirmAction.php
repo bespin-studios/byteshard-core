@@ -225,7 +225,7 @@ class ConfirmAction extends Action
             }
             $confirmationPopup->setHeight($this->height);
             $confirmationPopup->setWidth($this->width);
-            return new Action\ActionResultMigrationHelper($confirmationPopup->createConfirmationPopup());
+            return new Action\ActionResultMigrationHelper($confirmationPopup->createConfirmationPopup($this->getActionInitDTO()?->context));
         }
 
         // no confirmation dialoge defined, show message popup with "ok" button

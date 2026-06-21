@@ -24,6 +24,7 @@ class ActionInitDTO
         public readonly string                   $objectValue = '',
         public readonly ?EventContainerInterface $eventContainer = null,
         public readonly mixed                    $legacyId = null,
+        public readonly string                   $context = ''
     )
     {
     }
