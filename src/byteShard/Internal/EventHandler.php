@@ -86,6 +86,8 @@ class EventHandler
                     $this->nonce = $this->cell->getNonce();
                 }
             }
+        } elseif ($this->id?->isContainerId() === true) {
+            $this->cell = new Cell();
         }
     }
 
@@ -204,11 +206,27 @@ class EventHandler
             $this->cell = new Cell();
         }
         if (!isset($this->cellContent)) {
-            if ($this->className === null) {
-                $this->className = '\\App\\Cell\\'.$this->id->getCellId();
+            if ($this->id?->isContainerId() === true) {
+                $containerClass    = '\\App\\Container\\'.$this->id->getContainerId();
+                $container         = new $containerClass($this->cell, $this->context);
+                $this->cellContent = $container->defineContainerContent($this->cell, $this->context);
+                $this->cell        = $this->cellContent->getCell();
+
+                $parts        = explode('\\', ltrim(get_class($this->cellContent), '\\'));
+                $layoutCellId = array_pop($parts);
+                array_shift($parts);
+                array_shift($parts);
+                $namespace = implode('\\', $parts);
+
+                $this->cell->init($layoutCellId, $this->id);
+                $this->cell->setLocaleNamespace($namespace, $layoutCellId);
+            } else {
+                if ($this->className === null) {
+                    $this->className = '\\App\\Cell\\'.$this->id->getCellId();
+                }
+                $this->cellContent = ContentClassFactory::cellContent($this->className, $this->context, $this->cell);
+                $this->cell        = $this->cellContent->getCell();
             }
-            $this->cellContent = ContentClassFactory::cellContent($this->className, $this->context, $this->cell);
-            $this->cell        = $this->cellContent->getCell();
         }
         if ($this->clientTimeZone !== null) {
             $this->cellContent->setClientTimeZone($this->clientTimeZone);

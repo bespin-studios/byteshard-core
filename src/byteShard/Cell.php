@@ -60,6 +60,9 @@ class Cell extends CellDeprecation implements CellInterface, ContainerInterface
     private string $contentFormat = 'XML';
     private string $clickedLinkId;
 
+    private ?string $localeNamespaceOverride = null;
+    private ?string $localeCellOverride      = null;
+
     private ?string $refactorCellId        = null;
     private ?string $refactorCellNamespace = null;
 
@@ -641,6 +644,12 @@ class Cell extends CellDeprecation implements CellInterface, ContainerInterface
         $this->id           = $cellId;
     }
 
+    public function setLocaleNamespace(string $namespace, string $cellName): void
+    {
+        $this->localeNamespaceOverride = $namespace;
+        $this->localeCellOverride      = $cellName;
+    }
+
     public function getEncodedId(): string
     {
         return $this->id->getEncodedCellId(false, false);
@@ -957,6 +966,9 @@ class Cell extends CellDeprecation implements CellInterface, ContainerInterface
 
     public function createLocaleBaseToken(string $type): string
     {
+        if ($this->localeNamespaceOverride !== null) {
+            return str_replace('\\', '_', $this->localeNamespaceOverride).'::'.$type.'.'.$this->localeCellOverride;
+        }
         if ($this->contentClass !== '') {
             return str_replace('\\', '_', trim($this->contentClass, '\\')).'::'.$type.'.'.$this->layoutCellId;
         }

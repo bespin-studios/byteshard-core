@@ -215,7 +215,7 @@ class ID
         }
         if (isset($this->containerId)) {
             // reset everything, use only containerId for now
-            $id                    = [];
+            //$id                    = [];
             $id[self::CONTAINERID] = $this->containerId;
         }
         ksort($id);
@@ -309,6 +309,11 @@ class ID
     public function isPopupId(): bool
     {
         return $this->popupId !== '';
+    }
+
+    public function isContainerId(): bool
+    {
+        return isset($this->containerId) && $this->containerId !== '';
     }
 
     public static function refactor(string $id, ?self $containerId = null): ?self
