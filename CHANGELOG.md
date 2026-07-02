@@ -1,3 +1,10 @@
+## [2.30.1](https://github.com/bespin-studios/byteshard-core/compare/v2.30.0...v2.30.1) (2026-07-02)
+
+
+### Bug Fixes
+
+* use form container related issues ([2cdb55f](https://github.com/bespin-studios/byteshard-core/commit/2cdb55f67124da67616a317b7fe35796de24f225))
+
 # [2.30.0](https://github.com/bespin-studios/byteshard-core/compare/v2.29.0...v2.30.0) (2026-06-21)
 
 
