@@ -380,6 +380,65 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
 
     /**
      * @param BaseConnection|null $connection
+     * @return bool
+     * @throws Exception
+     */
+    public static function startTransaction(?BaseConnection $connection = null): bool
+    {
+        $connectionObject = self::checkConnection($connection);
+
+        try {
+            /** @var PDO $tempConnection */
+            $tempConnection = $connectionObject->getConnection();
+            return $tempConnection->beginTransaction();
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage(), 110320017);
+        }
+    }
+
+    /**
+     * @param BaseConnection|null $connection
+     * @return bool
+     * @throws Exception
+     */
+    public static function commitTransaction(BaseConnection $connection = null): bool
+    {
+        $connectionObject = self::checkConnection($connection);
+
+        try {
+            /** @var PDO $tempConnection */
+            $tempConnection = $connectionObject->getConnection();
+            return $tempConnection->commit();
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage(), 110320018);
+        }
+    }
+
+    /**
+     * @param BaseConnection|null $connection
+     * @return bool
+     * @throws Exception
+     */
+    public static function rollbackTransaction(?BaseConnection $connection = null): bool
+    {
+        $connectionObject = self::checkConnection($connection);
+
+        try {
+            /** @var PDO $tempConnection */
+            $tempConnection = $connectionObject->getConnection();
+
+            if ($tempConnection->inTransaction()) {
+                return $tempConnection->rollBack();
+            }
+
+            return false;
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage(), 110320019);
+        }
+    }
+
+    /**
+     * @param BaseConnection|null $connection
      * @return Connection
      */
     private static function checkConnection(?BaseConnection $connection = null): Connection

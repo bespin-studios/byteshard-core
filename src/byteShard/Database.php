@@ -224,4 +224,46 @@ class Database
             default                       => 0,
         };
     }
+
+    /**
+     * @param BaseConnection|null $connection
+     * @return bool
+     * @throws Exception
+     */
+    public static function startTransaction(?BaseConnection $connection = null): bool
+    {
+        global $dbDriver;
+        return match ($dbDriver) {
+            Environment::DRIVER_MYSQL_PDO => MySQL\PDO\Recordset::startTransaction($connection),
+            default                       => false,
+        };
+    }
+
+    /**
+     * @param BaseConnection|null $connection
+     * @return bool
+     * @throws Exception
+     */
+    public static function commitTransaction(?BaseConnection $connection = null): bool
+    {
+        global $dbDriver;
+        return match ($dbDriver) {
+            Environment::DRIVER_MYSQL_PDO => MySQL\PDO\Recordset::commitTransaction($connection),
+            default                       => false,
+        };
+    }
+
+    /**
+     * @param BaseConnection|null $connection
+     * @return bool
+     * @throws Exception
+     */
+    public static function rollbackTransaction(?BaseConnection $connection = null): bool
+    {
+        global $dbDriver;
+        return match ($dbDriver) {
+            Environment::DRIVER_MYSQL_PDO => MySQL\PDO\Recordset::rollbackTransaction($connection),
+            default                       => false,
+        };
+    }
 }
