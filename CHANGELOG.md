@@ -1,3 +1,16 @@
+# [2.31.0](https://github.com/bespin-studios/byteshard-core/compare/v2.30.1...v2.31.0) (2026-07-23)
+
+
+### Bug Fixes
+
+* remove wrong import ([8d7574f](https://github.com/bespin-studios/byteshard-core/commit/8d7574ff4dfbb40830d877c04ac345b6d5fac1a6))
+* require commit and rollback transaction methods a connection, let start transaction return the connection ([49411a5](https://github.com/bespin-studios/byteshard-core/commit/49411a5cddbd8c808cf2ffcb6c937586ebd683c5))
+
+
+### Features
+
+* add transaction support to byteshard ([62448c7](https://github.com/bespin-studios/byteshard-core/commit/62448c743be7e062a58746c723f3e7d6c3e9fb69))
+
 ## [2.30.1](https://github.com/bespin-studios/byteshard-core/compare/v2.30.0...v2.30.1) (2026-07-02)
 
 
