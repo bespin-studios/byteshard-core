@@ -34,7 +34,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
             $result = [];
             if ($encode_keys === true) {
                 foreach ($input as $k => $v) {
-                    $result[mb_convert_encoding($k,  'ISO-8859-1', 'UTF-8')] = self::utf8_decode_mix($v, true);
+                    $result[mb_convert_encoding($k, 'ISO-8859-1', 'UTF-8')] = self::utf8_decode_mix($v, true);
                 }
             } else {
                 foreach ($input as $k => $v) {
@@ -45,7 +45,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
             $result = new stdClass();
             if ($encode_keys === true) {
                 foreach ($input as $k => $v) {
-                    $result->{mb_convert_encoding($k,  'ISO-8859-1', 'UTF-8')} = self::utf8_decode_mix($v, true);
+                    $result->{mb_convert_encoding($k, 'ISO-8859-1', 'UTF-8')} = self::utf8_decode_mix($v, true);
                 }
             } else {
                 foreach ($input as $k => $v) {
@@ -57,7 +57,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
                 // output is already utf8
                 $result = $input;
             } else {
-                $result = mb_convert_encoding($input,  'ISO-8859-1', 'UTF-8');
+                $result = mb_convert_encoding($input, 'ISO-8859-1', 'UTF-8');
             }
         } else {
             $result = null;
@@ -95,7 +95,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
             $stmt->execute($parameters);
             if ($classMap !== null) {
                 if ($fetchPropsLate === true) {
-                    $result = $stmt->fetchAll(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $classMap);
+                    $result = $stmt->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $classMap);
                 } else {
                     $result = $stmt->fetchAll(PDO::FETCH_CLASS, $classMap);
                 }
@@ -216,7 +216,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
             $stmt->execute($parameters);
             if ($classMap !== null) {
                 if ($fetchPropsLate === true) {
-                    $stmt->setFetchMode(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $classMap);
+                    $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $classMap);
                 } else {
                     $stmt->setFetchMode(PDO::FETCH_CLASS, $classMap);
                 }
@@ -376,6 +376,66 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
             $connectionObject->disconnect();
         }
         return $affectedRows;
+    }
+
+    /**
+     * @param BaseConnection|null $connection
+     * @return BaseConnection
+     * @throws Exception
+     */
+    public static function startTransaction(?BaseConnection $connection = null): BaseConnection
+    {
+        $connectionObject = self::checkConnection($connection);
+
+        try {
+            /** @var PDO $tempConnection */
+            $tempConnection = $connectionObject->getConnection();
+            $tempConnection->beginTransaction();
+            return $connectionObject;
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage(), 110320017);
+        }
+    }
+
+    /**
+     * @param BaseConnection $connection
+     * @return bool
+     * @throws Exception
+     */
+    public static function commitTransaction(BaseConnection $connection): bool
+    {
+        $connectionObject = self::checkConnection($connection);
+
+        try {
+            /** @var PDO $tempConnection */
+            $tempConnection = $connectionObject->getConnection();
+            return $tempConnection->commit();
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage(), 110320018);
+        }
+    }
+
+    /**
+     * @param BaseConnection $connection
+     * @return bool
+     * @throws Exception
+     */
+    public static function rollbackTransaction(BaseConnection $connection): bool
+    {
+        $connectionObject = self::checkConnection($connection);
+
+        try {
+            /** @var PDO $tempConnection */
+            $tempConnection = $connectionObject->getConnection();
+
+            if ($tempConnection->inTransaction()) {
+                return $tempConnection->rollBack();
+            }
+
+            return false;
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage(), 110320019);
+        }
     }
 
     /**
