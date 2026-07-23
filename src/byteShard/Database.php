@@ -227,10 +227,10 @@ class Database
 
     /**
      * @param BaseConnection|null $connection
-     * @return bool
+     * @return BaseConnection
      * @throws Exception
      */
-    public static function startTransaction(?BaseConnection $connection = null): bool
+    public static function startTransaction(?BaseConnection $connection = null): BaseConnection
     {
         global $dbDriver;
         return match ($dbDriver) {
@@ -240,11 +240,11 @@ class Database
     }
 
     /**
-     * @param BaseConnection|null $connection
+     * @param BaseConnection $connection
      * @return bool
      * @throws Exception
      */
-    public static function commitTransaction(?BaseConnection $connection = null): bool
+    public static function commitTransaction(BaseConnection $connection): bool
     {
         global $dbDriver;
         return match ($dbDriver) {
@@ -254,11 +254,11 @@ class Database
     }
 
     /**
-     * @param BaseConnection|null $connection
+     * @param BaseConnection $connection
      * @return bool
      * @throws Exception
      */
-    public static function rollbackTransaction(?BaseConnection $connection = null): bool
+    public static function rollbackTransaction(BaseConnection $connection): bool
     {
         global $dbDriver;
         return match ($dbDriver) {

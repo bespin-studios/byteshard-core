@@ -19,6 +19,7 @@ use byteShard\Internal\Database\UpdateInterface;
 use config;
 use PDO;
 use PDOException;
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Base;
 use stdClass;
 
 /**
@@ -34,7 +35,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
             $result = [];
             if ($encode_keys === true) {
                 foreach ($input as $k => $v) {
-                    $result[mb_convert_encoding($k,  'ISO-8859-1', 'UTF-8')] = self::utf8_decode_mix($v, true);
+                    $result[mb_convert_encoding($k, 'ISO-8859-1', 'UTF-8')] = self::utf8_decode_mix($v, true);
                 }
             } else {
                 foreach ($input as $k => $v) {
@@ -45,7 +46,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
             $result = new stdClass();
             if ($encode_keys === true) {
                 foreach ($input as $k => $v) {
-                    $result->{mb_convert_encoding($k,  'ISO-8859-1', 'UTF-8')} = self::utf8_decode_mix($v, true);
+                    $result->{mb_convert_encoding($k, 'ISO-8859-1', 'UTF-8')} = self::utf8_decode_mix($v, true);
                 }
             } else {
                 foreach ($input as $k => $v) {
@@ -57,7 +58,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
                 // output is already utf8
                 $result = $input;
             } else {
-                $result = mb_convert_encoding($input,  'ISO-8859-1', 'UTF-8');
+                $result = mb_convert_encoding($input, 'ISO-8859-1', 'UTF-8');
             }
         } else {
             $result = null;
@@ -95,7 +96,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
             $stmt->execute($parameters);
             if ($classMap !== null) {
                 if ($fetchPropsLate === true) {
-                    $result = $stmt->fetchAll(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $classMap);
+                    $result = $stmt->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $classMap);
                 } else {
                     $result = $stmt->fetchAll(PDO::FETCH_CLASS, $classMap);
                 }
@@ -216,7 +217,7 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
             $stmt->execute($parameters);
             if ($classMap !== null) {
                 if ($fetchPropsLate === true) {
-                    $stmt->setFetchMode(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $classMap);
+                    $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $classMap);
                 } else {
                     $stmt->setFetchMode(PDO::FETCH_CLASS, $classMap);
                 }
@@ -380,28 +381,29 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
 
     /**
      * @param BaseConnection|null $connection
-     * @return bool
+     * @return BaseConnection
      * @throws Exception
      */
-    public static function startTransaction(?BaseConnection $connection = null): bool
+    public static function startTransaction(?BaseConnection $connection = null): BaseConnection
     {
         $connectionObject = self::checkConnection($connection);
 
         try {
             /** @var PDO $tempConnection */
             $tempConnection = $connectionObject->getConnection();
-            return $tempConnection->beginTransaction();
+            $tempConnection->beginTransaction();
+            return $connectionObject;
         } catch (PDOException $e) {
             throw new Exception($e->getMessage(), 110320017);
         }
     }
 
     /**
-     * @param BaseConnection|null $connection
+     * @param BaseConnection $connection
      * @return bool
      * @throws Exception
      */
-    public static function commitTransaction(BaseConnection $connection = null): bool
+    public static function commitTransaction(BaseConnection $connection): bool
     {
         $connectionObject = self::checkConnection($connection);
 
@@ -415,11 +417,11 @@ class Recordset implements GetArrayInterface, GetIndexArrayInterface, GetMultidi
     }
 
     /**
-     * @param BaseConnection|null $connection
+     * @param BaseConnection $connection
      * @return bool
      * @throws Exception
      */
-    public static function rollbackTransaction(?BaseConnection $connection = null): bool
+    public static function rollbackTransaction(BaseConnection $connection): bool
     {
         $connectionObject = self::checkConnection($connection);
 
