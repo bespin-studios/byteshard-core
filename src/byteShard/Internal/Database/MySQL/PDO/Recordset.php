@@ -19,7 +19,6 @@ use byteShard\Internal\Database\UpdateInterface;
 use config;
 use PDO;
 use PDOException;
-use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Base;
 use stdClass;
 
 /**
