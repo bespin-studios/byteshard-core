@@ -33,4 +33,14 @@ class UploadId
         $message = (object)array_filter($message);
         return urlencode(Session::encrypt(json_encode($message), $cell->getNonce()));
     }
+
+    public static function getImageUploadId(Cell $cell, string $formObjectId): string
+    {
+        $message = [
+            '!#c' => $cell->getContentClass(),
+            '!#i' => $cell->getNewId()->getEncodedCellId(),
+            '!#o' => $formObjectId
+        ];
+        return urlencode(Session::encrypt(json_encode((object)$message), $cell->getNonce()));
+    }
 }

@@ -741,6 +741,10 @@ final class Proxy
                 $uploadId = UploadId::getUploadId($cell, $this->clientName, $this->uploadFileTypes, $this->uploadTargetFilename, $this->uploadTargetPath, $this->uploadClearAfterUpload);
                 $this->setUploadUrlType($uploadId);
             }
+            if ($this->formObjectType === Control\Image::class) {
+                $uploadId = UploadId::getImageUploadId($cell, $this->internalName);
+                $this->setName($uploadId);
+            }
             if (empty($this->options) && $this->formObjectType === Control\Combo::class) {
                 $formAlterations->setOptions(true);
             }
