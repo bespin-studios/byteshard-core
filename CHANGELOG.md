@@ -1,3 +1,10 @@
+## [2.31.1](https://github.com/bespin-studios/byteshard-core/compare/v2.31.0...v2.31.1) (2026-09-05)
+
+
+### Bug Fixes
+
+* add context to export actions ([4599f31](https://github.com/bespin-studios/byteshard-core/commit/4599f3121c950737b1e498f0e6970441ff547c86))
+
 # [2.31.0](https://github.com/bespin-studios/byteshard-core/compare/v2.30.1...v2.31.0) (2026-07-23)
 
 
