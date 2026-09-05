@@ -45,7 +45,7 @@ class Request
         $this->affectedId       = $request['id'] ?? '';
         $this->data             = isset($request['dat']) ? Sanitizer::sanitize($request['dat']) : null;
         $this->objectProperties = $this->decryptObjectProperties($request['op'] ?? '');
-        $this->context          = isset($request['ctx']) ? \byteShard\Session::decrypt($request['ctx']) : '';
+        $this->context          = isset($request['ctx']) ? Session::decrypt($request['ctx']) : '';
         $this->mapLegacyRequestData($request);
     }
 
@@ -59,9 +59,9 @@ class Request
         $result = [];
         try {
             if (extension_loaded('zlib') === true) {
-                $decrypted = json_decode(gzuncompress(\byteShard\Session::decrypt($objectProperties)));
+                $decrypted = json_decode(gzuncompress(Session::decrypt($objectProperties)));
             } else {
-                $decrypted = json_decode(\byteShard\Session::decrypt($objectProperties));
+                $decrypted = json_decode(Session::decrypt($objectProperties));
             }
             foreach ($decrypted as $object => $properties) {
                 $result[$object]    = $properties;

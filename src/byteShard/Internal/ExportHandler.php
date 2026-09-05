@@ -51,7 +51,7 @@ class ExportHandler
      * @param ClientData|null $clientData
      * @param GetData|null $getData
      */
-    public function __construct(ErrorHandler $errorHandler, string $xid, string $eventId, string $appName, string $exportId, string $eventName, ?ClientData $clientData = null, ?GetData $getData = null)
+    public function __construct(ErrorHandler $errorHandler, string $xid, string $eventId, string $appName, string $exportId, string $eventName, ?ClientData $clientData = null, ?GetData $getData = null, private string $context = '')
     {
         $this->errorHandler = $errorHandler;
         $this->errorHandler->setExportID($exportId);
@@ -102,7 +102,7 @@ class ExportHandler
     {
         if (!isset($this->cellContent)) {
             $className         = $this->cell->getContentClass();
-            $this->cellContent = ContentClassFactory::cellContent($className, '', $this->cell);
+            $this->cellContent = ContentClassFactory::cellContent($className, $this->context, $this->cell);
             $this->cell        = $this->cellContent->getCell();
             if ($this->clientData !== null) {
                 $this->cellContent->setProcessedClientData($this->clientData);
