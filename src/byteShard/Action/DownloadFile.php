@@ -17,15 +17,17 @@ class DownloadFile extends Action\ExportAction implements Action\ExportInterface
     /**
      * DownloadFile constructor.
      */
-    public function __construct()
+    public function __construct(private readonly string $context = '')
     {
         parent::__construct(ExportType::DOWNLOAD, 180);
     }
 
     protected function runAction(): ActionResultInterface
     {
-        $xid = $this->getXID();
+        //$xid = $this->getXID();
+        $xid = $this->getActionInitDTO()->id->getEncryptedCellId();
         if ($xid !== null) {
+            $context = $this->context !== '' ? Session::encrypt($this->context) : '';
             //TODO: check string length since _GET is restricted.
             //if certain length is exceeded, dump serialized clientData in a datastore (aka db/ redis etc)
             $action[Action\ActionTargetEnum::Global->value]['export'] = [
@@ -33,7 +35,8 @@ class DownloadFile extends Action\ExportAction implements Action\ExportInterface
                 'id'   => $this->getEventId(),
                 'cd'   => Session::encrypt(serialize($this->getClientData())),
                 'gd'   => Session::encrypt(serialize($this->getGetData())),
-                'type' => 'download'
+                'type' => 'download',
+                'ctx'  => $context
             ];
             $this->resetEventId();
         }

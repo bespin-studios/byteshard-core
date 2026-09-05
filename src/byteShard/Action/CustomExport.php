@@ -10,6 +10,7 @@ use byteShard\Enum\Export\ExportType;
 use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
+use byteShard\Session;
 
 /**
  * Class CustomExport
@@ -17,7 +18,7 @@ use byteShard\Internal\Action\ActionResultInterface;
  */
 class CustomExport extends Action\ExportAction implements Action\ExportInterface
 {
-    public function __construct(ExportType $type)
+    public function __construct(ExportType $type, private string $context = '')
     {
         parent::__construct($type, 600);
     }
@@ -26,10 +27,12 @@ class CustomExport extends Action\ExportAction implements Action\ExportInterface
     {
         $xid = $this->getXID();
         if ($xid !== null) {
+            $context = $this->context !== '' ? Session::encrypt($this->context) : '';
             $action[Action\ActionTargetEnum::Global->value]['export'] = [
                 'xid'  => $xid,
                 'id'   => $this->getEventId(),
                 'type' => $this->getType()->value,
+                'ctx'  => $context,
                 'cd'   => null,
                 'gd'   => null
             ];
